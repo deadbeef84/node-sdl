@@ -543,12 +543,12 @@ NAN_MODULE_INIT(sdl::key::Init) {
 // NAN_METHOD(sdl::GetKeyFromName) {
 //
 
-// 	if(args.Length() < 1) {
+// 	if(info.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
 // 			String::New("Invalid arguments: Expected GetKeyFromName(String)")));
 // 	}
 
-// 	String::Utf8Value name(args[0]);
+// 	String::Utf8Value name(info[0]);
 // 	SDL_Keycode code = SDL_GetKeyFromName(*name);
 
 // 	info.GetReturnValue().Set(Number::New(code));
@@ -561,12 +561,12 @@ FUNCTION_END(Number::New(code))
 // NAN_METHOD(sdl::GetKeyFromScancode) {
 //
 
-// 	if(args.Length() < 1) {
+// 	if(info.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
 // 			String::New("Invalid arguments: Expected GetKeyFromScancode(Number)")));
 // 	}
 
-// 	SDL_Scancode scan = static_cast<SDL_Scancode>(args[0]->Int32Value());
+// 	SDL_Scancode scan = static_cast<SDL_Scancode>(info[0]->Int32Value());
 // 	SDL_Keycode key = SDL_GetKeyFromScancode(scan);
 
 // 	info.GetReturnValue().Set(Number::New(key));
@@ -579,12 +579,12 @@ FUNCTION_END(Number::New(key))
 NAN_METHOD(sdl::GetKeyName) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetKeyName(Number)")));
 	}
 
-	SDL_Keycode key = static_cast<SDL_Keycode>(args[0]->Int32Value());
+	SDL_Keycode key = static_cast<SDL_Keycode>(info[0]->Int32Value());
 	const char *name = SDL_GetKeyName(key);
 
 	info.GetReturnValue().Set(String::New(name));
@@ -593,12 +593,12 @@ NAN_METHOD(sdl::GetKeyName) {
 NAN_METHOD(sdl::GetScancodeFromKey) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetScancodeFromKey(Number)")));
 	}
 
-	SDL_Keycode key = static_cast<SDL_Keycode>(args[0]->Int32Value());
+	SDL_Keycode key = static_cast<SDL_Keycode>(info[0]->Int32Value());
 	SDL_Scancode scan = SDL_GetScancodeFromKey(key);
 
 	info.GetReturnValue().Set(Number::New(scan));
@@ -606,12 +606,12 @@ NAN_METHOD(sdl::GetScancodeFromKey) {
 NAN_METHOD(sdl::GetScancodeFromName) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetScancodeFromName(String)")));
 	}
 
-	String::Utf8Value name(args[0]);
+	String::Utf8Value name(info[0]);
 	SDL_Scancode scan = SDL_GetScancodeFromName(*name);
 
 	info.GetReturnValue().Set(Number::New(scan));
@@ -619,12 +619,12 @@ NAN_METHOD(sdl::GetScancodeFromName) {
 NAN_METHOD(sdl::GetScancodeName) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetScancodeName(Number)")));
 	}
 
-	SDL_Scancode scan = static_cast<SDL_Scancode>(args[0]->Int32Value());
+	SDL_Scancode scan = static_cast<SDL_Scancode>(info[0]->Int32Value());
 	const char *name = SDL_GetScancodeName(scan);
 
 	info.GetReturnValue().Set(String::New(name));
@@ -640,12 +640,12 @@ NAN_METHOD(sdl::HasScreenKeyboardSupport) {
 NAN_METHOD(sdl::IsScreenKeyboardShown) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected IsScreenKeyboardShown(Window)")));
 	}
 
-	WindowWrapper* wrap = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(args[0]));
+	WindowWrapper* wrap = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_bool ret = SDL_IsScreenKeyboardShown(wrap->window_);
 
 	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
@@ -690,12 +690,12 @@ NAN_METHOD(sdl::GetModState) {
 NAN_METHOD(sdl::SetModState) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected SetModState(Number)")));
 	}
 
-	SDL_Keymod mod = static_cast<SDL_Keymod>(args[0]->Int32Value());
+	SDL_Keymod mod = static_cast<SDL_Keymod>(info[0]->Int32Value());
 	SDL_SetModState(mod);
 
 	return Undefined();
@@ -711,12 +711,12 @@ NAN_METHOD(sdl::IsTextInputActive) {
 NAN_METHOD(sdl::SetTextInputRect) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected SetTextInputRect(Rect)")));
 	}
 
-	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[0]));
+	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_SetTextInputRect(rect->wrapped);
 
 	return Undefined();

@@ -63,23 +63,23 @@ NAN_MODULE_INIT(sdl::RendererWrapper::Init) {
 }
 
 NAN_METHOD(sdl::RendererWrapper::New) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instances of a Renderer.")));
 	}
 
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected at least: new Renderer(sdl.Window)")));
 	}
-	else if(!args[0]->IsObject()) {
+	else if(!info[0]->IsObject()) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected at least: new Renderer(sdl.Window)")));
 	}
 
-	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(args[0]));
-	int index = args[1]->IsUndefined() ? -1 : args[1]->Int32Value();
-	int flags = args[2]->IsUndefined() ? SDL_RENDERER_ACCELERATED : args[2]->Int32Value();
+	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	int index = info[1]->IsUndefined() ? -1 : info[1]->Int32Value();
+	int flags = info[2]->IsUndefined() ? SDL_RENDERER_ACCELERATED : info[2]->Int32Value();
 	SDL_Renderer* renderer = SDL_CreateRenderer(window->window_, index, flags);
 	if(NULL == renderer) {
 		return ThrowSDLException(__func__);
@@ -87,26 +87,26 @@ NAN_METHOD(sdl::RendererWrapper::New) {
 
 	RendererWrapper* obj = new RendererWrapper();
 	obj->renderer_ = renderer;
-	obj->Wrap(args.This());
-	return args.This();
+	obj->Wrap(info.This());
+	return info.This();
 }
 
 NAN_METHOD(sdl::RendererWrapper::NewSoftware) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instances of a Renderer.")));
 	}
 
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected: new SoftwareRenderer(sdl.Surface)")));
 	}
-	else if(!args[0]->IsObject()) {
+	else if(!info[0]->IsObject()) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected: new SoftwareRenderer(sdl.Surface)")));
 	}
 
-	SurfaceWrapper* wrap = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(args[0]));
+	SurfaceWrapper* wrap = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(wrap->surface_);
 	if(NULL == renderer) {
 		return ThrowSDLException(__func__);
@@ -114,26 +114,26 @@ NAN_METHOD(sdl::RendererWrapper::NewSoftware) {
 
 	RendererWrapper* obj = new RendererWrapper();
 	obj->renderer_ = renderer;
-	obj->Wrap(args.This());
-	return args.This();
+	obj->Wrap(info.This());
+	return info.This();
 }
 
 // NAN_METHOD(sdl::RendererWrapper::CreateTexture) {
 //
-//   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+//   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 //   return Undefined();
 // }
 // NAN_METHOD(sdl::RendererWrapper::CreateTextureFromSurface) {
 //
-//   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+//   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 //   return Undefined();
 // }
 
 NAN_METHOD(sdl::RendererWrapper::GetDrawBlendMode) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(info.This());
 	SDL_BlendMode mode;
 	int err = SDL_GetRenderDrawBlendMode(obj->renderer_, &mode);
 	if(err < 0) {
@@ -145,7 +145,7 @@ NAN_METHOD(sdl::RendererWrapper::GetDrawBlendMode) {
 
 NAN_METHOD(sdl::RendererWrapper::GetDrawColor) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 	uint8_t r, g, b, a;
 	int err = SDL_GetRenderDrawColor(obj->renderer_, &r, &g, &b, &a);
 	if(err < 0) {
@@ -162,7 +162,7 @@ NAN_METHOD(sdl::RendererWrapper::GetDrawColor) {
 
 NAN_METHOD(sdl::RendererWrapper::GetTarget) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	SDL_Texture* texture = SDL_GetRenderTarget(obj->renderer_);
 	if(NULL == texture) {
@@ -177,7 +177,7 @@ NAN_METHOD(sdl::RendererWrapper::GetTarget) {
 
 NAN_METHOD(sdl::RendererWrapper::GetInfo) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	SDL_RendererInfo* info = new SDL_RendererInfo;
 	int err = SDL_GetRendererInfo(obj->renderer_, info);
@@ -189,7 +189,7 @@ NAN_METHOD(sdl::RendererWrapper::GetInfo) {
 
 NAN_METHOD(sdl::RendererWrapper::GetOutputSize) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(info.This());
 
 	int w, h;
 	int err = SDL_GetRendererOutputSize(obj->renderer_, &w, &h);
@@ -204,7 +204,7 @@ NAN_METHOD(sdl::RendererWrapper::GetOutputSize) {
 
 NAN_METHOD(sdl::RendererWrapper::GetClipRect) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	SDL_Rect* rect = new SDL_Rect;
 	SDL_RenderGetClipRect(obj->renderer_, rect);
@@ -216,7 +216,7 @@ NAN_METHOD(sdl::RendererWrapper::GetClipRect) {
 
 NAN_METHOD(sdl::RendererWrapper::GetLogicalSize) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	int w, h;
 	SDL_RenderGetLogicalSize(obj->renderer_, &w, &h);
@@ -228,7 +228,7 @@ NAN_METHOD(sdl::RendererWrapper::GetLogicalSize) {
 }
 NAN_METHOD(sdl::RendererWrapper::GetScale) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	float scaleX, scaleY;
 	SDL_RenderGetScale(obj->renderer_, &scaleX, &scaleY);
@@ -240,7 +240,7 @@ NAN_METHOD(sdl::RendererWrapper::GetScale) {
 }
 NAN_METHOD(sdl::RendererWrapper::GetViewport) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	SDL_Rect* rect = new SDL_Rect;
 	SDL_RenderGetViewport(obj->renderer_, rect);
@@ -252,27 +252,27 @@ NAN_METHOD(sdl::RendererWrapper::GetViewport) {
 // TODO: Implement.
 NAN_METHOD(sdl::RendererWrapper::ReadPixels) {
 
-	// RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	// RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	return ThrowException(Exception::Error(String::New("Not implemented.")));
 }
 NAN_METHOD(sdl::RendererWrapper::TargetSupported) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	info.GetReturnValue().Set(Boolean::New(SDL_RenderTargetSupported(obj->renderer_)));
 }
 
 NAN_METHOD(sdl::RendererWrapper::SetClipRect) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	int err;
-	if(args[0]->IsUndefined()) {
+	if(info[0]->IsUndefined()) {
 		err = SDL_RenderSetClipRect(obj->renderer_, NULL);
 	}
 	else {
-		RectWrapper* clip = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[0]));
+		RectWrapper* clip = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 		err = SDL_RenderSetClipRect(obj->renderer_, clip->wrapped);
 	}
 	if(err < 0) {
@@ -283,13 +283,13 @@ NAN_METHOD(sdl::RendererWrapper::SetClipRect) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetLogicalSize) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected setLogicalSize(Number, Number)")));
 	}
-	int w = args[0]->IsUndefined() ? 1 : args[0]->Int32Value();
-	int h = args[1]->IsUndefined() ? 1 : args[1]->Int32Value();
+	int w = info[0]->IsUndefined() ? 1 : info[0]->Int32Value();
+	int h = info[1]->IsUndefined() ? 1 : info[1]->Int32Value();
 	int err = SDL_RenderSetLogicalSize(obj->renderer_, w, h);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -299,13 +299,13 @@ NAN_METHOD(sdl::RendererWrapper::SetLogicalSize) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetScale) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected setLogicalSize(Number, Number)")));
 	}
-	double scaleX = args[0]->IsUndefined() ? 1 : args[0]->NumberValue();
-	double scaleY = args[1]->IsUndefined() ? 1 : args[1]->NumberValue();
+	double scaleX = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+	double scaleY = info[1]->IsUndefined() ? 1 : info[1]->NumberValue();
 	int err = SDL_RenderSetLogicalSize(obj->renderer_, scaleX, scaleY);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -315,14 +315,14 @@ NAN_METHOD(sdl::RendererWrapper::SetScale) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetViewport) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	int err;
-	if(args[0]->IsUndefined()) {
+	if(info[0]->IsUndefined()) {
 		err = SDL_RenderSetViewport(obj->renderer_, NULL);
 	}
 	else {
-		RectWrapper* wrap = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[0]));
+		RectWrapper* wrap = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 		err = SDL_RenderSetViewport(obj->renderer_, wrap->wrapped);
 	}
 	if(err < 0) {
@@ -333,9 +333,9 @@ NAN_METHOD(sdl::RendererWrapper::SetViewport) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetDrawBlendMode) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	SDL_BlendMode mode = args[0]->IsUndefined() ? SDL_BLENDMODE_NONE : static_cast<SDL_BlendMode>(args[0]->Int32Value());
+	SDL_BlendMode mode = info[0]->IsUndefined() ? SDL_BLENDMODE_NONE : static_cast<SDL_BlendMode>(info[0]->Int32Value());
 	int err = SDL_SetRenderDrawBlendMode(obj->renderer_, mode);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -345,15 +345,15 @@ NAN_METHOD(sdl::RendererWrapper::SetDrawBlendMode) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetDrawColor) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 4) {
+	if(info.Length() < 4) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected setDrawColor(Number, Number, Number, Number)")));
 	}
-	int r = args[0]->IsUndefined() ? 0 : args[0]->Int32Value();
-	int g = args[1]->IsUndefined() ? 0 : args[1]->Int32Value();
-	int b = args[2]->IsUndefined() ? 0 : args[2]->Int32Value();
-	int a = args[3]->IsUndefined() ? 0 : args[4]->Int32Value();
+	int r = info[0]->IsUndefined() ? 0 : info[0]->Int32Value();
+	int g = info[1]->IsUndefined() ? 0 : info[1]->Int32Value();
+	int b = info[2]->IsUndefined() ? 0 : info[2]->Int32Value();
+	int a = info[3]->IsUndefined() ? 0 : info[4]->Int32Value();
 	int err = SDL_SetRenderDrawColor(obj->renderer_, r, g, b, a);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -363,12 +363,12 @@ NAN_METHOD(sdl::RendererWrapper::SetDrawColor) {
 }
 NAN_METHOD(sdl::RendererWrapper::SetTarget) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected setTarget(Texture)")));
 	}
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(args[0]));
+	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
 	int err = SDL_SetRenderTarget(obj->renderer_, tex->texture_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -379,7 +379,7 @@ NAN_METHOD(sdl::RendererWrapper::SetTarget) {
 
 NAN_METHOD(sdl::RendererWrapper::Clear) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
 	int err = SDL_RenderClear(obj->renderer_);
 	if(err < 0) {
@@ -390,22 +390,22 @@ NAN_METHOD(sdl::RendererWrapper::Clear) {
 }
 NAN_METHOD(sdl::RendererWrapper::Present) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 	SDL_RenderPresent(obj->renderer_);
 
 	return Undefined();
 }
 NAN_METHOD(sdl::RendererWrapper::Copy) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() > 3) {
-		TextureWrapper* texture = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(args[0]));
-		RectWrapper* src = args[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[1]));
-		RectWrapper* dst = args[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[2]));
-		double angle = args[3]->IsUndefined() ? 0 : args[3]->NumberValue();
-		PointWrapper* point = args[4]->IsUndefined() ? NULL : ObjectWrap::Unwrap<PointWrapper>(Handle<Object>::Cast(args[4]));
-		SDL_RendererFlip flip = args[5]->IsUndefined() ? SDL_FLIP_NONE : static_cast<SDL_RendererFlip>(args[5]->Int32Value());
+	if(info.Length() > 3) {
+		TextureWrapper* texture = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
+		RectWrapper* src = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
+		RectWrapper* dst = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
+		double angle = info[3]->IsUndefined() ? 0 : info[3]->NumberValue();
+		PointWrapper* point = info[4]->IsUndefined() ? NULL : ObjectWrap::Unwrap<PointWrapper>(Handle<Object>::Cast(info[4]));
+		SDL_RendererFlip flip = info[5]->IsUndefined() ? SDL_FLIP_NONE : static_cast<SDL_RendererFlip>(info[5]->Int32Value());
 		int err = SDL_RenderCopyEx(obj->renderer_, texture->texture_,
 			src == NULL ? NULL : src->wrapped,
 			dst == NULL ? NULL : dst->wrapped,
@@ -417,9 +417,9 @@ NAN_METHOD(sdl::RendererWrapper::Copy) {
 		}
 	}
 	else {
-		TextureWrapper* texture = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(args[0]));
-		RectWrapper* src = args[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[1]));
-		RectWrapper* dst = args[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[2]));
+		TextureWrapper* texture = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
+		RectWrapper* src = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
+		RectWrapper* dst = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
 		int err = SDL_RenderCopy(obj->renderer_, texture->texture_,
 			src == NULL ? NULL : src->wrapped,
 			dst == NULL ? NULL : dst->wrapped);
@@ -432,16 +432,16 @@ NAN_METHOD(sdl::RendererWrapper::Copy) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawLine) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 4) {
+	if(info.Length() < 4) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawLine(Number, Number, Number, Number)")));
 	}
 
-	int x1 = args[0]->Int32Value();
-	int y1 = args[1]->Int32Value();
-	int x2 = args[2]->Int32Value();
-	int y2 = args[3]->Int32Value();
+	int x1 = info[0]->Int32Value();
+	int y1 = info[1]->Int32Value();
+	int x2 = info[2]->Int32Value();
+	int y2 = info[3]->Int32Value();
 	int err = SDL_RenderDrawLine(obj->renderer_, x1, y1, x2, y2);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -451,13 +451,13 @@ NAN_METHOD(sdl::RendererWrapper::DrawLine) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawLines) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawLines(Array)")));
 	}
 
-	Handle<Array> arr = Handle<Array>::Cast(args[0]);
+	Handle<Array> arr = Handle<Array>::Cast(info[0]);
 	const int numPoints = arr->Length();
 	SDL_Point* points = new SDL_Point[numPoints];
 	for(int i = 0; i < numPoints; i++) {
@@ -474,14 +474,14 @@ NAN_METHOD(sdl::RendererWrapper::DrawLines) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawPoint) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawPoint(Point)")));
 	}
 
-	int x = args[0]->Int32Value();
-	int y = args[1]->Int32Value();
+	int x = info[0]->Int32Value();
+	int y = info[1]->Int32Value();
 	int err = SDL_RenderDrawPoint(obj->renderer_, x, y);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -491,13 +491,13 @@ NAN_METHOD(sdl::RendererWrapper::DrawPoint) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawPoints) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawPoints(Array)")));
 	}
 
-	Handle<Array> arr = Handle<Array>::Cast(args[0]);
+	Handle<Array> arr = Handle<Array>::Cast(info[0]);
 	int numPoints = arr->Length();
 	SDL_Point* points = new SDL_Point[numPoints];
 	for(int i = 0; i < numPoints; i++) {
@@ -514,13 +514,13 @@ NAN_METHOD(sdl::RendererWrapper::DrawPoints) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawRect) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawRect(Rect)")));
 	}
 
-	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[0]));
+	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 	int err = SDL_RenderDrawRect(obj->renderer_, rect->wrapped);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -530,13 +530,13 @@ NAN_METHOD(sdl::RendererWrapper::DrawRect) {
 }
 NAN_METHOD(sdl::RendererWrapper::DrawRects) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawRects(Array)")));
 	}
 
-	Handle<Array> arr = Handle<Array>::Cast(args[0]);
+	Handle<Array> arr = Handle<Array>::Cast(info[0]);
 	int numRects = arr->Length();
 	SDL_Rect* rects = new SDL_Rect[numRects];
 	for(int i = 0; i < numRects; i++) {
@@ -553,13 +553,13 @@ NAN_METHOD(sdl::RendererWrapper::DrawRects) {
 }
 NAN_METHOD(sdl::RendererWrapper::FillRect) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawRect(Rect)")));
 	}
 
-	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(args[0]));
+	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 	int err = SDL_RenderFillRect(obj->renderer_, rect->wrapped);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -569,13 +569,13 @@ NAN_METHOD(sdl::RendererWrapper::FillRect) {
 }
 NAN_METHOD(sdl::RendererWrapper::FillRects) {
 
-	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
+	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(info.This());
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected drawRects(Array)")));
 	}
 
-	Handle<Array> arr = Handle<Array>::Cast(args[0]);
+	Handle<Array> arr = Handle<Array>::Cast(info[0]);
 	int numRects = arr->Length();
 	SDL_Rect* rects = new SDL_Rect[numRects];
 	for(int i = 0; i < numRects; i++) {

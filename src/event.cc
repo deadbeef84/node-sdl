@@ -44,13 +44,13 @@ NAN_MODULE_INIT(sdl::event::Init) {
 NAN_METHOD(sdl::EventState) {
 
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected EventState(Number, Number)")));
 	}
 
-	int type = args[0]->Int32Value();
-	int state = args[1]->Int32Value();
+	int type = info[0]->Int32Value();
+	int state = info[1]->Int32Value();
 	int8_t ret = SDL_EventState(type, state);
 
 	info.GetReturnValue().Set(Number::New(ret));
@@ -75,12 +75,12 @@ NAN_METHOD(sdl::EventState) {
 NAN_METHOD(sdl::FlushEvent) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected FlushEvent(Number)")));
 	}
 
-	int type = args[0]->Int32Value();
+	int type = info[0]->Int32Value();
 	SDL_FlushEvent(type);
 
 	return Undefined();
@@ -88,13 +88,13 @@ NAN_METHOD(sdl::FlushEvent) {
 NAN_METHOD(sdl::FlushEvents) {
 
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected FlushEvent(Number, Number)")));
 	}
 
-	int typeMin = args[0]->Int32Value();
-	int typeMax = args[1]->Int32Value();
+	int typeMin = info[0]->Int32Value();
+	int typeMax = info[1]->Int32Value();
 	SDL_FlushEvents(typeMin, typeMax);
 
 	return Undefined();
@@ -110,12 +110,12 @@ NAN_METHOD(sdl::GetNumTouchDevices) {
 NAN_METHOD(sdl::GetNumTouchFingers) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetNumTouchFingers(Number)")));
 	}
 
-	SDL_TouchID id = static_cast<SDL_TouchID>(args[0]->IntegerValue());
+	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
 	int ret = SDL_GetNumTouchFingers(id);
 	if(0 == ret) {
 		return ThrowSDLException(__func__);
@@ -126,12 +126,12 @@ NAN_METHOD(sdl::GetNumTouchFingers) {
 NAN_METHOD(sdl::GetTouchDevice) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetTouchDevice(Number)")));
 	}
 
-	int index = args[0]->Int32Value();
+	int index = info[0]->Int32Value();
 	SDL_TouchID device = SDL_GetTouchDevice(index);
 	if(0 == device) {
 		return ThrowSDLException(__func__);
@@ -142,13 +142,13 @@ NAN_METHOD(sdl::GetTouchDevice) {
 NAN_METHOD(sdl::GetTouchFinger) {
 
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetTouchFinger(Number, Number)")));
 	}
 
-	SDL_TouchID id = static_cast<SDL_TouchID>(args[0]->IntegerValue());
-	int index = args[1]->Int32Value();
+	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
+	int index = info[1]->Int32Value();
 	SDL_Finger* finger = SDL_GetTouchFinger(id, index);
 	if(NULL == finger) {
 		return ThrowSDLException(__func__);
@@ -163,12 +163,12 @@ NAN_METHOD(sdl::GetTouchFinger) {
 NAN_METHOD(sdl::RecordGesture) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected RecordGesture(Number)")));
 	}
 
-	SDL_TouchID id = static_cast<SDL_TouchID>(args[0]->IntegerValue());
+	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
 	int err = SDL_RecordGesture(id);
 	if(0 == err) {
 		return ThrowSDLException(__func__);
@@ -180,12 +180,12 @@ NAN_METHOD(sdl::RecordGesture) {
 NAN_METHOD(sdl::HasEvent) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected HasEvent(Number)")));
 	}
 
-	int type = args[0]->Int32Value();
+	int type = info[0]->Int32Value();
 	SDL_bool ret = SDL_HasEvent(type);
 
 	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
@@ -193,13 +193,13 @@ NAN_METHOD(sdl::HasEvent) {
 NAN_METHOD(sdl::HasEvents) {
 
 
-	if(args.Length() < 2) {
+	if(info.Length() < 2) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected HasEvents(Number, Number)")));
 	}
 
-	int typeMin = args[0]->Int32Value();
-	int typeMax = args[1]->Int32Value();
+	int typeMin = info[0]->Int32Value();
+	int typeMax = info[1]->Int32Value();
 	SDL_bool ret = SDL_HasEvents(typeMin, typeMax);
 
 	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
@@ -226,7 +226,7 @@ NAN_METHOD(sdl::HasEvents) {
 NAN_METHOD(sdl::WaitEvent) {
 
 
-	if (!(args.Length() == 1 && args[0]->IsFunction())) {
+	if (!(info.Length() == 1 && info[0]->IsFunction())) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEvent(Function)")));
 	}
 
@@ -239,19 +239,19 @@ NAN_METHOD(sdl::WaitEvent) {
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
-	Handle<Function>::Cast(args[0])->Call(Context::GetCurrent()->Global(), 1, argv);
+	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
 	return Undefined();
 }
 
 NAN_METHOD(sdl::WaitEventTimeout) {
 
 
-	if(!(args.Length() == 2 && args[0]->IsFunction() && args[1]->IsNumber())) {
+	if(!(info.Length() == 2 && info[0]->IsFunction() && info[1]->IsNumber())) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEventTimeout(Function, Number)")));
 	}
 
 	SDL_Event e;
-	int timeout = args[1]->Int32Value();
+	int timeout = info[1]->Int32Value();
 	int err = SDL_WaitEventTimeout(&e, timeout);
 	if(0 == err) {
 		std::string err = "WaitEventTimeout failed: ";
@@ -260,14 +260,14 @@ NAN_METHOD(sdl::WaitEventTimeout) {
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
-	Handle<Function>::Cast(args[0])->Call(Context::GetCurrent()->Global(), 1, argv);
+	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
 	return Undefined();
 }
 
 NAN_METHOD(sdl::PollEvent) {
 
 
-	if (!(args.Length() == 0)) {
+	if (!(info.Length() == 0)) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected PollEvent()")));
 	}
 
@@ -302,7 +302,7 @@ NAN_METHOD(sdl::PollEvent) {
 // NAN_METHOD(sdl::PushEvent) {
 //
 
-// 	if(args.Length() < 1) {
+// 	if(info.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
 // 			String::New("Invalid arguments: Expected PushEvent(Event)")));
 // 	}

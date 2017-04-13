@@ -112,19 +112,19 @@ NAN_MODULE_INIT(sdl::controller::GameControllerWrapper::Init) {
 }
 
 NAN_METHOD(sdl::controller::GameControllerWrapper::New) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Must create a GameController with the new operator.")));
 	}
 
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Exepcted new sdl.GameController(Number)")));
 	}
 
-	int index = args[0]->Int32Value();
+	int index = info[0]->Int32Value();
 	SDL_GameController* controller = SDL_GameControllerOpen(index);
 	if(NULL == controller) {
 		return ThrowSDLException(__func__);
@@ -132,15 +132,15 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::New) {
 
 	GameControllerWrapper* wrap = new GameControllerWrapper();
 	wrap->controller_ = controller;
-	wrap->Wrap(args.This());
+	wrap->Wrap(info.This());
 
-	return args.This();
+	return info.This();
 }
 
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetAttached) {
 
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
 	SDL_bool ret = SDL_GameControllerGetAttached(wrap->controller_);
 
 	info.GetReturnValue().Set(Boolean::New(ret == SDL_TRUE ? true : false));
@@ -148,13 +148,13 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetAttached) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetAxis) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetAxis(Number)")));
 	}
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
-	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
+	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(info[0]->Int32Value());
 	int16_t ret = SDL_GameControllerGetAxis(wrap->controller_, axis);
 
 	info.GetReturnValue().Set(Number::New(ret));
@@ -162,13 +162,13 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetAxis) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForAxis) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetBindForAxis(Number)")));
 	}
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
-	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
+	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(info[0]->Int32Value());
 	SDL_GameControllerButtonBind bind = SDL_GameControllerGetBindForAxis(wrap->controller_, axis);
 
 	info.GetReturnValue().Set(ControllerButtonBindToObject(bind));
@@ -176,13 +176,13 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForAxis) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForButton) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetBindForButton(Number)")));
 	}
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
-	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
+	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(info[0]->Int32Value());
 	SDL_GameControllerButtonBind bind = SDL_GameControllerGetBindForButton(wrap->controller_, button);
 
 	info.GetReturnValue().Set(ControllerButtonBindToObject(bind));
@@ -190,13 +190,13 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForButton) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetButton) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetButton(Number)")));
 	}
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
-	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
+	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(info[0]->Int32Value());
 	uint8_t ret = SDL_GameControllerGetButton(wrap->controller_, button);
 
 	info.GetReturnValue().Set(Boolean::New(ret == 1 ? true : false));
@@ -204,7 +204,7 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetButton) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetJoystick) {
 
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
 	SDL_Joystick* joystick = SDL_GameControllerGetJoystick(wrap->controller_);
 
 	Handle<Value> arg = External::New(joystick);
@@ -214,7 +214,7 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetJoystick) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetMapping) {
 
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
 	char* mapping = SDL_GameControllerMapping(wrap->controller_);
 	if(NULL == mapping) {
 		return ThrowSDLException(__func__);
@@ -225,7 +225,7 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetMapping) {
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetName) {
 
 
-	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
+	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
 	const char* name = SDL_GameControllerName(wrap->controller_);
 	if(NULL == name) {
 		return ThrowSDLException(__func__);
@@ -237,12 +237,12 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetName) {
 NAN_METHOD(sdl::controller::AddMapping) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected AddMapping(String)")));
 	}
 
-	String::Utf8Value mapping(args[0]);
+	String::Utf8Value mapping(info[0]);
 	int err = SDL_GameControllerAddMapping(*mapping);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -253,12 +253,12 @@ NAN_METHOD(sdl::controller::AddMapping) {
 NAN_METHOD(sdl::controller::AddMappingsFromFile) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected AddMappingFromFile(String)")));
 	}
 
-	String::Utf8Value file(args[0]);
+	String::Utf8Value file(info[0]);
 	int err = SDL_GameControllerAddMappingsFromFile(*file);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -270,12 +270,12 @@ NAN_METHOD(sdl::controller::AddMappingsFromFile) {
 NAN_METHOD(sdl::controller::MappingForGUID) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected MappingForGUID(String)")));
 	}
 
-	String::Utf8Value jsGuid(args[0]);
+	String::Utf8Value jsGuid(info[0]);
 	SDL_JoystickGUID guid;
 	for(int i = 0; i < 16; i++) {
 		guid.data[i] = static_cast<uint8_t>((*jsGuid)[i]);
@@ -290,12 +290,12 @@ NAN_METHOD(sdl::controller::MappingForGUID) {
 NAN_METHOD(sdl::controller::NameForIndex) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected NameForIndex(Number)")));
 	}
 
-	int index = args[0]->Int32Value();
+	int index = info[0]->Int32Value();
 	const char* name = SDL_GameControllerNameForIndex(index);
 	if(NULL == name) {
 		return ThrowSDLException(__func__);
@@ -307,12 +307,12 @@ NAN_METHOD(sdl::controller::NameForIndex) {
 NAN_METHOD(sdl::controller::EventState) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected EventState(Number)")));
 	}
 
-	int state = args[0]->Int32Value();
+	int state = info[0]->Int32Value();
 	int ret = SDL_GameControllerEventState(state);
 
 	info.GetReturnValue().Set(Number::New(ret));
@@ -320,12 +320,12 @@ NAN_METHOD(sdl::controller::EventState) {
 NAN_METHOD(sdl::controller::GetAxisFromString) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetAxisFromString(String)")));
 	}
 
-	String::Utf8Value pchString(args[0]);
+	String::Utf8Value pchString(info[0]);
 	SDL_GameControllerAxis axis = SDL_GameControllerGetAxisFromString(*pchString);
 
 	info.GetReturnValue().Set(Number::New(axis));
@@ -333,12 +333,12 @@ NAN_METHOD(sdl::controller::GetAxisFromString) {
 NAN_METHOD(sdl::controller::GetButtonFromString) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetButtonFromString(String)")));
 	}
 
-	String::Utf8Value pchString(args[0]);
+	String::Utf8Value pchString(info[0]);
 	SDL_GameControllerButton button = SDL_GameControllerGetButtonFromString(*pchString);
 
 	info.GetReturnValue().Set(Number::New(button));
@@ -346,12 +346,12 @@ NAN_METHOD(sdl::controller::GetButtonFromString) {
 NAN_METHOD(sdl::controller::GetStringForAxis) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetStringForAxis(Number)")));
 	}
 
-	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
+	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(info[0]->Int32Value());
 	const char* axisString = SDL_GameControllerGetStringForAxis(axis);
 
 	info.GetReturnValue().Set(String::New(axisString));
@@ -359,12 +359,12 @@ NAN_METHOD(sdl::controller::GetStringForAxis) {
 NAN_METHOD(sdl::controller::GetStringForButton) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected GetStringForButton(Number)")));
 	}
 
-	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
+	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(info[0]->Int32Value());
 	const char* buttonString = SDL_GameControllerGetStringForButton(button);
 
 	info.GetReturnValue().Set(String::New(buttonString));
@@ -380,12 +380,12 @@ NAN_METHOD(Update) {
 NAN_METHOD(IsController) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected IsController(Number)")));
 	}
 
-	int index = args[0]->Int32Value();
+	int index = info[0]->Int32Value();
 	SDL_bool ret = SDL_IsGameController(index);
 
 	info.GetReturnValue().Set(Boolean::New(ret == SDL_TRUE ? true : false));

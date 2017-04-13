@@ -144,21 +144,21 @@ namespace sdl {
 		exports->Set(String::NewSymbol("Point"), constructor);
 	}
 	NAN_METHOD(sdl::PointWrapper::New) {
-		if(!args.IsConstructCall()) {
+		if(!info.IsConstructCall()) {
 			return ThrowException(Exception::TypeError(
 				String::New("Use the new operator to create instances of a Point.")));
 		}
 
 
 
-		int x = args[0]->IsUndefined() ? 0 : args[0]->Int32Value();
-		int y = args[0]->IsUndefined() ? 0 : args[1]->Int32Value();
+		int x = info[0]->IsUndefined() ? 0 : info[0]->Int32Value();
+		int y = info[0]->IsUndefined() ? 0 : info[1]->Int32Value();
 		PointWrapper* obj = new PointWrapper();
 		obj->point_ = new SDL_Point;
 		obj->point_->x = x;
 		obj->point_->y = y;
-		obj->Wrap(args.This());
-		return args.This();
+		obj->Wrap(info.This());
+		return info.This();
 	}
 
 	Handle<Value> sdl::PointWrapper::GetX(Local<String> name, const AccessorInfo& info) {
@@ -191,9 +191,9 @@ namespace sdl {
 	NAN_METHOD(sdl::PointWrapper::ToString) {
 
 
-		// PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(args.This());
-		int x = args.This()->Get(String::New("x"))->Int32Value();
-		int y = args.This()->Get(String::New("y"))->Int32Value();
+		// PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
+		int x = info.This()->Get(String::New("x"))->Int32Value();
+		int y = info.This()->Get(String::New("y"))->Int32Value();
 		std::stringstream ss;
 		ss << "{x: " << x << ", y:" << y << "}";
 		info.GetReturnValue().Set(String::New(ss.str().c_str()));
@@ -204,15 +204,15 @@ namespace sdl {
 	NAN_METHOD(ConstructColor) {
 
 
-		if(args.Length() < 1) {
+		if(info.Length() < 1) {
 			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructRect(x, y, width, height)")));
 		}
 
 		SDL_Color *color = new SDL_Color;
-		color->r = args[0]->Int32Value();
-		color->g = args[1]->Int32Value();
-		color->b = args[2]->Int32Value();
-		color->a = args[3]->Int32Value();
+		color->r = info[0]->Int32Value();
+		color->g = info[1]->Int32Value();
+		color->b = info[2]->Int32Value();
+		color->a = info[3]->Int32Value();
 
 		info.GetReturnValue().Set(WrapColor(color));
 	}
@@ -294,11 +294,11 @@ namespace sdl {
 	NAN_METHOD(ConstructPalette) {
 
 
-		if(args.Length() < 1) {
+		if(info.Length() < 1) {
 			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructPalette(Array)")));
 		}
 
-		Handle<Array> colors = Handle<Array>::Cast(args[0]);
+		Handle<Array> colors = Handle<Array>::Cast(info[0]);
 		int length = colors->Length();
 		SDL_Palette* palette = new SDL_Palette;
 		palette->ncolors = length;

@@ -20,11 +20,11 @@ START_INIT(sdl, RectWrapper)
 END_INIT("Rect")
 
 START_NEW(sdl, RectWrapper, 4)
-  if(args[0]->IsExternal()) {
+  if(info[0]->IsExternal()) {
     UNWRAP_EXTERNAL(SDL_Rect, rect, 0);
     RectWrapper* wrap = new RectWrapper();
     wrap->wrapped = rect;
-    wrap->Wrap(args.This());
+    wrap->Wrap(info.This());
   }
   else {
     EXTRACT_INT32(x, 0);
@@ -39,7 +39,7 @@ START_NEW(sdl, RectWrapper, 4)
 
     RectWrapper* wrap = new RectWrapper();
     wrap->wrapped = rect;
-    wrap->Wrap(args.This());
+    wrap->Wrap(info.This());
   }
 END_NEW
 
@@ -108,20 +108,20 @@ START_INIT(sdl, ColorWrapper)
 END_INIT("Color")
 
 NAN_METHOD(sdl::ColorWrapper::New) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instance of a Color.")));
 	}
 
-	if(args.Length() < 3) {
+	if(info.Length() < 3) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected new sdl.Color(Number, Number, Number[, Number])")));
 	}
 
-	uint8_t r = static_cast<uint8_t>(args[0]->Int32Value());
-	uint8_t g = static_cast<uint8_t>(args[1]->Int32Value());
-	uint8_t b = static_cast<uint8_t>(args[2]->Int32Value());
-	uint8_t a = args[3]->IsUndefined() ? 255 : static_cast<uint8_t>(args[3]->Int32Value());
+	uint8_t r = static_cast<uint8_t>(info[0]->Int32Value());
+	uint8_t g = static_cast<uint8_t>(info[1]->Int32Value());
+	uint8_t b = static_cast<uint8_t>(info[2]->Int32Value());
+	uint8_t a = info[3]->IsUndefined() ? 255 : static_cast<uint8_t>(info[3]->Int32Value());
 	SDL_Color* color = new SDL_Color;
 	color->r = r;
 	color->g = g;
@@ -130,8 +130,8 @@ NAN_METHOD(sdl::ColorWrapper::New) {
 
 	ColorWrapper* obj = new ColorWrapper();
 	obj->color_ = color;
-	obj->Wrap(args.This());
-	return args.This();
+	obj->Wrap(info.This());
+	return info.This();
 }
 
 Handle<Value> sdl::ColorWrapper::GetRed(Local<String> name, const AccessorInfo& info) {
@@ -159,13 +159,13 @@ Handle<Value> sdl::ColorWrapper::GetAlpha(Local<String> name, const AccessorInfo
 NAN_METHOD(sdl::ColorWrapper::GetColor) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid argument: Expected GetColor(PixelFormat)")));
 	}
 
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(args.This());
-	SDL_PixelFormat* format = UnwrapPixelFormat(Handle<Object>::Cast(args[0]));
+	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	SDL_PixelFormat* format = UnwrapPixelFormat(Handle<Object>::Cast(info[0]));
 	SDL_Color* c = obj->color_;
 	uint32_t color = SDL_MapRGBA(format, c->r, c->g, c->b, c->a);
 	info.GetReturnValue().Set(Number::New(color));
@@ -203,7 +203,7 @@ void sdl::ColorWrapper::SetAlpha(Local<String> name, Local<Value> value, const A
 NAN_METHOD(sdl::ColorWrapper::ToString) {
 
 
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(args.This());
+	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	SDL_Color* c = obj->color_;
 	std::stringstream ss;
 	ss << "{r:" << (int)c->r << ", g:" << (int)c->g << ", b:" << (int)c->b << ", a:" << (int)c->a << "}";
@@ -241,22 +241,22 @@ NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
 	exports->Set(String::NewSymbol("Finger"), constructor);
 }
 NAN_METHOD(sdl::FingerWrapper::New) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Can only construct a FingerWrapper with the new operator.")));
 	}
 
 
 
-	if(args.Length() < 4) {
+	if(info.Length() < 4) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected new sdl.Finger(Number, Number, Number, Number)")));
 	}
 
-	SDL_FingerID id = static_cast<SDL_FingerID>(args[0]->IntegerValue());
-	float x = static_cast<float>(args[1]->NumberValue());
-	float y = static_cast<float>(args[2]->NumberValue());
-	float pressure = static_cast<float>(args[3]->NumberValue());
+	SDL_FingerID id = static_cast<SDL_FingerID>(info[0]->IntegerValue());
+	float x = static_cast<float>(info[1]->NumberValue());
+	float y = static_cast<float>(info[2]->NumberValue());
+	float pressure = static_cast<float>(info[3]->NumberValue());
 
 	SDL_Finger* finger = new SDL_Finger;
 	finger->id = id;
@@ -266,9 +266,9 @@ NAN_METHOD(sdl::FingerWrapper::New) {
 
 	FingerWrapper* obj = new FingerWrapper();
 	obj->finger_ = finger;
-	obj->Wrap(args.This());
+	obj->Wrap(info.This());
 
-	return args.This();
+	return info.This();
 }
 
 Handle<Value> sdl::FingerWrapper::GetFingerID(Local<String> name, const AccessorInfo& info) {

@@ -251,7 +251,7 @@ init(Handle<Object> target)
 NAN_METHOD(sdl::Init) {
 
   SDL_SetMainReady();
-  int init = (args[0]->IsUndefined() || !args[0]->IsNumber()) ? SDL_INIT_EVERYTHING : args[0]->Int32Value();
+  int init = (info[0]->IsUndefined() || !info[0]->IsNumber()) ? SDL_INIT_EVERYTHING : info[0]->Int32Value();
   // std::cout << "sdl::Init got: " << init << std::endl;
   if (SDL_Init(init) < 0) {
     return ThrowSDLException(__func__);
@@ -262,11 +262,11 @@ NAN_METHOD(sdl::Init) {
 NAN_METHOD(sdl::InitSubSystem) {
 
 
-  if (!(args.Length() == 1 && args[0]->IsNumber())) {
+  if (!(info.Length() == 1 && info[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected InitSubSystem(Number)")));
   }
 
-  if (SDL_InitSubSystem(args[0]->Int32Value()) < 0) return ThrowSDLException(__func__);
+  if (SDL_InitSubSystem(info[0]->Int32Value()) < 0) return ThrowSDLException(__func__);
 
   return Undefined();
 }
@@ -274,7 +274,7 @@ NAN_METHOD(sdl::InitSubSystem) {
 NAN_METHOD(sdl::Quit) {
 
 
-  if (!(args.Length() == 0)) {
+  if (!(info.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected Quit()")));
   }
 
@@ -286,11 +286,11 @@ NAN_METHOD(sdl::Quit) {
 NAN_METHOD(sdl::QuitSubSystem) {
 
 
-  if (!(args.Length() == 1 && args[0]->IsNumber())) {
+  if (!(info.Length() == 1 && info[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected QuitSubSystem(Number)")));
   }
 
-  SDL_QuitSubSystem(args[0]->Int32Value());
+  SDL_QuitSubSystem(info[0]->Int32Value());
 
   return Undefined();
 }
@@ -298,11 +298,11 @@ NAN_METHOD(sdl::QuitSubSystem) {
 NAN_METHOD(sdl::WasInit) {
 
 
-  if (!(args.Length() == 1 && args[0]->IsNumber())) {
+  if (!(info.Length() == 1 && info[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WasInit(Number)")));
   }
 
-  return Number::New(SDL_WasInit(args[0]->Int32Value()));
+  return Number::New(SDL_WasInit(info[0]->Int32Value()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -329,12 +329,12 @@ NAN_METHOD(sdl::IsScreenSaverEnabled) {
 NAN_METHOD(sdl::GetClosestDisplayMode) {
 
 
-  if(args.Length() < 2) {
+  if(info.Length() < 2) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getClosestDisplayMode(Number, DisplayMode)")));
   }
 
-  int index = args[0]->Int32Value();
-  SDL_DisplayMode* mode = UnwrapDisplayMode(Handle<Object>::Cast(args[1]));
+  int index = info[0]->Int32Value();
+  SDL_DisplayMode* mode = UnwrapDisplayMode(Handle<Object>::Cast(info[1]));
   SDL_DisplayMode* closest = new SDL_DisplayMode;
   SDL_DisplayMode* err = SDL_GetClosestDisplayMode(index, mode, closest);
   if(NULL == err) {
@@ -347,11 +347,11 @@ NAN_METHOD(sdl::GetClosestDisplayMode) {
 NAN_METHOD(sdl::GetCurrentDisplayMode) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getCurrentDisplayMode(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   SDL_DisplayMode* current = new SDL_DisplayMode;
   int err = SDL_GetCurrentDisplayMode(index, current);
   if(err < 0) {
@@ -374,11 +374,11 @@ NAN_METHOD(sdl::GetCurrentVideoDriver) {
 NAN_METHOD(sdl::GetDesktopDisplayMode) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getCurrentDisplayMode(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   SDL_DisplayMode* current = new SDL_DisplayMode;
   int err = SDL_GetDesktopDisplayMode(index, current);
   if(err < 0) {
@@ -391,11 +391,11 @@ NAN_METHOD(sdl::GetDesktopDisplayMode) {
 NAN_METHOD(sdl::GetDisplayBounds) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getDisplayBounds(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   SDL_Rect* bounds = new SDL_Rect;
   int err = SDL_GetDisplayBounds(index, bounds);
   if(err < 0) {
@@ -415,12 +415,12 @@ NAN_METHOD(sdl::GetDisplayBounds) {
 NAN_METHOD(sdl::GetDisplayMode) {
 
 
-  if(args.Length() < 2) {
+  if(info.Length() < 2) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getDisplayMode(Number, Number)")));
   }
 
-  int displayIndex = args[0]->Int32Value();
-  int modeIndex = args[1]->Int32Value();
+  int displayIndex = info[0]->Int32Value();
+  int modeIndex = info[1]->Int32Value();
   SDL_DisplayMode* mode = new SDL_DisplayMode;
   int err = SDL_GetDisplayMode(displayIndex, modeIndex, mode);
   if(err < 0) {
@@ -433,11 +433,11 @@ NAN_METHOD(sdl::GetDisplayMode) {
 NAN_METHOD(sdl::GetDisplayName) {
 
 
-  if(args.Length() < 0) {
+  if(info.Length() < 0) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getDisplayName(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   const char* ret = SDL_GetDisplayName(index);
   if(NULL == ret) {
     return ThrowSDLException(__func__);
@@ -448,11 +448,11 @@ NAN_METHOD(sdl::GetDisplayName) {
 NAN_METHOD(sdl::GetNumDisplayModes) {
 
 
-  if(args.Length() < 0) {
+  if(info.Length() < 0) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getNumDisplayModes(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   int ret = SDL_GetNumDisplayModes(index);
   if(ret < 0) {
     return ThrowSDLException(__func__);
@@ -481,11 +481,11 @@ NAN_METHOD(sdl::GetNumVideoDrivers) {
 NAN_METHOD(sdl::GetVideoDriver) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getVideoDriver(Number)")));
   }
 
-  int index = args[0]->Int32Value();
+  int index = info[0]->Int32Value();
   const char* driver = SDL_GetVideoDriver(index);
   if(NULL == driver) {
     return ThrowSDLException(__func__);
@@ -499,23 +499,23 @@ NAN_METHOD(sdl::GetVideoDriver) {
 NAN_METHOD(sdl::ShowSimpleMessageBox) {
 
 
-  if(args.Length() < 3) {
+  if(info.Length() < 3) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected showSimpleMessageBox(Number, String, String, [Window])")));
   }
-  else if(args.Length() < 4) {
-    int flags = args[0]->Int32Value();
-    String::Utf8Value title(args[1]);
-    String::Utf8Value message(args[2]);
+  else if(info.Length() < 4) {
+    int flags = info[0]->Int32Value();
+    String::Utf8Value title(info[1]);
+    String::Utf8Value message(info[2]);
     int err = SDL_ShowSimpleMessageBox(flags, *title, *message, NULL);
     if(err < 0) {
       return ThrowSDLException(__func__);
     }
   }
   else {
-    int flags = args[0]->Int32Value();
-    String::Utf8Value title(args[1]);
-    String::Utf8Value message(args[2]);
-    WindowWrapper* window = node::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(args[3]));
+    int flags = info[0]->Int32Value();
+    String::Utf8Value title(info[1]);
+    String::Utf8Value message(info[2]);
+    WindowWrapper* window = node::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[3]));
     int err = SDL_ShowSimpleMessageBox(flags, *title, *message, window->window_);
     if(err < 0) {
       return ThrowSDLException(__func__);
@@ -528,7 +528,7 @@ NAN_METHOD(sdl::ShowSimpleMessageBox) {
 NAN_METHOD(sdl::VideoInit) {
 
 
-  const char* driver = args[0]->IsUndefined() ? NULL : *(String::Utf8Value(args[0]));
+  const char* driver = info[0]->IsUndefined() ? NULL : *(String::Utf8Value(info[0]));
   int err = SDL_VideoInit(driver);
   if(err < 0) {
     return ThrowSDLException(__func__);
@@ -545,7 +545,7 @@ NAN_METHOD(sdl::VideoQuit) {
 NAN_METHOD(sdl::ClearError) {
 
 
-  if (!(args.Length() == 0)) {
+  if (!(info.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected ClearError()")));
   }
 
@@ -557,7 +557,7 @@ NAN_METHOD(sdl::ClearError) {
 NAN_METHOD(sdl::GetError) {
 
 
-  if (!(args.Length() == 0)) {
+  if (!(info.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetError()")));
   }
 
@@ -567,11 +567,11 @@ NAN_METHOD(sdl::GetError) {
 NAN_METHOD(sdl::SetError) {
 
 
-  if (!(args.Length() == 1 && args[0]->IsString())) {
+  if (!(info.Length() == 1 && info[0]->IsString())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected SetError(String)")));
   }
 
-  String::Utf8Value message(args[1]);
+  String::Utf8Value message(info[1]);
 
   SDL_SetError(*message);
 
@@ -581,14 +581,14 @@ NAN_METHOD(sdl::SetError) {
 NAN_METHOD(sdl::MapRGB) {
 
 
-  if (!(args.Length() == 4 && args[0]->IsObject() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())) {
+  if (!(info.Length() == 4 && info[0]->IsObject() && info[1]->IsNumber() && info[2]->IsNumber() && info[3]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected MapRGB(PixelFormat, Number, Number, Number)")));
   }
 
-  SDL_PixelFormat* fmt = UnwrapPixelFormat(args[0]->ToObject());
-  int r = args[1]->Int32Value();
-  int g = args[2]->Int32Value();
-  int b = args[3]->Int32Value();
+  SDL_PixelFormat* fmt = UnwrapPixelFormat(info[0]->ToObject());
+  int r = info[1]->Int32Value();
+  int g = info[2]->Int32Value();
+  int b = info[3]->Int32Value();
 
   return Number::New(SDL_MapRGB(fmt, r, g, b));
 }
@@ -596,15 +596,15 @@ NAN_METHOD(sdl::MapRGB) {
 NAN_METHOD(sdl::MapRGBA) {
 
 
-  if (!(args.Length() == 5 && args[0]->IsObject() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber() && args[4]->IsNumber())) {
+  if (!(info.Length() == 5 && info[0]->IsObject() && info[1]->IsNumber() && info[2]->IsNumber() && info[3]->IsNumber() && info[4]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected MapRGBA(PixelFormat, Number, Number, Number, Number)")));
   }
 
-  SDL_PixelFormat* fmt = UnwrapPixelFormat(args[0]->ToObject());
-  int r = args[1]->Int32Value();
-  int g = args[2]->Int32Value();
-  int b = args[3]->Int32Value();
-  int a = args[4]->Int32Value();
+  SDL_PixelFormat* fmt = UnwrapPixelFormat(info[0]->ToObject());
+  int r = info[1]->Int32Value();
+  int g = info[2]->Int32Value();
+  int b = info[3]->Int32Value();
+  int a = info[4]->Int32Value();
 
   return Number::New(SDL_MapRGBA(fmt, r, g, b, a));
 }
@@ -612,12 +612,12 @@ NAN_METHOD(sdl::MapRGBA) {
 NAN_METHOD(sdl::GetRGB) {
 
 
-  if (!(args.Length() == 2 && args[0]->IsNumber() && args[1]->IsObject())) {
+  if (!(info.Length() == 2 && info[0]->IsNumber() && info[1]->IsObject())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetRGB(Number, PixelFormat)")));
   }
 
-  int pixel = args[0]->Int32Value();
-  SDL_PixelFormat* fmt = UnwrapPixelFormat(args[1]->ToObject());
+  int pixel = info[0]->Int32Value();
+  SDL_PixelFormat* fmt = UnwrapPixelFormat(info[1]->ToObject());
   ::Uint8 r, g, b;
 
   SDL_GetRGB(pixel, fmt, &r, &g, &b);
@@ -633,12 +633,12 @@ NAN_METHOD(sdl::GetRGB) {
 NAN_METHOD(sdl::GetRGBA) {
 
 
-  if (!(args.Length() == 2 && args[0]->IsNumber() && args[1]->IsObject())) {
+  if (!(info.Length() == 2 && info[0]->IsNumber() && info[1]->IsObject())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetRGBA(Number, PixelFormat)")));
   }
 
-  int pixel = args[0]->Int32Value();
-  SDL_PixelFormat* fmt = UnwrapPixelFormat(args[1]->ToObject());
+  int pixel = info[0]->Int32Value();
+  SDL_PixelFormat* fmt = UnwrapPixelFormat(info[1]->ToObject());
   ::Uint8 r, g, b, a;
 
   SDL_GetRGBA(pixel, fmt, &r, &g, &b, &a);
@@ -675,13 +675,13 @@ static void HintCallbackHandler(void *userData, const char *name, const char *ol
 NAN_METHOD(sdl::AddHintCallback) {
 
 
-  if(args.Length() < 2) {
+  if(info.Length() < 2) {
     return ThrowException(Exception::TypeError(
       String::New("Invalid arguments: Expected AddHintCallback(String, Function)")));
   }
 
-  String::Utf8Value name(args[0]);
-  Handle<Function> callback = Handle<Function>::Cast(args[1]);
+  String::Utf8Value name(info[0]);
+  Handle<Function> callback = Handle<Function>::Cast(info[1]);
   Persistent<Function> userData = Persistent<Function>::New(callback);
   SDL_AddHintCallback(*name, HintCallbackHandler, static_cast<void*>(&userData));
 
@@ -700,12 +700,12 @@ NAN_METHOD(sdl::AddHintCallback) {
 NAN_METHOD(sdl::GetHint) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(
       String::New("Invalid arguments: Expected GetHint(String)")));
   }
 
-  String::Utf8Value name(args[0]);
+  String::Utf8Value name(info[0]);
   const char *value = SDL_GetHint(*name);
   if(NULL == value) {
     return Undefined();
@@ -716,13 +716,13 @@ NAN_METHOD(sdl::GetHint) {
 NAN_METHOD(sdl::SetHint) {
 
 
-  if(args.Length() < 2) {
+  if(info.Length() < 2) {
     return ThrowException(Exception::TypeError(
       String::New("Invalid arguments: Expected SetHint(String, String)")));
   }
 
-  String::Utf8Value name(args[0]);
-  String::Utf8Value value(args[1]);
+  String::Utf8Value name(info[0]);
+  String::Utf8Value value(info[1]);
   int err = SDL_SetHint(*name, *value);
   if(err < 0) {
     return ThrowSDLException(__func__);
@@ -733,14 +733,14 @@ NAN_METHOD(sdl::SetHint) {
 NAN_METHOD(sdl::SetHintWithPriority) {
 
 
-  if(args.Length() < 3) {
+  if(info.Length() < 3) {
     return ThrowException(Exception::TypeError(
       String::New("Invalid arguments: Excpected SetHintWithPriority(String, String, Number)")));
   }
 
-  String::Utf8Value name(args[0]);
-  String::Utf8Value value(args[1]);
-  SDL_HintPriority priority = static_cast<SDL_HintPriority>(args[2]->Int32Value());
+  String::Utf8Value name(info[0]);
+  String::Utf8Value value(info[1]);
+  SDL_HintPriority priority = static_cast<SDL_HintPriority>(info[2]->Int32Value());
   SDL_bool ret = SDL_SetHintWithPriority(*name, *value, priority);
 
   info.GetReturnValue().Set(Boolean::New(ret ? true : false));
@@ -816,12 +816,12 @@ NAN_METHOD(sdl::HasClipboardText) {
 NAN_METHOD(sdl::SetClipboardText) {
 
 
-  if(args.Length() < 1) {
+  if(info.Length() < 1) {
     return ThrowException(Exception::TypeError(
       String::New("Invalid arguments: Expected SetClipboardText(String)")));
   }
 
-  String::Utf8Value text(args[0]);
+  String::Utf8Value text(info[0]);
   int err = SDL_SetClipboardText(*text);
   if(err < 0) {
     return ThrowSDLException(__func__);
@@ -835,11 +835,11 @@ NAN_METHOD(sdl::SetClipboardText) {
 NAN_METHOD(sdl::IMG::Load) {
 
 
-  if (!(args.Length() == 1 && args[0]->IsString())) {
+  if (!(info.Length() == 1 && info[0]->IsString())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected IMG::Load(String)")));
   }
 
-  String::Utf8Value file(args[0]);
+  String::Utf8Value file(info[0]);
 
   SDL_Surface *image;
   image=IMG_Load(*file);

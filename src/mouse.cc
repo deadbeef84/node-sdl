@@ -79,21 +79,21 @@ NAN_MODULE_INIT(sdl::CursorWrapper::Init) {
 }
 
 NAN_METHOD(sdl::CursorWrapper::New) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("A new Cursor must be created with the new operator.")));
 	}
 
 
 
-	if(args.Length() < 3) {
+	if(info.Length() < 3) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected CreateColorCursor(Surface, Number, Number)")));
 	}
 
-	SurfaceWrapper* surface = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(args[0]));
-	int x = args[1]->Int32Value();
-	int y = args[2]->Int32Value();
+	SurfaceWrapper* surface = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
+	int x = info[1]->Int32Value();
+	int y = info[2]->Int32Value();
 	SDL_Cursor* cursor = SDL_CreateColorCursor(surface->surface_, x, y);
 	if(NULL == cursor) {
 		return ThrowSDLException(__func__);
@@ -101,24 +101,24 @@ NAN_METHOD(sdl::CursorWrapper::New) {
 
 	CursorWrapper* wrap = new CursorWrapper();
 	wrap->cursor_ = cursor;
-	wrap->Wrap(args.This());
+	wrap->Wrap(info.This());
 
-	return args.This();
+	return info.This();
 }
 NAN_METHOD(sdl::CursorWrapper::NewSystem) {
-	if(!args.IsConstructCall()) {
+	if(!info.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("A new Cursor must be created with the new operator.")));
 	}
 
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected CreateColorCursor(Number)")));
 	}
 
-	SDL_SystemCursor id = static_cast<SDL_SystemCursor>(args[0]->Int32Value());
+	SDL_SystemCursor id = static_cast<SDL_SystemCursor>(info[0]->Int32Value());
 	SDL_Cursor* cursor = SDL_CreateSystemCursor(id);
 	if(NULL == cursor) {
 		return ThrowSDLException(__func__);
@@ -126,9 +126,9 @@ NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 
 	CursorWrapper* wrap = new CursorWrapper();
 	wrap->cursor_ = cursor;
-	wrap->Wrap(args.This());
+	wrap->Wrap(info.This());
 
-	return args.This();
+	return info.This();
 }
 
 // TODO: Implement this function. See:
@@ -141,7 +141,7 @@ NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 NAN_METHOD(sdl::CursorWrapper::FreeCursor) {
 
 
-	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(args.This());
+	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(info.This());
 	SDL_FreeCursor(wrap->cursor_);
 	wrap->cursor_ = NULL;
 
@@ -150,7 +150,7 @@ NAN_METHOD(sdl::CursorWrapper::FreeCursor) {
 NAN_METHOD(sdl::CursorWrapper::SetCursor) {
 
 
-	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(args.This());
+	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(info.This());
 	SDL_SetCursor(wrap->cursor_);
 
 	return Undefined();
@@ -159,12 +159,12 @@ NAN_METHOD(sdl::CursorWrapper::SetCursor) {
 NAN_METHOD(sdl::ShowCursor) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected Cursor.show(Number)")));
 	}
 
-	int toggle = args[0]->Int32Value();
+	int toggle = info[0]->Int32Value();
 	int err = SDL_ShowCursor(toggle);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -253,12 +253,12 @@ NAN_METHOD(sdl::GetRelativeMouseState) {
 NAN_METHOD(sdl::SetRelativeMouseMode) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected SetRelativeMouseMode(Boolean)")));
 	}
 
-	bool enabled = args[0]->BooleanValue();
+	bool enabled = info[0]->BooleanValue();
 	int err = SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -270,14 +270,14 @@ NAN_METHOD(sdl::SetRelativeMouseMode) {
 NAN_METHOD(sdl::WarpMouseInWindow) {
 
 
-	if(args.Length() < 3) {
+	if(info.Length() < 3) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected WarpMouseInWindow(Window, Number, Number)")));
 	}
 
-	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(args[0]));
-	int x = args[1]->Int32Value();
-	int y = args[2]->Int32Value();
+	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	int x = info[1]->Int32Value();
+	int y = info[2]->Int32Value();
 	SDL_WarpMouseInWindow(window->window_, x, y);
 
 	return Undefined();
@@ -286,12 +286,12 @@ NAN_METHOD(sdl::WarpMouseInWindow) {
 NAN_METHOD(sdl::ButtonMacroWrapper) {
 
 
-	if(args.Length() < 1) {
+	if(info.Length() < 1) {
 		return ThrowException(Exception::TypeError(
 			String::New("Invalid arguments: Expected button(Number)")));
 	}
 
-	int button = args[0]->Int32Value();
+	int button = info[0]->Int32Value();
 	int ret = SDL_BUTTON(button);
 
 	info.GetReturnValue().Set(Number::New(ret));
