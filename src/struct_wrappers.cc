@@ -26,7 +26,7 @@ namespace sdl {
 	// Initialize everything we need to use the wrappers.
 	void InitWrappers(Handle<Object> exports) {
 		// std::cout << "About to initialize SDL struct wrappers." << std::endl;
-		HandleScope scope;
+
 		// std::cout << "Created scope for struct wrapper initialization." << std::endl;
 
 		// std::cout << "Putting together information for color wrapper..." << std::endl;
@@ -108,7 +108,7 @@ namespace sdl {
 
 			if(allConstructors[i] != 0) {
 				// std::cout << "Creating constructor with name: " << constructorNames[i] << "." << std::endl;
-				NODE_SET_METHOD(exports, constructorNames[i].c_str(), allConstructors[i]);
+				Nan::SetPrototypeMethod(exports, constructorNames[i].c_str(), allConstructors[i]);
 			}
 			// std::cout << std::endl;
 		}
@@ -120,7 +120,7 @@ namespace sdl {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Point Wrapper/Unwrapper.
-    Persistent<FunctionTemplate> sdl::PointWrapper::point_wrap_template_;
+    Persistent<FunctionTemplate> sdl::PointWrapper::constructor;
 
 	sdl::PointWrapper::PointWrapper() {
 	}
@@ -130,27 +130,26 @@ namespace sdl {
 		}
 	}
 
-	void sdl::PointWrapper::Init(Handle<Object> exports) {
+	NAN_MODULE_INIT(sdl::PointWrapper::Init) {
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-		point_wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+		tpl->InstanceTemplate()->SetInternalFieldCount(1);
+		tpl->SetClassName(String::NewSymbol("PointWrapper"));
 
-		point_wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-		point_wrap_template_->SetClassName(String::NewSymbol("PointWrapper"));
-
-		Local<ObjectTemplate> proto = point_wrap_template_->PrototypeTemplate();
+		Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
 		proto->SetAccessor(String::NewSymbol("x"), GetX, SetX);
 		proto->SetAccessor(String::NewSymbol("y"), GetY, SetY);
-		NODE_SET_PROTOTYPE_METHOD(point_wrap_template_, "toString", ToString);
+		Nan::SetPrototypeMethod(tpl, "toString", ToString);
 
-		exports->Set(String::NewSymbol("Point"), point_wrap_template_->GetFunction());
+		constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+		exports->Set(String::NewSymbol("Point"), constructor);
 	}
-	Handle<Value> sdl::PointWrapper::New(const Arguments& args) {
+	NAN_METHOD(sdl::PointWrapper::New) {
 		if(!args.IsConstructCall()) {
 			return ThrowException(Exception::TypeError(
 				String::New("Use the new operator to create instances of a Point.")));
 		}
 
-		HandleScope scope;
+
 
 		int x = args[0]->IsUndefined() ? 0 : args[0]->Int32Value();
 		int y = args[0]->IsUndefined() ? 0 : args[1]->Int32Value();
@@ -163,47 +162,47 @@ namespace sdl {
 	}
 
 	Handle<Value> sdl::PointWrapper::GetX(Local<String> name, const AccessorInfo& info) {
-		HandleScope scope;
+
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		return scope.Close(Number::New(obj->point_->x));
+		info.GetReturnValue().Set(Number::New(obj->point_->x));
 	}
 	Handle<Value> sdl::PointWrapper::GetY(Local<String> name, const AccessorInfo& info) {
-		HandleScope scope;
+
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		return scope.Close(Number::New(obj->point_->y));
+		info.GetReturnValue().Set(Number::New(obj->point_->y));
 	}
 	void sdl::PointWrapper::SetX(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-		HandleScope scope;
+
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
 		int x = value->Int32Value();
 		obj->point_->x = x;
 	}
 	void sdl::PointWrapper::SetY(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-		HandleScope scope;
+
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
 		int y = value->Int32Value();
 		obj->point_->y = y;
 	}
 
-	Handle<Value> sdl::PointWrapper::ToString(const Arguments& args) {
-		HandleScope scope;
+	NAN_METHOD(sdl::PointWrapper::ToString) {
+
 
 		// PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(args.This());
 		int x = args.This()->Get(String::New("x"))->Int32Value();
 		int y = args.This()->Get(String::New("y"))->Int32Value();
 		std::stringstream ss;
 		ss << "{x: " << x << ", y:" << y << "}";
-		return scope.Close(String::New(ss.str().c_str()));
+		info.GetReturnValue().Set(String::New(ss.str().c_str()));
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Color Wrapper/Unwrapper.
-	Handle<Value> ConstructColor(const Arguments& args) {
-		HandleScope scope;
+	NAN_METHOD(ConstructColor) {
+
 
 		if(args.Length() < 1) {
 			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructRect(x, y, width, height)")));
@@ -215,7 +214,7 @@ namespace sdl {
 		color->b = args[2]->Int32Value();
 		color->a = args[3]->Int32Value();
 
-		return scope.Close(WrapColor(color));
+		info.GetReturnValue().Set(WrapColor(color));
 	}
 
 	Handle<Object> WrapColor(SDL_Color* color) {
@@ -292,8 +291,8 @@ namespace sdl {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Palette Wrapper/Unwrapper.
-	Handle<Value> ConstructPalette(const Arguments& args) {
-		HandleScope scope;
+	NAN_METHOD(ConstructPalette) {
+
 
 		if(args.Length() < 1) {
 			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructPalette(Array)")));
@@ -310,7 +309,7 @@ namespace sdl {
 			palette->colors[i] = *color;
 		}
 
-		return scope.Close(WrapPalette(palette));
+		info.GetReturnValue().Set(WrapPalette(palette));
 	}
 
 	Handle<Object> WrapPalette(SDL_Palette* palette) {
@@ -360,7 +359,7 @@ namespace sdl {
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_DisplayMode Wrapper/Unwrapper.
 	Handle<ObjectTemplate> MakeDisplayModeTemplate() {
-		HandleScope scope;
+
 
 		Handle<ObjectTemplate> result = ObjectTemplate::New();
 		result->SetInternalFieldCount(1);
@@ -370,17 +369,17 @@ namespace sdl {
 		result->SetAccessor(String::NewSymbol("h"), GetDisplayModeHeight);
 		result->SetAccessor(String::NewSymbol("refreshRate"), GetDisplayModeRefreshRate);
 
-		return scope.Close(result);
+		info.GetReturnValue().Set(result);
 	}
 
 	Handle<Object> WrapDisplayMode(SDL_DisplayMode* mode) {
-		HandleScope scope;
+
 
 		Handle<ObjectTemplate> templ = displaymode_template_;
 		Handle<Object> result = templ->NewInstance();
 		Handle<External> request_ptr = External::New(mode);
 		result->SetInternalField(0, request_ptr);
-		return scope.Close(result);
+		info.GetReturnValue().Set(result);
 	}
 
 	SDL_DisplayMode* UnwrapDisplayMode(Handle<Value> val) {

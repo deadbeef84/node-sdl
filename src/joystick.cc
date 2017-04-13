@@ -7,21 +7,21 @@ using namespace v8;
 using namespace node;
 
 
-void sdl::joystick::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::joystick::Init) {
 	JoystickWrapper::Init(exports);
 
-	NODE_SET_METHOD(exports, "numJoysticks", NumJoysticks);
+	Nan::SetPrototypeMethod(exports, "numJoysticks", NumJoysticks);
 
-	NODE_SET_METHOD(exports, "joystickNameForIndex", JoystickNameForIndex);
-	NODE_SET_METHOD(exports, "joystickGetDeviceGUID", JoystickGetDeviceGUID);
-	NODE_SET_METHOD(exports, "joystickGetGUIDFromString", JoystickGetGUIDFromString);
-	NODE_SET_METHOD(exports, "joystickGetGUIDString", JoystickGetGUIDString);
+	Nan::SetPrototypeMethod(exports, "joystickNameForIndex", JoystickNameForIndex);
+	Nan::SetPrototypeMethod(exports, "joystickGetDeviceGUID", JoystickGetDeviceGUID);
+	Nan::SetPrototypeMethod(exports, "joystickGetGUIDFromString", JoystickGetGUIDFromString);
+	Nan::SetPrototypeMethod(exports, "joystickGetGUIDString", JoystickGetGUIDString);
 
-	NODE_SET_METHOD(exports, "joystickUpdate", JoystickUpdate);
-	NODE_SET_METHOD(exports, "joystickEventState", JoystickEventState);
+	Nan::SetPrototypeMethod(exports, "joystickUpdate", JoystickUpdate);
+	Nan::SetPrototypeMethod(exports, "joystickEventState", JoystickEventState);
 }
 
-Persistent<FunctionTemplate> sdl::JoystickWrapper::wrap_template_;
+Persistent<FunctionTemplate> sdl::JoystickWrapper::constructor;
 
 sdl::JoystickWrapper::JoystickWrapper() {
 }
@@ -34,34 +34,33 @@ sdl::JoystickWrapper::~JoystickWrapper() {
 	}
 }
 
-void sdl::JoystickWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::JoystickWrapper::Init) {
 	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("JoystickWrapper"));
 
-	wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_->SetClassName(String::NewSymbol("JoystickWrapper"));
+	Nan::SetPrototypeMethod(tpl, "getAttached", GetAttached);
+	Nan::SetPrototypeMethod(tpl, "getAxis", GetAxis);
+	Nan::SetPrototypeMethod(tpl, "getBall", GetBall);
+	Nan::SetPrototypeMethod(tpl, "getButton", GetButton);
+	Nan::SetPrototypeMethod(tpl, "getGUID", GetGUID);
+	Nan::SetPrototypeMethod(tpl, "getHat", GetHat);
+	Nan::SetPrototypeMethod(tpl, "getName", GetName);
+	Nan::SetPrototypeMethod(tpl, "getNumAxes", GetNumAxes);
+	Nan::SetPrototypeMethod(tpl, "getNumButtons", GetNumButtons);
+	Nan::SetPrototypeMethod(tpl, "getNumBalls", GetNumBalls);
+	Nan::SetPrototypeMethod(tpl, "getNumHats", GetNumHats);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getAttached", GetAttached);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getAxis", GetAxis);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getBall", GetBall);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getButton", GetButton);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getGUID", GetGUID);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getHat", GetHat);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getName", GetName);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getNumAxes", GetNumAxes);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getNumButtons", GetNumButtons);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getNumBalls", GetNumBalls);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getNumHats", GetNumHats);
-
-	exports->Set(String::NewSymbol("Joystick"), wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("Joystick"), constructor);
 }
-Handle<Value> sdl::JoystickWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::JoystickWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Must create an sdl.Joystick with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -94,16 +93,16 @@ Handle<Value> sdl::JoystickWrapper::New(const Arguments& args) {
 	return args.This();
 }
 
-Handle<Value> sdl::JoystickWrapper::GetAttached(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetAttached) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	SDL_bool attached = SDL_JoystickGetAttached(wrap->joystick_);
 
-	return scope.Close(Boolean::New(attached ? true : false));
+	info.GetReturnValue().Set(Boolean::New(attached ? true : false));
 }
-Handle<Value> sdl::JoystickWrapper::GetAxis(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetAxis) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -117,10 +116,10 @@ Handle<Value> sdl::JoystickWrapper::GetAxis(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(position));
+	info.GetReturnValue().Set(Number::New(position));
 }
-Handle<Value> sdl::JoystickWrapper::GetBall(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetBall) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -139,10 +138,10 @@ Handle<Value> sdl::JoystickWrapper::GetBall(const Arguments& args) {
 	ret->Set(String::NewSymbol("dx"), Number::New(dx));
 	ret->Set(String::NewSymbol("dy"), Number::New(dy));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::JoystickWrapper::GetButton(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetButton) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -153,10 +152,10 @@ Handle<Value> sdl::JoystickWrapper::GetButton(const Arguments& args) {
 	int button = args[0]->Int32Value();
 	uint8_t ret = SDL_JoystickGetButton(wrap->joystick_, button);
 
-	return scope.Close(Boolean::New(ret == 1 ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret == 1 ? true : false));
 }
-Handle<Value> sdl::JoystickWrapper::GetGUID(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetGUID) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	SDL_JoystickGUID guid = SDL_JoystickGetGUID(wrap->joystick_);
@@ -167,10 +166,10 @@ Handle<Value> sdl::JoystickWrapper::GetGUID(const Arguments& args) {
 		ret->Set(i, Number::New(guid.data[i]));
 	}
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::JoystickWrapper::GetHat(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetHat) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -181,11 +180,11 @@ Handle<Value> sdl::JoystickWrapper::GetHat(const Arguments& args) {
 	int hat = args[0]->Int32Value();
 	uint8_t ret = SDL_JoystickGetHat(wrap->joystick_, hat);
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
 
-Handle<Value> sdl::JoystickWrapper::GetName(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetName) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	const char* name = SDL_JoystickName(wrap->joystick_);
@@ -193,10 +192,10 @@ Handle<Value> sdl::JoystickWrapper::GetName(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
-Handle<Value> sdl::JoystickWrapper::GetNumAxes(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetNumAxes) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	int axes = SDL_JoystickNumAxes(wrap->joystick_);
@@ -204,10 +203,10 @@ Handle<Value> sdl::JoystickWrapper::GetNumAxes(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(axes));
+	info.GetReturnValue().Set(Number::New(axes));
 }
-Handle<Value> sdl::JoystickWrapper::GetNumButtons(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetNumButtons) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	int buttons = SDL_JoystickNumButtons(wrap->joystick_);
@@ -215,10 +214,10 @@ Handle<Value> sdl::JoystickWrapper::GetNumButtons(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(buttons));
+	info.GetReturnValue().Set(Number::New(buttons));
 }
-Handle<Value> sdl::JoystickWrapper::GetNumBalls(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetNumBalls) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	int balls = SDL_JoystickNumBalls(wrap->joystick_);
@@ -226,10 +225,10 @@ Handle<Value> sdl::JoystickWrapper::GetNumBalls(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(balls));
+	info.GetReturnValue().Set(Number::New(balls));
 }
-Handle<Value> sdl::JoystickWrapper::GetNumHats(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickWrapper::GetNumHats) {
+
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(args.This()));
 	int hats = SDL_JoystickNumHats(wrap->joystick_);
@@ -237,17 +236,17 @@ Handle<Value> sdl::JoystickWrapper::GetNumHats(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(hats));
+	info.GetReturnValue().Set(Number::New(hats));
 }
 
-Handle<Value> sdl::NumJoysticks(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::NumJoysticks) {
 
-	return scope.Close(Number::New(SDL_NumJoysticks()));
+
+	info.GetReturnValue().Set(Number::New(SDL_NumJoysticks()));
 }
 
-Handle<Value> sdl::JoystickNameForIndex(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickNameForIndex) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -260,11 +259,11 @@ Handle<Value> sdl::JoystickNameForIndex(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
 
-Handle<Value> sdl::JoystickGetDeviceGUID(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickGetDeviceGUID) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -280,10 +279,10 @@ Handle<Value> sdl::JoystickGetDeviceGUID(const Arguments& args) {
 		ret->Set(i, Number::New(guid.data[i]));
 	}
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::JoystickGetGUIDFromString(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickGetGUIDFromString) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -299,10 +298,10 @@ Handle<Value> sdl::JoystickGetGUIDFromString(const Arguments& args) {
 		ret->Set(i, Number::New(guid.data[i]));
 	}
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::JoystickGetGUIDString(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickGetGUIDString) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -318,19 +317,19 @@ Handle<Value> sdl::JoystickGetGUIDString(const Arguments& args) {
 	char pszGuid[200];
 	SDL_JoystickGetGUIDString(guid, pszGuid, 200);
 
-	return scope.Close(String::New(pszGuid));
+	info.GetReturnValue().Set(String::New(pszGuid));
 }
 
-Handle<Value> sdl::JoystickUpdate(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickUpdate) {
+
 
 	SDL_JoystickUpdate();
 
 	return Undefined();
 }
 
-Handle<Value> sdl::JoystickEventState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::JoystickEventState) {
+
 
 	int state;
 	if (args.Length() == 0) {

@@ -133,15 +133,16 @@
 #define CHECK_EXTERNAL(arg_n)
 #endif
 
+/*
 #define FUNCTION_DEF(name) v8::Handle<v8::Value> name(const v8::Arguments& args)
 #define FUNCTION_DEFP(prefix, name) v8::Handle<v8::Value> prefix::name(const v8::Arguments& args)
 #define FUNCTION_BEGIN(name, num_args) FUNCTION_DEF(name) { \
-	v8::HandleScope scope; \
+	v8:: \
 	CHECK_ARGLEN(name, num_args);
 #define FUNCTION_BEGINP(prefix, name, num_args) v8::Handle<v8::Value> prefix::name(const v8::Arguments& args) { \
-	v8::HandleScope scope; \
+	v8:: \
 	CHECK_ARGLEN(name, num_args);
-#define FUNCTION_END(ret) return scope.Close(ret); \
+#define FUNCTION_END(ret) info.GetReturnValue().Set(ret); \
 }
 #define FUNCTION_UNDEFINED return Undefined(); \
 }
@@ -149,8 +150,8 @@
 #define GETTER_DEF(func_name) v8::Handle<v8::Value> func_name(v8::Local<v8::String> name, const v8::AccessorInfo& info)
 #define GETTER_DEFP(prefix, func_name) v8::Handle<v8::Value> prefix::func_name(v8::Local<v8::String> name, const v8::AccessorInfo& info)
 #define GETTER_BEGIN(prefix, func_name) GETTER_DEFP(prefix, func_name) { \
-	v8::HandleScope scope;
-#define GETTER_END(ret) return scope.Close(ret); \
+	v8::
+#define GETTER_END(ret) info.GetReturnValue().Set(ret); \
 }
 #define GETTER_UNDEFINED return Undefined(); \
 }
@@ -158,7 +159,7 @@
 #define SETTER_DEF(func_name) void func_name(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
 #define SETTER_DEFP(prefix, func_name) void prefix::func_name(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
 #define SETTER_BEGIN(prefix, func_name) SETTER_DEFP(prefix, func_name) { \
-	v8::HandleScope scope;
+	v8::
 #define SETTER_END }
 
 #define EXTRACT_STRING(name, arg_n) \
@@ -231,10 +232,10 @@
 
 #define OPEN_OBJECTWRAP(type) class type : public node::ObjectWrap { \
 	public: \
-		static v8::Persistent<v8::FunctionTemplate> wrap_template_; \
+		static v8::Persistent<v8::FunctionTemplate> constructor; \
 		~type(); \
 		static void Init(v8::Handle<v8::Object> target); \
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+		static NAN_METHOD(New);
 #define CLOSE_OBJECTWRAP(wrap_type) wrap_type* wrapped; \
 	};
 
@@ -247,10 +248,10 @@
 #define GETTER_SETTER(template, name, get, set) template->PrototypeTemplate()->SetAccessor(String::NewSymbol(name), get, set);
 #define SET(target, symbol, object) target->Set(String::NewSymbol(symbol), object)
 #define START_INIT(prefix, type) \
-  v8::Persistent<v8::FunctionTemplate> prefix::type::wrap_template_; \
+  v8::Persistent<v8::FunctionTemplate> prefix::type::constructor; \
   void prefix::type::Init(Handle<Object> target) { \
-    CREATE_TEMPLATE(wrap_template_, type)
-#define END_INIT(symbol) SET(target, symbol, wrap_template_->GetFunction()); \
+    CREATE_TEMPLATE(tpl, type)
+#define END_INIT(symbol) SET(target, symbol, tpl->GetFunction()); \
 	}
 
 #define PROTO_METHOD(target, name, callback) \
@@ -262,27 +263,21 @@
   type* name = static_cast<type*>(Handle<External>::Cast(args[arg])->Value())
 #define START_NEW(prefix, type, num_args) v8::Handle<v8::Value> prefix::type::New(const v8::Arguments& args) { \
 	CHECK_CONSTRUCT(S(type)) \
-	HandleScope scope; \
+ \
 	CHECK_ARGLEN(S(type), num_args);
 #define END_NEW return args.This(); \
   }
 
 #define NEW_WRAPPED(pointer, type, ret) \
   v8::Handle<v8::Value> argv[] = {v8::External::New(pointer)}; \
-  v8::Handle<v8::Object> ret = type::wrap_template_->GetFunction()->NewInstance(1, argv);
-
+  v8::Handle<v8::Object> ret = type::tpl->GetFunction()->NewInstance(1, argv);
+*/
 
 namespace sdl {
 
   // Error reporting helpers
   v8::Handle<v8::Value> ThrowSDLException(const char* name);
   v8::Local<v8::Value> MakeSDLException(const char* name);
-
-  // Helpers to work with buffers
-  char* BufferData(node::Buffer *b);
-  size_t BufferLength(node::Buffer *b);
-  char* BufferData(v8::Local<v8::Object> buf_obj);
-  size_t BufferLength(v8::Local<v8::Object> buf_obj);
 
   v8::Local<v8::Object> SDLDisplayModeToJavascriptObject(const SDL_DisplayMode& mode);
 

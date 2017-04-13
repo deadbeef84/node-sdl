@@ -35,66 +35,66 @@
 
 namespace sdl {
   // Initialization and Shutdown.
-  v8::Handle<v8::Value> Init(const v8::Arguments& args);
-  v8::Handle<v8::Value> InitSubSystem(const v8::Arguments& args);
-  v8::Handle<v8::Value> WasInit(const v8::Arguments& args);
-  v8::Handle<v8::Value> Quit(const v8::Arguments& args);
-  v8::Handle<v8::Value> QuitSubSystem(const v8::Arguments& args);
+  NAN_METHOD(Init);
+  NAN_METHOD(InitSubSystem);
+  NAN_METHOD(WasInit);
+  NAN_METHOD(Quit);
+  NAN_METHOD(QuitSubSystem);
 
   // Display and Window Management.
-  v8::Handle<v8::Value> DisableScreenSaver(const v8::Arguments& args);
-  v8::Handle<v8::Value> EnableScreenSaver(const v8::Arguments& args);
-  v8::Handle<v8::Value> IsScreenSaverEnabled(const v8::Arguments& args);
+  NAN_METHOD(DisableScreenSaver);
+  NAN_METHOD(EnableScreenSaver);
+  NAN_METHOD(IsScreenSaverEnabled);
 
-  v8::Handle<v8::Value> GetClosestDisplayMode(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetCurrentDisplayMode(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetCurrentVideoDriver(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetDesktopDisplayMode(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetDisplayBounds(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetDisplayMode(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetDisplayName(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetNumDisplayModes(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetNumVideoDisplays(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetNumVideoDrivers(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetVideoDriver(const v8::Arguments& args);
+  NAN_METHOD(GetClosestDisplayMode);
+  NAN_METHOD(GetCurrentDisplayMode);
+  NAN_METHOD(GetCurrentVideoDriver);
+  NAN_METHOD(GetDesktopDisplayMode);
+  NAN_METHOD(GetDisplayBounds);
+  NAN_METHOD(GetDisplayMode);
+  NAN_METHOD(GetDisplayName);
+  NAN_METHOD(GetNumDisplayModes);
+  NAN_METHOD(GetNumVideoDisplays);
+  NAN_METHOD(GetNumVideoDrivers);
+  NAN_METHOD(GetVideoDriver);
   // TODO: Put this functionality into Window?
-  // v8::Handle<v8::Value> GetWindowFromID(const v8::Arguments& args);
+  // NAN_METHOD(GetWindowFromID);
 
   // TODO: Implement showing a normal message box.
-  // v8::Handle<v8::Value> ShowMessageBox(const v8::Arguments& args);
-  v8::Handle<v8::Value> ShowSimpleMessageBox(const v8::Arguments& args);
+  // NAN_METHOD(ShowMessageBox);
+  NAN_METHOD(ShowSimpleMessageBox);
 
-  v8::Handle<v8::Value> VideoInit(const v8::Arguments& args);
-  v8::Handle<v8::Value> VideoQuit(const v8::Arguments& args);
+  NAN_METHOD(VideoInit);
+  NAN_METHOD(VideoQuit);
 
   // Error handling?
-  v8::Handle<v8::Value> ClearError(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetError(const v8::Arguments& args);
-  v8::Handle<v8::Value> SetError(const v8::Arguments& args);
+  NAN_METHOD(ClearError);
+  NAN_METHOD(GetError);
+  NAN_METHOD(SetError);
 
-  v8::Handle<v8::Value> MapRGB(const v8::Arguments& args);
-  v8::Handle<v8::Value> MapRGBA(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetRGB(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetRGBA(const v8::Arguments& args);
+  NAN_METHOD(MapRGB);
+  NAN_METHOD(MapRGBA);
+  NAN_METHOD(GetRGB);
+  NAN_METHOD(GetRGBA);
 
-  v8::Handle<v8::Value> AddHintCallback(const v8::Arguments& args);
-  // v8::Handle<v8::Value> ClearHints(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetHint(const v8::Arguments& args);
-  v8::Handle<v8::Value> SetHint(const v8::Arguments& args);
-  v8::Handle<v8::Value> SetHintWithPriority(const v8::Arguments& args);
+  NAN_METHOD(AddHintCallback);
+  // NAN_METHOD(ClearHints);
+  NAN_METHOD(GetHint);
+  NAN_METHOD(SetHint);
+  NAN_METHOD(SetHintWithPriority);
 
-  v8::Handle<v8::Value> CompiledVersion(const v8::Arguments& args);
-  v8::Handle<v8::Value> CompiledRevision(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetRevision(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetRevisionNumber(const v8::Arguments& args);
-  v8::Handle<v8::Value> GetVersion(const v8::Arguments& args);
+  NAN_METHOD(CompiledVersion);
+  NAN_METHOD(CompiledRevision);
+  NAN_METHOD(GetRevision);
+  NAN_METHOD(GetRevisionNumber);
+  NAN_METHOD(GetVersion);
 
-  v8::Handle<v8::Value> GetClipboardText(const v8::Arguments& args);
-  v8::Handle<v8::Value> HasClipboardText(const v8::Arguments& args);
-  v8::Handle<v8::Value> SetClipboardText(const v8::Arguments& args);
+  NAN_METHOD(GetClipboardText);
+  NAN_METHOD(HasClipboardText);
+  NAN_METHOD(SetClipboardText);
 
   namespace IMG {
-    v8::Handle<v8::Value> Load(const v8::Arguments& args);
+    NAN_METHOD(Load);
   }
 
   namespace WM {

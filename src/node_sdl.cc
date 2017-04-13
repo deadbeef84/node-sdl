@@ -101,37 +101,37 @@ init(Handle<Object> target)
   sdl::controller::Init(target);
 
   // Initialization and Shutdown.
-  NODE_SET_METHOD(target, "init", sdl::Init);
-  NODE_SET_METHOD(target, "initSubSystem", sdl::InitSubSystem);
-  NODE_SET_METHOD(target, "wasInit", sdl::WasInit);
-  NODE_SET_METHOD(target, "quit", sdl::Quit);
-  NODE_SET_METHOD(target, "quitSubSystem", sdl::QuitSubSystem);
+  Nan::SetPrototypeMethod(target, "init", sdl::Init);
+  Nan::SetPrototypeMethod(target, "initSubSystem", sdl::InitSubSystem);
+  Nan::SetPrototypeMethod(target, "wasInit", sdl::WasInit);
+  Nan::SetPrototypeMethod(target, "quit", sdl::Quit);
+  Nan::SetPrototypeMethod(target, "quitSubSystem", sdl::QuitSubSystem);
 
   // Display and Window Management.
 
-  NODE_SET_METHOD(target, "clearError", sdl::ClearError);
-  NODE_SET_METHOD(target, "getError", sdl::GetError);
-  NODE_SET_METHOD(target, "setError", sdl::SetError);
+  Nan::SetPrototypeMethod(target, "clearError", sdl::ClearError);
+  Nan::SetPrototypeMethod(target, "getError", sdl::GetError);
+  Nan::SetPrototypeMethod(target, "setError", sdl::SetError);
 
-  NODE_SET_METHOD(target, "mapRGB", sdl::MapRGB);
-  NODE_SET_METHOD(target, "mapRGBA", sdl::MapRGBA);
-  NODE_SET_METHOD(target, "getRGB", sdl::GetRGB);
-  NODE_SET_METHOD(target, "getRGBA", sdl::GetRGBA);
+  Nan::SetPrototypeMethod(target, "mapRGB", sdl::MapRGB);
+  Nan::SetPrototypeMethod(target, "mapRGBA", sdl::MapRGBA);
+  Nan::SetPrototypeMethod(target, "getRGB", sdl::GetRGB);
+  Nan::SetPrototypeMethod(target, "getRGBA", sdl::GetRGBA);
 
-  NODE_SET_METHOD(target, "AddHintCallback", sdl::AddHintCallback);
-  NODE_SET_METHOD(target, "getHint", sdl::GetHint);
-  NODE_SET_METHOD(target, "setHint", sdl::SetHint);
-  NODE_SET_METHOD(target, "setHintWithPriority", sdl::SetHintWithPriority);
+  Nan::SetPrototypeMethod(target, "AddHintCallback", sdl::AddHintCallback);
+  Nan::SetPrototypeMethod(target, "getHint", sdl::GetHint);
+  Nan::SetPrototypeMethod(target, "setHint", sdl::SetHint);
+  Nan::SetPrototypeMethod(target, "setHintWithPriority", sdl::SetHintWithPriority);
 
-  NODE_SET_METHOD(target, "compiledVersion", sdl::CompiledVersion);
-  NODE_SET_METHOD(target, "compiledRevision", sdl::CompiledRevision);
-  NODE_SET_METHOD(target, "getRevision", sdl::GetRevision);
-  NODE_SET_METHOD(target, "getRevisionNumber", sdl::GetRevisionNumber);
-  NODE_SET_METHOD(target, "getVersion", sdl::GetVersion);
+  Nan::SetPrototypeMethod(target, "compiledVersion", sdl::CompiledVersion);
+  Nan::SetPrototypeMethod(target, "compiledRevision", sdl::CompiledRevision);
+  Nan::SetPrototypeMethod(target, "getRevision", sdl::GetRevision);
+  Nan::SetPrototypeMethod(target, "getRevisionNumber", sdl::GetRevisionNumber);
+  Nan::SetPrototypeMethod(target, "getVersion", sdl::GetVersion);
 
-  NODE_SET_METHOD(target, "getClipboardText", sdl::GetClipboardText);
-  NODE_SET_METHOD(target, "hasClipboardText", sdl::HasClipboardText);
-  NODE_SET_METHOD(target, "setClipboardText", sdl::SetClipboardText);
+  Nan::SetPrototypeMethod(target, "getClipboardText", sdl::GetClipboardText);
+  Nan::SetPrototypeMethod(target, "hasClipboardText", sdl::HasClipboardText);
+  Nan::SetPrototypeMethod(target, "setClipboardText", sdl::SetClipboardText);
 
   Local<Object> INIT = Object::New();
   target->Set(String::New("INIT"), INIT);
@@ -187,7 +187,7 @@ init(Handle<Object> target)
   Local<Object> IMG = Object::New();
   target->Set(String::New("IMG"), IMG);
 
-  NODE_SET_METHOD(IMG, "load", sdl::IMG::Load);
+  Nan::SetPrototypeMethod(IMG, "load", sdl::IMG::Load);
 
   Local<Object> WM = Object::New();
   target->Set(String::New("WM"), WM);
@@ -248,8 +248,8 @@ init(Handle<Object> target)
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization and Shutdown.
 
-Handle<Value> sdl::Init(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::Init) {
+
   SDL_SetMainReady();
   int init = (args[0]->IsUndefined() || !args[0]->IsNumber()) ? SDL_INIT_EVERYTHING : args[0]->Int32Value();
   // std::cout << "sdl::Init got: " << init << std::endl;
@@ -259,8 +259,8 @@ Handle<Value> sdl::Init(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::InitSubSystem(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::InitSubSystem) {
+
 
   if (!(args.Length() == 1 && args[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected InitSubSystem(Number)")));
@@ -271,8 +271,8 @@ Handle<Value> sdl::InitSubSystem(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::Quit(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::Quit) {
+
 
   if (!(args.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected Quit()")));
@@ -283,8 +283,8 @@ Handle<Value> sdl::Quit(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::QuitSubSystem(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::QuitSubSystem) {
+
 
   if (!(args.Length() == 1 && args[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected QuitSubSystem(Number)")));
@@ -295,8 +295,8 @@ Handle<Value> sdl::QuitSubSystem(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::WasInit(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::WasInit) {
+
 
   if (!(args.Length() == 1 && args[0]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WasInit(Number)")));
@@ -311,23 +311,23 @@ Handle<Value> sdl::WasInit(const Arguments& args) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Global SDL functions.
-Handle<Value> sdl::DisableScreenSaver(const Arguments& args) {
+NAN_METHOD(sdl::DisableScreenSaver) {
   SDL_DisableScreenSaver();
   return Undefined();
 }
-Handle<Value> sdl::EnableScreenSaver(const Arguments& args) {
+NAN_METHOD(sdl::EnableScreenSaver) {
   SDL_EnableScreenSaver();
   return Undefined();
 }
-Handle<Value> sdl::IsScreenSaverEnabled(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::IsScreenSaverEnabled) {
+
 
   SDL_bool ret = SDL_IsScreenSaverEnabled();
-  return scope.Close(Boolean::New(ret));
+  info.GetReturnValue().Set(Boolean::New(ret));
 }
 
-Handle<Value> sdl::GetClosestDisplayMode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetClosestDisplayMode) {
+
 
   if(args.Length() < 2) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getClosestDisplayMode(Number, DisplayMode)")));
@@ -342,10 +342,10 @@ Handle<Value> sdl::GetClosestDisplayMode(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(WrapDisplayMode(closest));
+  info.GetReturnValue().Set(WrapDisplayMode(closest));
 }
-Handle<Value> sdl::GetCurrentDisplayMode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetCurrentDisplayMode) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getCurrentDisplayMode(Number)")));
@@ -359,20 +359,20 @@ Handle<Value> sdl::GetCurrentDisplayMode(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(WrapDisplayMode(current));
+  info.GetReturnValue().Set(WrapDisplayMode(current));
 }
-Handle<Value> sdl::GetCurrentVideoDriver(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetCurrentVideoDriver) {
+
 
   const char* ret = SDL_GetCurrentVideoDriver();
   if(NULL == ret) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(String::New(ret));
+  info.GetReturnValue().Set(String::New(ret));
 }
-Handle<Value> sdl::GetDesktopDisplayMode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetDesktopDisplayMode) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getCurrentDisplayMode(Number)")));
@@ -386,10 +386,10 @@ Handle<Value> sdl::GetDesktopDisplayMode(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(WrapDisplayMode(current));
+  info.GetReturnValue().Set(WrapDisplayMode(current));
 }
-Handle<Value> sdl::GetDisplayBounds(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetDisplayBounds) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getDisplayBounds(Number)")));
@@ -405,15 +405,15 @@ Handle<Value> sdl::GetDisplayBounds(const Arguments& args) {
 
   NEW_WRAPPED(bounds, RectWrapper, ret);
 //   Handle<Value> argv[] = {External::New(bounds)};
-//   Handle<Object> ret = RectWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
+//   Handle<Object> ret = RectWrapper::tpl->GetFunction()->NewInstance(1, argv);
 //   Handle<Object> ret = Object::New();
 //   RectWrapper* wrap = new RectWrapper(ret);
 //   wrap->wrapped = bounds;
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetDisplayMode(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetDisplayMode) {
+
 
   if(args.Length() < 2) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected getDisplayMode(Number, Number)")));
@@ -428,10 +428,10 @@ Handle<Value> sdl::GetDisplayMode(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(WrapDisplayMode(mode));
+  info.GetReturnValue().Set(WrapDisplayMode(mode));
 }
-Handle<Value> sdl::GetDisplayName(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetDisplayName) {
+
 
   if(args.Length() < 0) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getDisplayName(Number)")));
@@ -443,10 +443,10 @@ Handle<Value> sdl::GetDisplayName(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(String::New(ret));
+  info.GetReturnValue().Set(String::New(ret));
 }
-Handle<Value> sdl::GetNumDisplayModes(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetNumDisplayModes) {
+
 
   if(args.Length() < 0) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getNumDisplayModes(Number)")));
@@ -458,28 +458,28 @@ Handle<Value> sdl::GetNumDisplayModes(const Arguments& args) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(Number::New(ret));
+  info.GetReturnValue().Set(Number::New(ret));
 }
-Handle<Value> sdl::GetNumVideoDisplays(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetNumVideoDisplays) {
+
 
   int num = SDL_GetNumVideoDisplays();
   if(num < 0) {
     return ThrowSDLException(__func__);
   }
-  return scope.Close(Number::New(num));
+  info.GetReturnValue().Set(Number::New(num));
 }
-Handle<Value> sdl::GetNumVideoDrivers(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetNumVideoDrivers) {
+
 
   int num = SDL_GetNumVideoDrivers();
   if(num < 0) {
     return ThrowSDLException(__func__);
   }
-  return scope.Close(Number::New(num));
+  info.GetReturnValue().Set(Number::New(num));
 }
-Handle<Value> sdl::GetVideoDriver(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetVideoDriver) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected getVideoDriver(Number)")));
@@ -490,14 +490,14 @@ Handle<Value> sdl::GetVideoDriver(const Arguments& args) {
   if(NULL == driver) {
     return ThrowSDLException(__func__);
   }
-  return scope.Close(String::New(driver));
+  info.GetReturnValue().Set(String::New(driver));
 }
 
-// Handle<Value> sdl::ShowMessageBox(const Arguments& args) {
+// NAN_METHOD(sdl::ShowMessageBox) {
 
 // }
-Handle<Value> sdl::ShowSimpleMessageBox(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::ShowSimpleMessageBox) {
+
 
   if(args.Length() < 3) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: expected showSimpleMessageBox(Number, String, String, [Window])")));
@@ -525,25 +525,25 @@ Handle<Value> sdl::ShowSimpleMessageBox(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::VideoInit(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::VideoInit) {
+
 
   const char* driver = args[0]->IsUndefined() ? NULL : *(String::Utf8Value(args[0]));
   int err = SDL_VideoInit(driver);
   if(err < 0) {
     return ThrowSDLException(__func__);
   }
-  return scope.Close(String::New(driver));
+  info.GetReturnValue().Set(String::New(driver));
 }
-Handle<Value> sdl::VideoQuit(const Arguments& args) {
+NAN_METHOD(sdl::VideoQuit) {
   SDL_VideoQuit();
   return Undefined();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Handle<Value> sdl::ClearError(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::ClearError) {
+
 
   if (!(args.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected ClearError()")));
@@ -554,8 +554,8 @@ Handle<Value> sdl::ClearError(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::GetError(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetError) {
+
 
   if (!(args.Length() == 0)) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetError()")));
@@ -564,8 +564,8 @@ Handle<Value> sdl::GetError(const Arguments& args) {
   return String::New(SDL_GetError());
 }
 
-Handle<Value> sdl::SetError(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::SetError) {
+
 
   if (!(args.Length() == 1 && args[0]->IsString())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected SetError(String)")));
@@ -578,8 +578,8 @@ Handle<Value> sdl::SetError(const Arguments& args) {
   return Undefined();
 }
 
-Handle<Value> sdl::MapRGB(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::MapRGB) {
+
 
   if (!(args.Length() == 4 && args[0]->IsObject() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected MapRGB(PixelFormat, Number, Number, Number)")));
@@ -593,8 +593,8 @@ Handle<Value> sdl::MapRGB(const Arguments& args) {
   return Number::New(SDL_MapRGB(fmt, r, g, b));
 }
 
-Handle<Value> sdl::MapRGBA(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::MapRGBA) {
+
 
   if (!(args.Length() == 5 && args[0]->IsObject() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber() && args[4]->IsNumber())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected MapRGBA(PixelFormat, Number, Number, Number, Number)")));
@@ -609,8 +609,8 @@ Handle<Value> sdl::MapRGBA(const Arguments& args) {
   return Number::New(SDL_MapRGBA(fmt, r, g, b, a));
 }
 
-Handle<Value> sdl::GetRGB(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetRGB) {
+
 
   if (!(args.Length() == 2 && args[0]->IsNumber() && args[1]->IsObject())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetRGB(Number, PixelFormat)")));
@@ -627,11 +627,11 @@ Handle<Value> sdl::GetRGB(const Arguments& args) {
   rgb->Set(String::New("g"), Number::New(g));
   rgb->Set(String::New("b"), Number::New(b));
 
-  return scope.Close(rgb);
+  info.GetReturnValue().Set(rgb);
 }
 
-Handle<Value> sdl::GetRGBA(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetRGBA) {
+
 
   if (!(args.Length() == 2 && args[0]->IsNumber() && args[1]->IsObject())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected GetRGBA(Number, PixelFormat)")));
@@ -649,13 +649,13 @@ Handle<Value> sdl::GetRGBA(const Arguments& args) {
   rgba->Set(String::New("b"), Number::New(b));
   rgba->Set(String::New("a"), Number::New(a));
 
-  return scope.Close(rgba);
+  info.GetReturnValue().Set(rgba);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SDL Hint Handling.
 static void HintCallbackHandler(void *userData, const char *name, const char *oldValue, const char *newValue) {
-  HandleScope scope;
+
 
   Persistent<Function> callback = *static_cast<Persistent<Function>*>(userData);
 
@@ -672,8 +672,8 @@ static void HintCallbackHandler(void *userData, const char *name, const char *ol
   }
 }
 
-Handle<Value> sdl::AddHintCallback(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::AddHintCallback) {
+
 
   if(args.Length() < 2) {
     return ThrowException(Exception::TypeError(
@@ -693,12 +693,12 @@ Handle<Value> sdl::AddHintCallback(const Arguments& args) {
 // TODO: Also implement a wrapper around SDL_DelHintCallback. (need to return a token or something
 //       when adding a callback, because it's likely most callbacks will be anonymous so we won't
 //       have the exact same Persistent address)
-// Handle<Value> ClearHints(const Arguments& args) {
-//   HandleScope scope;
+// NAN_METHOD(ClearHints) {
+//
 //   return Undefined();
 // }
-Handle<Value> sdl::GetHint(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetHint) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(
@@ -711,10 +711,10 @@ Handle<Value> sdl::GetHint(const Arguments& args) {
     return Undefined();
   }
 
-  return scope.Close(String::New(value));
+  info.GetReturnValue().Set(String::New(value));
 }
-Handle<Value> sdl::SetHint(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::SetHint) {
+
 
   if(args.Length() < 2) {
     return ThrowException(Exception::TypeError(
@@ -730,8 +730,8 @@ Handle<Value> sdl::SetHint(const Arguments& args) {
 
   return Undefined();
 }
-Handle<Value> sdl::SetHintWithPriority(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::SetHintWithPriority) {
+
 
   if(args.Length() < 3) {
     return ThrowException(Exception::TypeError(
@@ -743,11 +743,11 @@ Handle<Value> sdl::SetHintWithPriority(const Arguments& args) {
   SDL_HintPriority priority = static_cast<SDL_HintPriority>(args[2]->Int32Value());
   SDL_bool ret = SDL_SetHintWithPriority(*name, *value, priority);
 
-  return scope.Close(Boolean::New(ret ? true : false));
+  info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
 
-Handle<Value> sdl::CompiledVersion(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::CompiledVersion) {
+
 
   SDL_version version;
   SDL_VERSION(&version);
@@ -757,33 +757,33 @@ Handle<Value> sdl::CompiledVersion(const Arguments& args) {
   ret->Set(String::New("minor"), Number::New(version.minor));
   ret->Set(String::New("patch"), Number::New(version.patch));
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::CompiledRevision(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::CompiledRevision) {
+
 
   Handle<String> ret = String::New(SDL_REVISION);
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetRevision(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetRevision) {
+
 
   const char *revision = SDL_GetRevision();
   Handle<String> ret = String::New(revision);
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetRevisionNumber(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetRevisionNumber) {
+
 
   int revision = SDL_GetRevisionNumber();
   Handle<Value> ret = Number::New(revision);
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetVersion(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetVersion) {
+
 
   SDL_version version;
   SDL_GetVersion(&version);
@@ -793,28 +793,28 @@ Handle<Value> sdl::GetVersion(const Arguments& args) {
   ret->Set(String::New("minor"), Number::New(version.minor));
   ret->Set(String::New("patch"), Number::New(version.patch));
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::GetClipboardText(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::GetClipboardText) {
+
 
   char *text = SDL_GetClipboardText();
   if(NULL == text) {
     return ThrowSDLException(__func__);
   }
 
-  return scope.Close(String::New(text));
+  info.GetReturnValue().Set(String::New(text));
 }
-Handle<Value> sdl::HasClipboardText(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::HasClipboardText) {
+
 
   SDL_bool has = SDL_HasClipboardText();
 
-  return scope.Close(Boolean::New(has ? true : false));
+  info.GetReturnValue().Set(Boolean::New(has ? true : false));
 }
-Handle<Value> sdl::SetClipboardText(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::SetClipboardText) {
+
 
   if(args.Length() < 1) {
     return ThrowException(Exception::TypeError(
@@ -832,8 +832,8 @@ Handle<Value> sdl::SetClipboardText(const Arguments& args) {
 
 
 // TODO: make an async version so this can be used in loops or parallel load images
-Handle<Value> sdl::IMG::Load(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(sdl::IMG::Load) {
+
 
   if (!(args.Length() == 1 && args[0]->IsString())) {
     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected IMG::Load(String)")));
@@ -852,7 +852,7 @@ Handle<Value> sdl::IMG::Load(const Arguments& args) {
 
   NEW_WRAPPED(image, SurfaceWrapper, ret)
 
-  return scope.Close(ret);
+  info.GetReturnValue().Set(ret);
 }
 
 NODE_MODULE(node_sdl, init)

@@ -8,41 +8,41 @@ using namespace v8;
 using namespace node;
 
 
-void sdl::event::Init(Handle<Object> exports) {
-	NODE_SET_METHOD(exports, "eventState", EventState);
+NAN_MODULE_INIT(sdl::event::Init) {
+	Nan::SetPrototypeMethod(exports, "eventState", EventState);
 
-	NODE_SET_METHOD(exports, "flushEvent", FlushEvent);
-	NODE_SET_METHOD(exports, "flushEvents", FlushEvents);
+	Nan::SetPrototypeMethod(exports, "flushEvent", FlushEvent);
+	Nan::SetPrototypeMethod(exports, "flushEvents", FlushEvents);
 
-	NODE_SET_METHOD(exports, "getNumtouchDevices", GetNumTouchDevices);
-	NODE_SET_METHOD(exports, "getNumTouchFingers", GetNumTouchFingers);
-	NODE_SET_METHOD(exports, "getTouchDevice", GetTouchDevice);
-	NODE_SET_METHOD(exports, "getTouchFinger", GetTouchFinger);
-	NODE_SET_METHOD(exports, "recordGesture", RecordGesture);
+	Nan::SetPrototypeMethod(exports, "getNumtouchDevices", GetNumTouchDevices);
+	Nan::SetPrototypeMethod(exports, "getNumTouchFingers", GetNumTouchFingers);
+	Nan::SetPrototypeMethod(exports, "getTouchDevice", GetTouchDevice);
+	Nan::SetPrototypeMethod(exports, "getTouchFinger", GetTouchFinger);
+	Nan::SetPrototypeMethod(exports, "recordGesture", RecordGesture);
 
-	NODE_SET_METHOD(exports, "hasEvent", HasEvent);
-	NODE_SET_METHOD(exports, "hasEvents", HasEvents);
+	Nan::SetPrototypeMethod(exports, "hasEvent", HasEvent);
+	Nan::SetPrototypeMethod(exports, "hasEvents", HasEvents);
 
-	NODE_SET_METHOD(exports, "waitEvent", sdl::WaitEvent);
-	NODE_SET_METHOD(exports, "waitEventTimeout", sdl::WaitEventTimeout);
-	NODE_SET_METHOD(exports, "pollEvent", sdl::PollEvent);
+	Nan::SetPrototypeMethod(exports, "waitEvent", sdl::WaitEvent);
+	Nan::SetPrototypeMethod(exports, "waitEventTimeout", sdl::WaitEventTimeout);
+	Nan::SetPrototypeMethod(exports, "pollEvent", sdl::PollEvent);
 
-	NODE_SET_METHOD(exports, "quitRequested", QuitRequested);
+	Nan::SetPrototypeMethod(exports, "quitRequested", QuitRequested);
 }
 
 // TODO: Implement these in a way that will be able to call Javascript functions on the
 //       main thread. (possibly create a custom implementation?) The callback to SDL_AddEventWatch,
 //       per the SDL documentation, is not guaranteed to be on the same thread.
-// Handle<Value> sdl::AddEventWatch(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::AddEventWatch) {
+//
 // 	return Undefined();
 // }
-// Handle<Value> sdl::DelEventWatch(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::DelEventWatch) {
+//
 // 	return Undefined();
 // }
-Handle<Value> sdl::EventState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::EventState) {
+
 
 	if(args.Length() < 2) {
 		return ThrowException(Exception::TypeError(
@@ -53,27 +53,27 @@ Handle<Value> sdl::EventState(const Arguments& args) {
 	int state = args[1]->Int32Value();
 	int8_t ret = SDL_EventState(type, state);
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
 
 // TODO: Implement these in a way that will be able to call Javascript functions on the
 //       main thread. (possibly create a custom implementation?) The callback to SDL_SetEventFilter,
 //       per the SDL documentation, is not guaranteed to be on the same thread.
-// Handle<Value> sdl::FilterEvents(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::FilterEvents) {
+//
 // 	return Undefined();
 // }
-// Handle<Value> sdl::GetEventFilter(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::GetEventFilter) {
+//
 // 	return Undefined();
 // }
-// Handle<Value> sdl::SetEventFilter(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::SetEventFilter) {
+//
 // 	return Undefined();
 // }
 
-Handle<Value> sdl::FlushEvent(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::FlushEvent) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -85,8 +85,8 @@ Handle<Value> sdl::FlushEvent(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::FlushEvents(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::FlushEvents) {
+
 
 	if(args.Length() < 2) {
 		return ThrowException(Exception::TypeError(
@@ -100,15 +100,15 @@ Handle<Value> sdl::FlushEvents(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::GetNumTouchDevices(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetNumTouchDevices) {
+
 
 	int ret = SDL_GetNumTouchDevices();
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
-Handle<Value> sdl::GetNumTouchFingers(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetNumTouchFingers) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -121,10 +121,10 @@ Handle<Value> sdl::GetNumTouchFingers(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
-Handle<Value> sdl::GetTouchDevice(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetTouchDevice) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -137,10 +137,10 @@ Handle<Value> sdl::GetTouchDevice(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(device));
+	info.GetReturnValue().Set(Number::New(device));
 }
-Handle<Value> sdl::GetTouchFinger(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetTouchFinger) {
+
 
 	if(args.Length() < 2) {
 		return ThrowException(Exception::TypeError(
@@ -158,10 +158,10 @@ Handle<Value> sdl::GetTouchFinger(const Arguments& args) {
 	FingerWrapper* ret = new FingerWrapper(toWrap);
 	ret->finger_ = finger;
 
-	return scope.Close(toWrap);
+	info.GetReturnValue().Set(toWrap);
 }
-Handle<Value> sdl::RecordGesture(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RecordGesture) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -177,8 +177,8 @@ Handle<Value> sdl::RecordGesture(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::HasEvent(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::HasEvent) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -188,10 +188,10 @@ Handle<Value> sdl::HasEvent(const Arguments& args) {
 	int type = args[0]->Int32Value();
 	SDL_bool ret = SDL_HasEvent(type);
 
-	return scope.Close(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
-Handle<Value> sdl::HasEvents(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::HasEvents) {
+
 
 	if(args.Length() < 2) {
 		return ThrowException(Exception::TypeError(
@@ -202,29 +202,29 @@ Handle<Value> sdl::HasEvents(const Arguments& args) {
 	int typeMax = args[1]->Int32Value();
 	SDL_bool ret = SDL_HasEvents(typeMin, typeMax);
 
-	return scope.Close(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
 
 // TODO: Implement these, along with RWOps wrapper.
 //       (too lazy to implement RWOps right now)
-// Handle<Value> sdl::LoadDollarTemplates(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::LoadDollarTemplates) {
+//
 
 // 	return Undefined();
 // }
-// Handle<Value> sdl::SaveAllDollarTemplates(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::SaveAllDollarTemplates) {
+//
 
 // 	return Undefined();
 // }
-// Handle<Value> sdl::SaveDollarTemplate(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::SaveDollarTemplate) {
+//
 
 // 	return Undefined();
 // }
 
-Handle<Value> sdl::WaitEvent(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::WaitEvent) {
+
 
 	if (!(args.Length() == 1 && args[0]->IsFunction())) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEvent(Function)")));
@@ -243,8 +243,8 @@ Handle<Value> sdl::WaitEvent(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::WaitEventTimeout(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::WaitEventTimeout) {
+
 
 	if(!(args.Length() == 2 && args[0]->IsFunction() && args[1]->IsNumber())) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEventTimeout(Function, Number)")));
@@ -264,8 +264,8 @@ Handle<Value> sdl::WaitEventTimeout(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::PollEvent(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::PollEvent) {
+
 
 	if (!(args.Length() == 0)) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected PollEvent()")));
@@ -277,14 +277,14 @@ Handle<Value> sdl::PollEvent(const Arguments& args) {
 	}
 
 	Local<Object> evt = SDLEventToJavascriptObject(event);
-	return scope.Close(evt);
+	info.GetReturnValue().Set(evt);
 }
 // TODO: Implement this function.
 //		 This is a relatively complicated function which uses an array to put/get events into/from
 //		 the event queue. The same functionality can be achieved using other functions, so I'll
 // 		 deal with this later. (too lazy right now, again)
-// Handle<Value> sdl::PeepEvents(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::PeepEvents) {
+//
 
 // 	return Undefined();
 // }
@@ -292,15 +292,15 @@ Handle<Value> sdl::PollEvent(const Arguments& args) {
 // 		 None of the functions which make pump useful are implemented, so there's no use in
 // 		 exposing this function yet. (for example, filtering events of peeping events)
 //		 Just use poll for now.
-// Handle<Value> sdl::PumpEvents(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::PumpEvents) {
+//
 
 // 	return Undefined();
 // }
 // TODO: Implement when events are refactored. Huge pain to convert from object to event right now,
 //  	 similar effort to the current event to object conversion. (should just be a wrapper)
-// Handle<Value> sdl::PushEvent(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::PushEvent) {
+//
 
 // 	if(args.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
@@ -311,18 +311,18 @@ Handle<Value> sdl::PollEvent(const Arguments& args) {
 // }
 // TODO: Implement when push is implemented. Can only be used when you can push a custom
 // 		 event.
-// Handle<Value> sdl::RegisterEvents(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::RegisterEvents) {
+//
 
 // 	return Undefined();
 // }
 
-Handle<Value> sdl::QuitRequested(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::QuitRequested) {
+
 
 	bool ret = SDL_QuitRequested();
 
-	return scope.Close(Boolean::New(ret));
+	info.GetReturnValue().Set(Boolean::New(ret));
 }
 
 // TODO: Improve on how events are created. Gotta be a better way than this...

@@ -13,7 +13,7 @@ using namespace v8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TextureWrapper Class Definition.
-Persistent<FunctionTemplate> sdl::TextureWrapper::texture_wrap_template_;
+Persistent<FunctionTemplate> sdl::TextureWrapper::constructor;
 
 sdl::TextureWrapper::TextureWrapper() {
 }
@@ -28,42 +28,41 @@ sdl::TextureWrapper::~TextureWrapper() {
 	}
 }
 
-void sdl::TextureWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::TextureWrapper::Init) {
   // Setup hardware renderer construction.
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	texture_wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("TextureWrapper"));
 
-	texture_wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	texture_wrap_template_->SetClassName(String::NewSymbol("TextureWrapper"));
+	Nan::SetPrototypeMethod(tpl, "getAlphaMod", GetAlphaMod);
+	Nan::SetPrototypeMethod(tpl, "getBlendMode", GetBlendMode);
+	Nan::SetPrototypeMethod(tpl, "getColorMod", GetColorMod);
+	Nan::SetPrototypeMethod(tpl, "getFormat", GetFormat);
+	Nan::SetPrototypeMethod(tpl, "getSize", GetSize);
+	Nan::SetPrototypeMethod(tpl, "getWidth", GetWidth);
+	Nan::SetPrototypeMethod(tpl, "getHeight", GetHeight);
 
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getAlphaMod", GetAlphaMod);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getBlendMode", GetBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getColorMod", GetColorMod);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getFormat", GetFormat);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getSize", GetSize);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getWidth", GetWidth);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "getHeight", GetHeight);
+	Nan::SetPrototypeMethod(tpl, "setAlphaMod", SetAlphaMod);
+	Nan::SetPrototypeMethod(tpl, "setBlendMode", SetBlendMode);
+	Nan::SetPrototypeMethod(tpl, "setColorMod", SetColorMod);
 
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "setAlphaMod", SetAlphaMod);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "setBlendMode", SetBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "setColorMod", SetColorMod);
+	// Nan::SetPrototypeMethod(tpl, "lock", Lock);
+	// Nan::SetPrototypeMethod(tpl, "unlock", Unlock);
 
-	// NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "lock", Lock);
-	// NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "unlock", Unlock);
+	Nan::SetPrototypeMethod(tpl, "update", Update);
 
-	NODE_SET_PROTOTYPE_METHOD(texture_wrap_template_, "update", Update);
-
-	exports->Set(String::NewSymbol("Texture"), texture_wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("Texture"), constructor);
 }
 
-Handle<Value> sdl::TextureWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::TextureWrapper::New) {
 	// std::cout << "Texture::New - Checking for constructor call." << std::endl;
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instances of a Texture.")));
 	}
 
-	HandleScope scope;
+
 
 	SDL_Texture* tex;
 	// std::cout << "Texture::New - Unwrapping RendererWrapper from first argument." << std::endl;
@@ -105,8 +104,8 @@ Handle<Value> sdl::TextureWrapper::New(const Arguments& args) {
 	return args.This();
 }
 
-Handle<Value> sdl::TextureWrapper::GetAlphaMod(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetAlphaMod) {
+
 
 	uint8_t alpha;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -115,10 +114,10 @@ Handle<Value> sdl::TextureWrapper::GetAlphaMod(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(alpha));
+	info.GetReturnValue().Set(Number::New(alpha));
 }
-Handle<Value> sdl::TextureWrapper::GetBlendMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetBlendMode) {
+
 
 	SDL_BlendMode mode;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -127,10 +126,10 @@ Handle<Value> sdl::TextureWrapper::GetBlendMode(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(mode));
+	info.GetReturnValue().Set(Number::New(mode));
 }
-Handle<Value> sdl::TextureWrapper::GetColorMod(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetColorMod) {
+
 
 	uint8_t r, g, b;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -144,10 +143,10 @@ Handle<Value> sdl::TextureWrapper::GetColorMod(const Arguments& args) {
 	ret->Set(String::NewSymbol("g"), Number::New(g));
 	ret->Set(String::NewSymbol("b"), Number::New(b));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TextureWrapper::GetFormat(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetFormat) {
+
 
 	uint32_t format;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -156,10 +155,10 @@ Handle<Value> sdl::TextureWrapper::GetFormat(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(format));
+	info.GetReturnValue().Set(Number::New(format));
 }
-Handle<Value> sdl::TextureWrapper::GetSize(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetSize) {
+
 
 	int access;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -168,10 +167,10 @@ Handle<Value> sdl::TextureWrapper::GetSize(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(access));
+	info.GetReturnValue().Set(Number::New(access));
 }
-Handle<Value> sdl::TextureWrapper::GetWidth(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetWidth) {
+
 
 	int width;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -180,10 +179,10 @@ Handle<Value> sdl::TextureWrapper::GetWidth(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(width));
+	info.GetReturnValue().Set(Number::New(width));
 }
-Handle<Value> sdl::TextureWrapper::GetHeight(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::GetHeight) {
+
 
 	int height;
 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
@@ -192,11 +191,11 @@ Handle<Value> sdl::TextureWrapper::GetHeight(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(height));
+	info.GetReturnValue().Set(Number::New(height));
 }
 
-Handle<Value> sdl::TextureWrapper::SetAlphaMod(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::SetAlphaMod) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -211,8 +210,8 @@ Handle<Value> sdl::TextureWrapper::SetAlphaMod(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::TextureWrapper::SetBlendMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::SetBlendMode) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -227,8 +226,8 @@ Handle<Value> sdl::TextureWrapper::SetBlendMode(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::TextureWrapper::SetColorMod(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::SetColorMod) {
+
 
 	if(args.Length() < 3) {
 		return ThrowException(Exception::TypeError(
@@ -247,8 +246,8 @@ Handle<Value> sdl::TextureWrapper::SetColorMod(const Arguments& args) {
 	return Undefined();
 }
 
-// Handle<Value> sdl::TextureWrapper::Lock(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::TextureWrapper::Lock) {
+//
 
 // 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
 // 	int err = SDL_LockTexture(tex->texture_);
@@ -258,8 +257,8 @@ Handle<Value> sdl::TextureWrapper::SetColorMod(const Arguments& args) {
 
 // 	return Undefined();
 // }
-// Handle<Value> sdl::TextureWrapper::Unlock(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::TextureWrapper::Unlock) {
+//
 
 // 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(args.This());
 // 	int err = SDL_UnlockTexture(tex->texture_);
@@ -270,8 +269,8 @@ Handle<Value> sdl::TextureWrapper::SetColorMod(const Arguments& args) {
 // 	return Undefined();
 // }
 
-Handle<Value> sdl::TextureWrapper::Update(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TextureWrapper::Update) {
+
 
 	if(!args[0]->IsObject()) {
 		return ThrowException(Exception::TypeError(

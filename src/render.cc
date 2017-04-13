@@ -13,8 +13,7 @@ using namespace v8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // RendererWrapper Class Definition.
-Persistent<FunctionTemplate> sdl::RendererWrapper::render_wrap_template_;
-Persistent<FunctionTemplate> sdl::RendererWrapper::software_render_wrap_template_;
+Persistent<FunctionTemplate> sdl::RendererWrapper::constructor;
 
 sdl::RendererWrapper::RendererWrapper() {
 }
@@ -25,89 +24,51 @@ sdl::RendererWrapper::~RendererWrapper() {
 	}
 }
 
-void sdl::RendererWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::RendererWrapper::Init) {
   	// Setup hardware renderer construction.
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	render_wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("RendererWrapper"));
 
-	render_wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	render_wrap_template_->SetClassName(String::NewSymbol("RendererWrapper"));
+	Nan::SetPrototypeMethod(tpl, "getDrawBlendMode", GetDrawBlendMode);
+	Nan::SetPrototypeMethod(tpl, "getDrawColor", GetDrawColor);
+	Nan::SetPrototypeMethod(tpl, "getOutputSize", GetOutputSize);
+	Nan::SetPrototypeMethod(tpl, "getTarget", GetTarget);
+	Nan::SetPrototypeMethod(tpl, "getInfo", GetInfo);
+	Nan::SetPrototypeMethod(tpl, "getClipRect", GetClipRect);
+	Nan::SetPrototypeMethod(tpl, "getLogicalSize", GetLogicalSize);
+	Nan::SetPrototypeMethod(tpl, "getScale", GetScale);
+	Nan::SetPrototypeMethod(tpl, "getViewport", GetViewport);
+	Nan::SetPrototypeMethod(tpl, "targetSupported", TargetSupported);
 
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getDrawBlendMode", GetDrawBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getDrawColor", GetDrawColor);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getOutputSize", GetOutputSize);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getTarget", GetTarget);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getInfo", GetInfo);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getClipRect", GetClipRect);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getLogicalSize", GetLogicalSize);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getScale", GetScale);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "getViewport", GetViewport);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "targetSupported", TargetSupported);
+	Nan::SetPrototypeMethod(tpl, "setClipRect", SetClipRect);
+	Nan::SetPrototypeMethod(tpl, "setLogicalSize", SetLogicalSize);
+	Nan::SetPrototypeMethod(tpl, "setScale", SetScale);
+	Nan::SetPrototypeMethod(tpl, "setViewport", SetViewport);
+	Nan::SetPrototypeMethod(tpl, "setDrawBlendMode", SetDrawBlendMode);
+	Nan::SetPrototypeMethod(tpl, "setDrawColor", SetDrawColor);
+	Nan::SetPrototypeMethod(tpl, "setTarget", SetTarget);
 
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setClipRect", SetClipRect);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setLogicalSize", SetLogicalSize);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setScale", SetScale);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setViewport", SetViewport);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setDrawBlendMode", SetDrawBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setDrawColor", SetDrawColor);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "setTarget", SetTarget);
+	Nan::SetPrototypeMethod(tpl, "clear", Clear);
+	Nan::SetPrototypeMethod(tpl, "present", Present);
+	Nan::SetPrototypeMethod(tpl, "copy", Copy);
+	Nan::SetPrototypeMethod(tpl, "drawLine", DrawLine);
+	Nan::SetPrototypeMethod(tpl, "drawLines", DrawLine);
+	Nan::SetPrototypeMethod(tpl, "drawPoint", DrawPoint);
+	Nan::SetPrototypeMethod(tpl, "drawRect", DrawRect);
+	Nan::SetPrototypeMethod(tpl, "fillRect", FillRect);
 
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "clear", Clear);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "present", Present);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "copy", Copy);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "drawLine", DrawLine);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "drawLines", DrawLine);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "drawPoint", DrawPoint);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "drawRect", DrawRect);
-	NODE_SET_PROTOTYPE_METHOD(render_wrap_template_, "fillRect", FillRect);
-
-	exports->Set(String::NewSymbol("Renderer"), render_wrap_template_->GetFunction());
-
-  // Setup software renderer construction.
-	tpl = FunctionTemplate::New(NewSoftware);
-	software_render_wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
-
-	software_render_wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	software_render_wrap_template_->SetClassName(String::NewSymbol("SoftwareRendererWrapper"));
-
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getDrawBlendMode", GetDrawBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getDrawColor", GetDrawColor);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getOutputSize", GetOutputSize);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getTarget", GetTarget);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getInfo", GetInfo);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getClipRect", GetClipRect);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getLogicalSize", GetLogicalSize);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getScale", GetScale);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "getViewport", GetViewport);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "targetSupported", TargetSupported);
-
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setClipRect", SetClipRect);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setLogicalSize", SetLogicalSize);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setScale", SetScale);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setViewport", SetViewport);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setDrawBlendMode", SetDrawBlendMode);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setDrawColor", SetDrawColor);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "setTarget", SetTarget);
-
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "clear", Clear);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "present", Present);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "copy", Copy);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "drawLine", DrawLine);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "drawLines", DrawLine);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "drawPoint", DrawPoint);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "drawRect", DrawRect);
-	NODE_SET_PROTOTYPE_METHOD(software_render_wrap_template_, "fillRect", FillRect);
-
-	exports->Set(String::NewSymbol("SoftwareRenderer"), software_render_wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("Renderer"), constructor);
 }
 
-Handle<Value> sdl::RendererWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::RendererWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instances of a Renderer.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected at least: new Renderer(sdl.Window)")));
@@ -130,13 +91,13 @@ Handle<Value> sdl::RendererWrapper::New(const Arguments& args) {
 	return args.This();
 }
 
-Handle<Value> sdl::RendererWrapper::NewSoftware(const Arguments& args) {
+NAN_METHOD(sdl::RendererWrapper::NewSoftware) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instances of a Renderer.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(String::New("Invalid Arguments: Expected: new SoftwareRenderer(sdl.Surface)")));
@@ -157,21 +118,21 @@ Handle<Value> sdl::RendererWrapper::NewSoftware(const Arguments& args) {
 	return args.This();
 }
 
-// Handle<Value> sdl::RendererWrapper::CreateTexture(const Arguments& args) {
-//   HandleScope scope;
+// NAN_METHOD(sdl::RendererWrapper::CreateTexture) {
+//
 //   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 //   return Undefined();
 // }
-// Handle<Value> sdl::RendererWrapper::CreateTextureFromSurface(const Arguments& args) {
-//   HandleScope scope;
+// NAN_METHOD(sdl::RendererWrapper::CreateTextureFromSurface) {
+//
 //   RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 //   return Undefined();
 // }
 
-Handle<Value> sdl::RendererWrapper::GetDrawBlendMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetDrawBlendMode) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(args.This());
 	SDL_BlendMode mode;
 	int err = SDL_GetRenderDrawBlendMode(obj->renderer_, &mode);
@@ -179,11 +140,11 @@ Handle<Value> sdl::RendererWrapper::GetDrawBlendMode(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(mode));
+	info.GetReturnValue().Set(Number::New(mode));
 }
 
-Handle<Value> sdl::RendererWrapper::GetDrawColor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetDrawColor) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 	uint8_t r, g, b, a;
 	int err = SDL_GetRenderDrawColor(obj->renderer_, &r, &g, &b, &a);
@@ -196,11 +157,11 @@ Handle<Value> sdl::RendererWrapper::GetDrawColor(const Arguments& args) {
 	color->b = b;
 	color->a = a;
 
-	return scope.Close(WrapColor(color));
+	info.GetReturnValue().Set(WrapColor(color));
 }
 
-Handle<Value> sdl::RendererWrapper::GetTarget(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetTarget) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	SDL_Texture* texture = SDL_GetRenderTarget(obj->renderer_);
@@ -211,11 +172,11 @@ Handle<Value> sdl::RendererWrapper::GetTarget(const Arguments& args) {
 	Handle<Object> toWrap = Object::New();
 	TextureWrapper* texWrap = new TextureWrapper(toWrap);
 	texWrap->texture_ = texture;
-	return scope.Close(toWrap);
+	info.GetReturnValue().Set(toWrap);
 }
 
-Handle<Value> sdl::RendererWrapper::GetInfo(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetInfo) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	SDL_RendererInfo* info = new SDL_RendererInfo;
@@ -223,11 +184,11 @@ Handle<Value> sdl::RendererWrapper::GetInfo(const Arguments& args) {
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
-	return scope.Close(WrapRendererInfo(info));
+	info.GetReturnValue().Set(WrapRendererInfo(info));
 }
 
-Handle<Value> sdl::RendererWrapper::GetOutputSize(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetOutputSize) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<sdl::RendererWrapper>(args.This());
 
 	int w, h;
@@ -238,11 +199,11 @@ Handle<Value> sdl::RendererWrapper::GetOutputSize(const Arguments& args) {
 	Local<Array> ret = Array::New(2);
 	ret->Set(0, Number::New(w));
 	ret->Set(1, Number::New(h));
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::RendererWrapper::GetClipRect(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetClipRect) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	SDL_Rect* rect = new SDL_Rect;
@@ -250,11 +211,11 @@ Handle<Value> sdl::RendererWrapper::GetClipRect(const Arguments& args) {
 
   NEW_WRAPPED(rect, RectWrapper, ret)
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::RendererWrapper::GetLogicalSize(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetLogicalSize) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	int w, h;
@@ -263,10 +224,10 @@ Handle<Value> sdl::RendererWrapper::GetLogicalSize(const Arguments& args) {
 	ret->Set(0, Number::New(w));
 	ret->Set(1, Number::New(h));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::RendererWrapper::GetScale(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetScale) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	float scaleX, scaleY;
@@ -275,10 +236,10 @@ Handle<Value> sdl::RendererWrapper::GetScale(const Arguments& args) {
 	ret->Set(0, Number::New(scaleX));
 	ret->Set(1, Number::New(scaleY));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::RendererWrapper::GetViewport(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::GetViewport) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	SDL_Rect* rect = new SDL_Rect;
@@ -286,24 +247,24 @@ Handle<Value> sdl::RendererWrapper::GetViewport(const Arguments& args) {
 
   NEW_WRAPPED(rect, RectWrapper, ret)
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
 // TODO: Implement.
-Handle<Value> sdl::RendererWrapper::ReadPixels(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::ReadPixels) {
+
 	// RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	return ThrowException(Exception::Error(String::New("Not implemented.")));
 }
-Handle<Value> sdl::RendererWrapper::TargetSupported(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::TargetSupported) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
-	return scope.Close(Boolean::New(SDL_RenderTargetSupported(obj->renderer_)));
+	info.GetReturnValue().Set(Boolean::New(SDL_RenderTargetSupported(obj->renderer_)));
 }
 
-Handle<Value> sdl::RendererWrapper::SetClipRect(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetClipRect) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	int err;
@@ -320,8 +281,8 @@ Handle<Value> sdl::RendererWrapper::SetClipRect(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetLogicalSize(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetLogicalSize) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 2) {
@@ -336,8 +297,8 @@ Handle<Value> sdl::RendererWrapper::SetLogicalSize(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetScale(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetScale) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 2) {
@@ -352,8 +313,8 @@ Handle<Value> sdl::RendererWrapper::SetScale(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetViewport(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetViewport) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	int err;
@@ -370,8 +331,8 @@ Handle<Value> sdl::RendererWrapper::SetViewport(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetDrawBlendMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetDrawBlendMode) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	SDL_BlendMode mode = args[0]->IsUndefined() ? SDL_BLENDMODE_NONE : static_cast<SDL_BlendMode>(args[0]->Int32Value());
@@ -382,8 +343,8 @@ Handle<Value> sdl::RendererWrapper::SetDrawBlendMode(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetDrawColor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetDrawColor) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 4) {
@@ -400,8 +361,8 @@ Handle<Value> sdl::RendererWrapper::SetDrawColor(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::SetTarget(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::SetTarget) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -416,8 +377,8 @@ Handle<Value> sdl::RendererWrapper::SetTarget(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::RendererWrapper::Clear(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::Clear) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	int err = SDL_RenderClear(obj->renderer_);
@@ -427,15 +388,15 @@ Handle<Value> sdl::RendererWrapper::Clear(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::Present(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::Present) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 	SDL_RenderPresent(obj->renderer_);
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::Copy(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::Copy) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() > 3) {
@@ -469,8 +430,8 @@ Handle<Value> sdl::RendererWrapper::Copy(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawLine(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawLine) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 4) {
@@ -488,8 +449,8 @@ Handle<Value> sdl::RendererWrapper::DrawLine(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawLines(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawLines) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -511,8 +472,8 @@ Handle<Value> sdl::RendererWrapper::DrawLines(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawPoint(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawPoint) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 2) {
@@ -528,8 +489,8 @@ Handle<Value> sdl::RendererWrapper::DrawPoint(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawPoints(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawPoints) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -551,8 +512,8 @@ Handle<Value> sdl::RendererWrapper::DrawPoints(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawRect(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawRect) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -567,8 +528,8 @@ Handle<Value> sdl::RendererWrapper::DrawRect(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::DrawRects(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::DrawRects) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -590,8 +551,8 @@ Handle<Value> sdl::RendererWrapper::DrawRects(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::FillRect(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::FillRect) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {
@@ -606,8 +567,8 @@ Handle<Value> sdl::RendererWrapper::FillRect(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::RendererWrapper::FillRects(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::RendererWrapper::FillRects) {
+
 	RendererWrapper* obj = ObjectWrap::Unwrap<RendererWrapper>(args.This());
 
 	if(args.Length() < 1) {

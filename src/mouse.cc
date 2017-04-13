@@ -7,22 +7,22 @@ using namespace v8;
 using namespace node;
 
 
-void sdl::mouse::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::mouse::Init) {
 	CursorWrapper::Init(exports);
 
-	NODE_SET_METHOD(exports, "showCursor", ShowCursor);
-	NODE_SET_METHOD(exports, "getCursor", GetCursor);
-	NODE_SET_METHOD(exports, "getDefaultCursor", GetDefaultCursor);
-	NODE_SET_METHOD(exports, "getMouseFocus", GetMouseFocus);
-	NODE_SET_METHOD(exports, "getMouseState", GetMouseState);
-	NODE_SET_METHOD(exports, "getRelativeMouseMode", GetRelativeMouseMode);
-	NODE_SET_METHOD(exports, "getRelativeMouseState", GetRelativeMouseState);
+	Nan::SetPrototypeMethod(exports, "showCursor", ShowCursor);
+	Nan::SetPrototypeMethod(exports, "getCursor", GetCursor);
+	Nan::SetPrototypeMethod(exports, "getDefaultCursor", GetDefaultCursor);
+	Nan::SetPrototypeMethod(exports, "getMouseFocus", GetMouseFocus);
+	Nan::SetPrototypeMethod(exports, "getMouseState", GetMouseState);
+	Nan::SetPrototypeMethod(exports, "getRelativeMouseMode", GetRelativeMouseMode);
+	Nan::SetPrototypeMethod(exports, "getRelativeMouseState", GetRelativeMouseState);
 
-	NODE_SET_METHOD(exports, "setRelativeMouseMode", SetRelativeMouseMode);
+	Nan::SetPrototypeMethod(exports, "setRelativeMouseMode", SetRelativeMouseMode);
 
-	NODE_SET_METHOD(exports, "warpMouseInWindow", WarpMouseInWindow);
+	Nan::SetPrototypeMethod(exports, "warpMouseInWindow", WarpMouseInWindow);
 
-	NODE_SET_METHOD(exports, "button", ButtonMacroWrapper);
+	Nan::SetPrototypeMethod(exports, "button", ButtonMacroWrapper);
 
 	Handle<Object> SYSTEM_CURSOR = Object::New();
 	exports->Set(String::NewSymbol("SYSTEM_CURSOR"), SYSTEM_CURSOR);
@@ -53,8 +53,7 @@ void sdl::mouse::Init(Handle<Object> exports) {
 	BUTTON->Set(String::NewSymbol("X2MASK"), Number::New(SDL_BUTTON_X2MASK));
 }
 
-Persistent<FunctionTemplate> sdl::CursorWrapper::wrap_template_;
-Persistent<FunctionTemplate> sdl::CursorWrapper::wrap_template_system_;
+Persistent<FunctionTemplate> sdl::CursorWrapper::constructor;
 
 sdl::CursorWrapper::CursorWrapper() {
 }
@@ -67,38 +66,25 @@ sdl::CursorWrapper::~CursorWrapper() {
 	}
 }
 
-void sdl::CursorWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::CursorWrapper::Init) {
 	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("CursorWrapper"));
 
-	wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_->SetClassName(String::NewSymbol("CursorWrapper"));
+	Nan::SetPrototypeMethod(tpl, "free", FreeCursor);
+	Nan::SetPrototypeMethod(tpl, "set", SetCursor);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "free", FreeCursor);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "set", SetCursor);
-
-	exports->Set(String::NewSymbol("Cursor"), wrap_template_->GetFunction());
-
-	// System cursor wrapper.
-	tpl = FunctionTemplate::New(NewSystem);
-	wrap_template_system_ = Persistent<FunctionTemplate>::New(tpl);
-
-	wrap_template_system_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_system_->SetClassName(String::NewSymbol("SystemCursorWrapper"));
-
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_system_, "free", FreeCursor);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_system_, "set", SetCursor);
-
-	exports->Set(String::NewSymbol("SystemCursor"), wrap_template_system_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("Cursor"), constructor);
 }
 
-Handle<Value> sdl::CursorWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::CursorWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("A new Cursor must be created with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 3) {
 		return ThrowException(Exception::TypeError(
@@ -119,13 +105,13 @@ Handle<Value> sdl::CursorWrapper::New(const Arguments& args) {
 
 	return args.This();
 }
-Handle<Value> sdl::CursorWrapper::NewSystem(const Arguments& args) {
+NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("A new Cursor must be created with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -147,13 +133,13 @@ Handle<Value> sdl::CursorWrapper::NewSystem(const Arguments& args) {
 
 // TODO: Implement this function. See:
 //       http://wiki.libsdl.org/SDL_CreateCursor?highlight=%28\bCategoryMouse\b%29|%28CategoryEnum%29|%28CategoryStruct%29
-// Handle<Value> sdl::CreateCursor(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::CreateCursor) {
+//
 
 // 	return Undefined();
 // }
-Handle<Value> sdl::CursorWrapper::FreeCursor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::CursorWrapper::FreeCursor) {
+
 
 	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(args.This());
 	SDL_FreeCursor(wrap->cursor_);
@@ -161,8 +147,8 @@ Handle<Value> sdl::CursorWrapper::FreeCursor(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::CursorWrapper::SetCursor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::CursorWrapper::SetCursor) {
+
 
 	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(args.This());
 	SDL_SetCursor(wrap->cursor_);
@@ -170,8 +156,8 @@ Handle<Value> sdl::CursorWrapper::SetCursor(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::ShowCursor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::ShowCursor) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -184,10 +170,10 @@ Handle<Value> sdl::ShowCursor(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(err));
+	info.GetReturnValue().Set(Number::New(err));
 }
-Handle<Value> sdl::GetCursor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetCursor) {
+
 
 	SDL_Cursor* cursor = SDL_GetCursor();
 	if(NULL == cursor) {
@@ -198,10 +184,10 @@ Handle<Value> sdl::GetCursor(const Arguments& args) {
 	CursorWrapper* wrap = new CursorWrapper(toWrap);
 	wrap->cursor_ = cursor;
 
-	return scope.Close(toWrap);
+	info.GetReturnValue().Set(toWrap);
 }
-Handle<Value> sdl::GetDefaultCursor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetDefaultCursor) {
+
 
 	SDL_Cursor* cursor = SDL_GetDefaultCursor();
 	if(NULL == cursor) {
@@ -212,12 +198,12 @@ Handle<Value> sdl::GetDefaultCursor(const Arguments& args) {
 	CursorWrapper* wrap = new CursorWrapper(toWrap);
 	wrap->cursor_ = cursor;
 
-	return scope.Close(toWrap);
+	info.GetReturnValue().Set(toWrap);
 
 	return Undefined();
 }
-Handle<Value> sdl::GetMouseFocus(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetMouseFocus) {
+
 
 	SDL_Window* window = SDL_GetMouseFocus();
 	if(NULL == window) {
@@ -228,10 +214,10 @@ Handle<Value> sdl::GetMouseFocus(const Arguments& args) {
 	WindowWrapper* wrap = new WindowWrapper(toWrap);
 	wrap->window_ = window;
 
-	return scope.Close(toWrap);
+	info.GetReturnValue().Set(toWrap);
 }
-Handle<Value> sdl::GetMouseState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetMouseState) {
+
 
 	int x, y;
 	uint32_t mask = SDL_GetMouseState(&x, &y);
@@ -241,17 +227,17 @@ Handle<Value> sdl::GetMouseState(const Arguments& args) {
 	ret->Set(1, Number::New(y));
 	ret->Set(2, Number::New(mask));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetRelativeMouseMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetRelativeMouseMode) {
+
 
 	SDL_bool ret = SDL_GetRelativeMouseMode();
 
-	return scope.Close(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
-Handle<Value> sdl::GetRelativeMouseState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetRelativeMouseState) {
+
 
 	int x, y;
 	uint32_t mask = SDL_GetRelativeMouseState(&x, &y);
@@ -261,11 +247,11 @@ Handle<Value> sdl::GetRelativeMouseState(const Arguments& args) {
 	ret->Set(1, Number::New(y));
 	ret->Set(2, Number::New(mask));
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::SetRelativeMouseMode(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::SetRelativeMouseMode) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -281,8 +267,8 @@ Handle<Value> sdl::SetRelativeMouseMode(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::WarpMouseInWindow(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::WarpMouseInWindow) {
+
 
 	if(args.Length() < 3) {
 		return ThrowException(Exception::TypeError(
@@ -297,8 +283,8 @@ Handle<Value> sdl::WarpMouseInWindow(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::ButtonMacroWrapper(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::ButtonMacroWrapper) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -308,5 +294,5 @@ Handle<Value> sdl::ButtonMacroWrapper(const Arguments& args) {
 	int button = args[0]->Int32Value();
 	int ret = SDL_BUTTON(button);
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }

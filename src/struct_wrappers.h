@@ -5,10 +5,12 @@
 #include "SDL_ttf.h"
 #include "SDL_image.h"
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 #include <node_buffer.h>
 
+/*
 namespace sdl {
 	void InitWrappers(v8::Handle<v8::Object> exports);
 
@@ -21,28 +23,28 @@ namespace sdl {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Point Wrapper/Unwrapper.
-	class PointWrapper : public node::ObjectWrap {
+	class PointWrapper : public Nan::ObjectWrap {
 	public:
-	    static v8::Persistent<v8::FunctionTemplate> point_wrap_template_;
+	    static v8::Persistent<v8::FunctionTemplate> constructor;
 
 		PointWrapper();
 		~PointWrapper();
 
-		static void Init(v8::Handle<v8::Object> exports);
-		static v8::Handle<v8::Value> New(const v8::Arguments& args);
+		static NAN_MODULE_INIT(Init);
+		static NAN_METHOD(New);
 
 		static v8::Handle<v8::Value> GetX(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 		static v8::Handle<v8::Value> GetY(v8::Local<v8::String> name, const v8::AccessorInfo& info);
 		static void SetX(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 		static void SetY(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
+		static NAN_METHOD(ToString);
 
 		SDL_Point* point_;
 	};
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Color Wrapper/Unwrapper.
-	v8::Handle<v8::Value> ConstructColor(const v8::Arguments& args);
+	NAN_METHOD(ConstructColor);
 	v8::Handle<v8::Object> WrapColor(SDL_Color* color);
 	SDL_Color* UnwrapColor(v8::Handle<v8::Object> obj);
 	// Property getters.
@@ -58,7 +60,7 @@ namespace sdl {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Palette Wrapper/Unwrapper.
-	v8::Handle<v8::Value> ConstructPalette(const v8::Arguments& args);
+	NAN_METHOD(ConstructPalette);
 	v8::Handle<v8::Object> WrapPalette(SDL_Palette* palette);
 	SDL_Palette* UnwrapPalette(v8::Handle<v8::Object> obj);
 	// Property functions.
@@ -110,5 +112,5 @@ namespace sdl {
 	v8::Handle<v8::Object> WrapFont(TTF_Font* font);
 	TTF_Font* UnwrapFont(v8::Handle<v8::Object> obj);
 }
-
+*/
 #endif

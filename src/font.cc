@@ -9,7 +9,7 @@ using namespace v8;
 using namespace node;
 
 
-Persistent<FunctionTemplate> sdl::TTF::FontWrapper::wrap_template_;
+Persistent<FunctionTemplate> sdl::TTF::FontWrapper::constructor;
 
 sdl::TTF::FontWrapper::FontWrapper() {
 }
@@ -19,37 +19,36 @@ sdl::TTF::FontWrapper::~FontWrapper() {
 	}
 }
 
-void sdl::TTF::FontWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::TTF::FontWrapper::Init) {
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("FontWrapper"));
 
-	wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_->SetClassName(String::NewSymbol("FontWrapper"));
+	Nan::SetPrototypeMethod(tpl, "renderTextSolid", RenderTextSolid);
+	Nan::SetPrototypeMethod(tpl, "renderUtf8Solid", RenderUTF8Solid);
+	Nan::SetPrototypeMethod(tpl, "renderUnicodeSolid", RenderUnicodeSolid);
+	Nan::SetPrototypeMethod(tpl, "renderGlyphSolid", RenderGlyphSolid);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderTextSolid", RenderTextSolid);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUtf8Solid", RenderUTF8Solid);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUnicodeSolid", RenderUnicodeSolid);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderGlyphSolid", RenderGlyphSolid);
+	Nan::SetPrototypeMethod(tpl, "renderTextShaded", RenderTextShaded);
+	Nan::SetPrototypeMethod(tpl, "renderUtf8Shaded", RenderUTF8Shaded);
+	Nan::SetPrototypeMethod(tpl, "renderUnicodeShaded", RenderUnicodeShaded);
+	Nan::SetPrototypeMethod(tpl, "renderGlyphShaded", RenderGlyphShaded);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderTextShaded", RenderTextShaded);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUtf8Shaded", RenderUTF8Shaded);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUnicodeShaded", RenderUnicodeShaded);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderGlyphShaded", RenderGlyphShaded);
+	Nan::SetPrototypeMethod(tpl, "renderTextBlended", RenderTextBlended);
+	Nan::SetPrototypeMethod(tpl, "renderUtf8Blended", RenderUTF8Blended);
+	Nan::SetPrototypeMethod(tpl, "renderUnicodeBlended", RenderUnicodeBlended);
+	Nan::SetPrototypeMethod(tpl, "renderGlyphBlended", RenderGlyphBlended);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderTextBlended", RenderTextBlended);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUtf8Blended", RenderUTF8Blended);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderUnicodeBlended", RenderUnicodeBlended);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "renderGlyphBlended", RenderGlyphBlended);
-
-	exports->Set(String::New("Font"), wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::New("Font"), constructor);
 }
-Handle<Value> sdl::TTF::FontWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::TTF::FontWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("A Font must be created with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args[0]->IsExternal()) {
 		FontWrapper* obj = new FontWrapper();
@@ -81,8 +80,8 @@ Handle<Value> sdl::TTF::FontWrapper::New(const Arguments& args) {
 	}
 }
 
-Handle<Value> sdl::TTF::FontWrapper::RenderTextSolid(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderTextSolid) {
+
 	Context::Scope context_scope(Context::GetCurrent());
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
@@ -113,11 +112,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderTextSolid(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Solid(const Arguments& args) {
-	HandleScope scope;
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -147,11 +146,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Solid(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeSolid(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeSolid) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -177,11 +176,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeSolid(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderGlyphSolid(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphSolid) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -211,12 +210,12 @@ Handle<Value> sdl::TTF::FontWrapper::RenderGlyphSolid(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::TTF::FontWrapper::RenderTextShaded(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderTextShaded) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -255,11 +254,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderTextShaded(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Shaded(const Arguments& args) {
-	HandleScope scope;
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -298,11 +297,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Shaded(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeShaded(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeShaded) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -341,11 +340,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeShaded(const Arguments& args) 
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderGlyphShaded(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphShaded) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -388,12 +387,12 @@ Handle<Value> sdl::TTF::FontWrapper::RenderGlyphShaded(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 
-Handle<Value> sdl::TTF::FontWrapper::RenderTextBlended(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderTextBlended) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -423,11 +422,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderTextBlended(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Blended(const Arguments& args) {
-	HandleScope scope;
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -457,11 +456,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUTF8Blended(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeBlended(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeBlended) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -487,11 +486,11 @@ Handle<Value> sdl::TTF::FontWrapper::RenderUnicodeBlended(const Arguments& args)
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::TTF::FontWrapper::RenderGlyphBlended(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
+
 
 	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(args.This());
 	if(NULL == font) {
@@ -521,23 +520,23 @@ Handle<Value> sdl::TTF::FontWrapper::RenderGlyphBlended(const Arguments& args) {
 
 	Handle<Value> arg = External::New(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::wrap_template_->GetFunction()->NewInstance(1, argv);
-	return scope.Close(ret);
+	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	info.GetReturnValue().Set(ret);
 }
 
 void sdl::TTF::Initialize(Handle<Object> exports) {
 	Handle<Object> TTF = Object::New();
 	exports->Set(String::New("TTF"), TTF);
-	NODE_SET_METHOD(TTF, "init", Init);
-	NODE_SET_METHOD(TTF, "wasInit", WasInit);
-	NODE_SET_METHOD(TTF, "quit", Quit);
-	NODE_SET_METHOD(TTF, "getError", GetError);
+	Nan::SetPrototypeMethod(TTF, "init", Init);
+	Nan::SetPrototypeMethod(TTF, "wasInit", WasInit);
+	Nan::SetPrototypeMethod(TTF, "quit", Quit);
+	Nan::SetPrototypeMethod(TTF, "getError", GetError);
 
 	FontWrapper::Init(TTF);
 }
 
-Handle<Value> sdl::TTF::Init(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::Init) {
+
 
 	if (!(args.Length() == 0)) {
 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected TTF::Init()")));
@@ -553,27 +552,27 @@ Handle<Value> sdl::TTF::Init(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::TTF::WasInit(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::WasInit) {
 
-	return scope.Close(Boolean::New(TTF_WasInit() ? true : false));
+
+	info.GetReturnValue().Set(Boolean::New(TTF_WasInit() ? true : false));
 }
 
-Handle<Value> sdl::TTF::Quit(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::Quit) {
+
 
 	TTF_Quit();
 
 	return Undefined();
 }
 
-// Handle<Value> sdl::TTF::SetError(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::TTF::SetError) {
+//
 
 // 	return Undefined();
 // }
-Handle<Value> sdl::TTF::GetError(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::TTF::GetError) {
+
 
 	const char* error = TTF_GetError();
 	// Can this happen?!
@@ -581,11 +580,11 @@ Handle<Value> sdl::TTF::GetError(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(error));
+	info.GetReturnValue().Set(String::New(error));
 }
 
-// Handle<Value> sdl::TTF::OpenFont(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::TTF::OpenFont) {
+//
 
 // 	if (!(args.Length() == 2 && args[0]->IsString() && args[1]->IsNumber())) {
 // 		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected TTF::OpenFont(String, Number)")));
@@ -602,12 +601,12 @@ Handle<Value> sdl::TTF::GetError(const Arguments& args) {
 // 			)));
 // 	}
 // 	return Undefined();
-// 	// return scope.Close(WrapFont(font));
+// 	// info.GetReturnValue().Set(WrapFont(font));
 // }
 
 // TODO: Rewrite for SDL2.
-// static Handle<Value> sdl::TTF::RenderTextBlended(const Arguments& args) {
-//   HandleScope scope;
+// static NAN_METHOD(sdl::TTF::RenderTextBlended) {
+//
 
 //   if (!(args.Length() == 3 && args[0]->IsObject() && args[1]->IsString() && args[2]->IsNumber())) {
 //     return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected TTF::RenderTextBlended(Font, String, Number)")));
@@ -634,5 +633,5 @@ Handle<Value> sdl::TTF::GetError(const Arguments& args) {
 //       String::New(TTF_GetError())
 //     )));
 //   }
-//   return scope.Close(WrapSurface(resulting_text));
+//   info.GetReturnValue().Set(WrapSurface(resulting_text));
 // }

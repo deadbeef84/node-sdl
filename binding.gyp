@@ -48,10 +48,18 @@
 					'/usr/lib/x86_64-linux-gnu/libSDL2_ttf-2.0.so'
 				],
 				'include_dirs': [
+					'<!(node -e "require(\'nan\')")',
 					'/usr/include/SDL2'
 				]
 			}
 		]],
+		# 'libraries': [
+		# 	'<!@(pkg-config sdl2 --libs)',
+		# ],
+		# 'include_dirs': [
+		# 	'<!(node -e "require(\'nan\')")',
+		# 	'<!@(pkg-config sdl2 --cflags-only-I | sed s/-I//g)',
+		# ],
 		'defines': [
 			'_THREAD_SAFE',
 			'ENABLE_ARG_CHECKING',

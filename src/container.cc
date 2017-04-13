@@ -13,10 +13,10 @@ sdl::RectWrapper::~RectWrapper() {
 }
 
 START_INIT(sdl, RectWrapper)
-  GETTER_SETTER(wrap_template_, "x", GetX, SetX)
-  GETTER_SETTER(wrap_template_, "y", GetY, SetY)
-  GETTER_SETTER(wrap_template_, "w", GetW, SetW)
-  GETTER_SETTER(wrap_template_, "h", GetH, SetH)
+  GETTER_SETTER(tpl, "x", GetX, SetX)
+  GETTER_SETTER(tpl, "y", GetY, SetY)
+  GETTER_SETTER(tpl, "w", GetW, SetW)
+  GETTER_SETTER(tpl, "h", GetH, SetH)
 END_INIT("Rect")
 
 START_NEW(sdl, RectWrapper, 4)
@@ -98,22 +98,20 @@ sdl::ColorWrapper::~ColorWrapper() {
 }
 
 START_INIT(sdl, ColorWrapper)
-	GETTER_SETTER(wrap_template_, "r", GetRed, SetRed);
-	GETTER_SETTER(wrap_template_, "g", GetGreen, SetGreen);
-	GETTER_SETTER(wrap_template_, "b", GetBlue, SetBlue);
-	GETTER_SETTER(wrap_template_, "a", GetAlpha, SetAlpha);
+	GETTER_SETTER(tpl, "r", GetRed, SetRed);
+	GETTER_SETTER(tpl, "g", GetGreen, SetGreen);
+	GETTER_SETTER(tpl, "b", GetBlue, SetBlue);
+	GETTER_SETTER(tpl, "a", GetAlpha, SetAlpha);
 
-  PROTO_METHOD(wrap_template_, getColor, GetColor);
-  PROTO_METHOD(wrap_template_, toString, ToString);
+  PROTO_METHOD(tpl, getColor, GetColor);
+  PROTO_METHOD(tpl, toString, ToString);
 END_INIT("Color")
 
-Handle<Value> sdl::ColorWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::ColorWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Use the new operator to create instance of a Color.")));
 	}
-
-	HandleScope scope;
 
 	if(args.Length() < 3) {
 		return ThrowException(Exception::TypeError(
@@ -137,31 +135,29 @@ Handle<Value> sdl::ColorWrapper::New(const Arguments& args) {
 }
 
 Handle<Value> sdl::ColorWrapper::GetRed(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	return scope.Close(Number::New(obj->color_->r));
+	info.GetReturnValue().Set(Number::New(obj->color_->r));
 }
 Handle<Value> sdl::ColorWrapper::GetGreen(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	return scope.Close(Number::New(obj->color_->g));
+	info.GetReturnValue().Set(Number::New(obj->color_->g));
 }
 Handle<Value> sdl::ColorWrapper::GetBlue(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	return scope.Close(Number::New(obj->color_->b));
+	info.GetReturnValue().Set(Number::New(obj->color_->b));
 }
 Handle<Value> sdl::ColorWrapper::GetAlpha(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	return scope.Close(Number::New(obj->color_->a));
+	info.GetReturnValue().Set(Number::New(obj->color_->a));
 }
-Handle<Value> sdl::ColorWrapper::GetColor(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::ColorWrapper::GetColor) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -172,51 +168,51 @@ Handle<Value> sdl::ColorWrapper::GetColor(const Arguments& args) {
 	SDL_PixelFormat* format = UnwrapPixelFormat(Handle<Object>::Cast(args[0]));
 	SDL_Color* c = obj->color_;
 	uint32_t color = SDL_MapRGBA(format, c->r, c->g, c->b, c->a);
-	return scope.Close(Number::New(color));
+	info.GetReturnValue().Set(Number::New(color));
 }
 
 void sdl::ColorWrapper::SetRed(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t r = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->r = r;
 }
 void sdl::ColorWrapper::SetGreen(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t g = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->g = g;
 }
 void sdl::ColorWrapper::SetBlue(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t b = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->b = b;
 }
 void sdl::ColorWrapper::SetAlpha(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t a = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->a = a;
 }
 
-Handle<Value> sdl::ColorWrapper::ToString(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::ColorWrapper::ToString) {
+
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(args.This());
 	SDL_Color* c = obj->color_;
 	std::stringstream ss;
 	ss << "{r:" << (int)c->r << ", g:" << (int)c->g << ", b:" << (int)c->b << ", a:" << (int)c->a << "}";
-	return scope.Close(String::New(ss.str().c_str()));
+	info.GetReturnValue().Set(String::New(ss.str().c_str()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // FingerWrapper Class Definition.
-v8::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::wrap_template_;
+v8::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::tpl;
 
 sdl::FingerWrapper::FingerWrapper() {
 }
@@ -230,28 +226,27 @@ sdl::FingerWrapper::~FingerWrapper() {
 	}
 }
 
-void sdl::FingerWrapper::Init(v8::Handle<v8::Object> exports) {
+NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("FingerWrapper"));
 
-	wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_->SetClassName(String::NewSymbol("FingerWrapper"));
-
-	Local<ObjectTemplate> templ = wrap_template_->PrototypeTemplate();
+	Local<ObjectTemplate> templ = tpl->PrototypeTemplate();
 	templ->SetAccessor(String::NewSymbol("fingerID"), GetFingerID);
 	templ->SetAccessor(String::NewSymbol("x"), GetX);
 	templ->SetAccessor(String::NewSymbol("y"), GetY);
 	templ->SetAccessor(String::NewSymbol("pressure"), GetPressure);
 
-	exports->Set(String::NewSymbol("Finger"), wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("Finger"), constructor);
 }
-Handle<Value> sdl::FingerWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::FingerWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Can only construct a FingerWrapper with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 4) {
 		return ThrowException(Exception::TypeError(
@@ -277,30 +272,30 @@ Handle<Value> sdl::FingerWrapper::New(const Arguments& args) {
 }
 
 Handle<Value> sdl::FingerWrapper::GetFingerID(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	return scope.Close(Number::New(obj->finger_->id));
+	info.GetReturnValue().Set(Number::New(obj->finger_->id));
 }
 Handle<Value> sdl::FingerWrapper::GetX(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	return scope.Close(Number::New(obj->finger_->x));
+	info.GetReturnValue().Set(Number::New(obj->finger_->x));
 }
 Handle<Value> sdl::FingerWrapper::GetY(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	return scope.Close(Number::New(obj->finger_->y));
+	info.GetReturnValue().Set(Number::New(obj->finger_->y));
 }
 Handle<Value> sdl::FingerWrapper::GetPressure(Local<String> name, const AccessorInfo& info) {
-	HandleScope scope;
+
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	return scope.Close(Number::New(obj->finger_->pressure));
+	info.GetReturnValue().Set(Number::New(obj->finger_->pressure));
 }

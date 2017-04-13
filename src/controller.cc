@@ -29,18 +29,18 @@ static Handle<Object> ControllerButtonBindToObject(SDL_GameControllerButtonBind 
 	return ret;
 }
 
-void sdl::controller::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::controller::Init) {
 	GameControllerWrapper::Init(exports);
 
-	NODE_SET_METHOD(exports, "addMapping", AddMapping);
-	NODE_SET_METHOD(exports, "addMappingsFromFile", AddMappingsFromFile);
+	Nan::SetPrototypeMethod(exports, "addMapping", AddMapping);
+	Nan::SetPrototypeMethod(exports, "addMappingsFromFile", AddMappingsFromFile);
 
-	NODE_SET_METHOD(exports, "mappingForGuid", MappingForGUID);
-	NODE_SET_METHOD(exports, "nameForIndex", NameForIndex);
+	Nan::SetPrototypeMethod(exports, "mappingForGuid", MappingForGUID);
+	Nan::SetPrototypeMethod(exports, "nameForIndex", NameForIndex);
 
-	NODE_SET_METHOD(exports, "eventState", EventState);
-	NODE_SET_METHOD(exports, "getAxisFromString", GetAxisFromString);
-	NODE_SET_METHOD(exports, "getButtonFromString", GetButtonFromString);
+	Nan::SetPrototypeMethod(exports, "eventState", EventState);
+	Nan::SetPrototypeMethod(exports, "getAxisFromString", GetAxisFromString);
+	Nan::SetPrototypeMethod(exports, "getButtonFromString", GetButtonFromString);
 
 	Handle<Object> BINDTYPE = Object::New();
 	exports->Set(String::NewSymbol("BINDTYPE"), BINDTYPE);
@@ -81,7 +81,7 @@ void sdl::controller::Init(Handle<Object> exports) {
 	BUTTON->Set(String::NewSymbol("MAX"), Number::New(SDL_CONTROLLER_BUTTON_MAX));
 }
 
-Persistent<FunctionTemplate> sdl::controller::GameControllerWrapper::wrap_template_;
+Persistent<FunctionTemplate> sdl::controller::GameControllerWrapper::constructor;
 
 sdl::controller::GameControllerWrapper::GameControllerWrapper() {
 }
@@ -91,34 +91,33 @@ sdl::controller::GameControllerWrapper::~GameControllerWrapper() {
 	}
 }
 
-void sdl::controller::GameControllerWrapper::Init(Handle<Object> exports) {
+NAN_MODULE_INIT(sdl::controller::GameControllerWrapper::Init) {
 	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	wrap_template_ = Persistent<FunctionTemplate>::New(tpl);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(String::NewSymbol("GameControllerWrapper"));
 
-	wrap_template_->InstanceTemplate()->SetInternalFieldCount(1);
-	wrap_template_->SetClassName(String::NewSymbol("GameControllerWrapper"));
+	Nan::SetPrototypeMethod(tpl, "getAttached", GetAttached);
+	Nan::SetPrototypeMethod(tpl, "getAxis", GetAxis);
+	Nan::SetPrototypeMethod(tpl, "getBindForAxis", GetBindForAxis);
+	Nan::SetPrototypeMethod(tpl, "getBindForButton", GetBindForButton);
+	Nan::SetPrototypeMethod(tpl, "getButton", GetButton);
+	Nan::SetPrototypeMethod(tpl, "getJoystick", GetJoystick);
+	Nan::SetPrototypeMethod(tpl, "getStringForAxis", GetStringForAxis);
+	Nan::SetPrototypeMethod(tpl, "getStringForButton", GetStringForButton);
+	Nan::SetPrototypeMethod(tpl, "getMapping", GetMapping);
+	Nan::SetPrototypeMethod(tpl, "getName", GetName);
 
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getAttached", GetAttached);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getAxis", GetAxis);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getBindForAxis", GetBindForAxis);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getBindForButton", GetBindForButton);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getButton", GetButton);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getJoystick", GetJoystick);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getStringForAxis", GetStringForAxis);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getStringForButton", GetStringForButton);
-	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getMapping", GetMapping);
-  	NODE_SET_PROTOTYPE_METHOD(wrap_template_, "getName", GetName);
-
-	exports->Set(String::NewSymbol("GameController"), wrap_template_->GetFunction());
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(String::NewSymbol("GameController"), constructor);
 }
 
-Handle<Value> sdl::controller::GameControllerWrapper::New(const Arguments& args) {
+NAN_METHOD(sdl::controller::GameControllerWrapper::New) {
 	if(!args.IsConstructCall()) {
 		return ThrowException(Exception::TypeError(
 			String::New("Must create a GameController with the new operator.")));
 	}
 
-	HandleScope scope;
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -138,16 +137,16 @@ Handle<Value> sdl::controller::GameControllerWrapper::New(const Arguments& args)
 	return args.This();
 }
 
-Handle<Value> sdl::controller::GameControllerWrapper::GetAttached(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetAttached) {
+
 
 	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
 	SDL_bool ret = SDL_GameControllerGetAttached(wrap->controller_);
 
-	return scope.Close(Boolean::New(ret == SDL_TRUE ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret == SDL_TRUE ? true : false));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetAxis(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetAxis) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -158,10 +157,10 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetAxis(const Arguments& a
 	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
 	int16_t ret = SDL_GameControllerGetAxis(wrap->controller_, axis);
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetBindForAxis(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForAxis) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -172,10 +171,10 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetBindForAxis(const Argum
 	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
 	SDL_GameControllerButtonBind bind = SDL_GameControllerGetBindForAxis(wrap->controller_, axis);
 
-	return scope.Close(ControllerButtonBindToObject(bind));
+	info.GetReturnValue().Set(ControllerButtonBindToObject(bind));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetBindForButton(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetBindForButton) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -186,10 +185,10 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetBindForButton(const Arg
 	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
 	SDL_GameControllerButtonBind bind = SDL_GameControllerGetBindForButton(wrap->controller_, button);
 
-	return scope.Close(ControllerButtonBindToObject(bind));
+	info.GetReturnValue().Set(ControllerButtonBindToObject(bind));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetButton(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetButton) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -200,20 +199,20 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetButton(const Arguments&
 	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
 	uint8_t ret = SDL_GameControllerGetButton(wrap->controller_, button);
 
-	return scope.Close(Boolean::New(ret == 1 ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret == 1 ? true : false));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetJoystick(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetJoystick) {
+
 
 	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
 	SDL_Joystick* joystick = SDL_GameControllerGetJoystick(wrap->controller_);
 
 	Handle<Value> arg = External::New(joystick);
 	Handle<Value> argv[] = {arg, Boolean::New(false)};
-	return scope.Close(JoystickWrapper::wrap_template_->GetFunction()->NewInstance(2, argv));
+	info.GetReturnValue().Set(JoystickWrapper::tpl->GetFunction()->NewInstance(2, argv));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetMapping(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetMapping) {
+
 
 	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
 	char* mapping = SDL_GameControllerMapping(wrap->controller_);
@@ -221,10 +220,10 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetMapping(const Arguments
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(mapping));
+	info.GetReturnValue().Set(String::New(mapping));
 }
-Handle<Value> sdl::controller::GameControllerWrapper::GetName(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GameControllerWrapper::GetName) {
+
 
 	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(args.This());
 	const char* name = SDL_GameControllerName(wrap->controller_);
@@ -232,11 +231,11 @@ Handle<Value> sdl::controller::GameControllerWrapper::GetName(const Arguments& a
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
 
-Handle<Value> sdl::controller::AddMapping(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::AddMapping) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -249,10 +248,10 @@ Handle<Value> sdl::controller::AddMapping(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(err));
+	info.GetReturnValue().Set(Number::New(err));
 }
-Handle<Value> sdl::controller::AddMappingsFromFile(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::AddMappingsFromFile) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -265,11 +264,11 @@ Handle<Value> sdl::controller::AddMappingsFromFile(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(Number::New(err));
+	info.GetReturnValue().Set(Number::New(err));
 }
 
-Handle<Value> sdl::controller::MappingForGUID(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::MappingForGUID) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -286,10 +285,10 @@ Handle<Value> sdl::controller::MappingForGUID(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(mapping));
+	info.GetReturnValue().Set(String::New(mapping));
 }
-Handle<Value> sdl::controller::NameForIndex(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::NameForIndex) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -302,11 +301,11 @@ Handle<Value> sdl::controller::NameForIndex(const Arguments& args) {
 		return ThrowSDLException(__func__);
 	}
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
 
-Handle<Value> sdl::controller::EventState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::EventState) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -316,10 +315,10 @@ Handle<Value> sdl::controller::EventState(const Arguments& args) {
 	int state = args[0]->Int32Value();
 	int ret = SDL_GameControllerEventState(state);
 
-	return scope.Close(Number::New(ret));
+	info.GetReturnValue().Set(Number::New(ret));
 }
-Handle<Value> sdl::controller::GetAxisFromString(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GetAxisFromString) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -329,10 +328,10 @@ Handle<Value> sdl::controller::GetAxisFromString(const Arguments& args) {
 	String::Utf8Value pchString(args[0]);
 	SDL_GameControllerAxis axis = SDL_GameControllerGetAxisFromString(*pchString);
 
-	return scope.Close(Number::New(axis));
+	info.GetReturnValue().Set(Number::New(axis));
 }
-Handle<Value> sdl::controller::GetButtonFromString(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GetButtonFromString) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -342,10 +341,10 @@ Handle<Value> sdl::controller::GetButtonFromString(const Arguments& args) {
 	String::Utf8Value pchString(args[0]);
 	SDL_GameControllerButton button = SDL_GameControllerGetButtonFromString(*pchString);
 
-	return scope.Close(Number::New(button));
+	info.GetReturnValue().Set(Number::New(button));
 }
-Handle<Value> sdl::controller::GetStringForAxis(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GetStringForAxis) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -355,10 +354,10 @@ Handle<Value> sdl::controller::GetStringForAxis(const Arguments& args) {
 	SDL_GameControllerAxis axis = static_cast<SDL_GameControllerAxis>(args[0]->Int32Value());
 	const char* axisString = SDL_GameControllerGetStringForAxis(axis);
 
-	return scope.Close(String::New(axisString));
+	info.GetReturnValue().Set(String::New(axisString));
 }
-Handle<Value> sdl::controller::GetStringForButton(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::controller::GetStringForButton) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -368,18 +367,18 @@ Handle<Value> sdl::controller::GetStringForButton(const Arguments& args) {
 	SDL_GameControllerButton button = static_cast<SDL_GameControllerButton>(args[0]->Int32Value());
 	const char* buttonString = SDL_GameControllerGetStringForButton(button);
 
-	return scope.Close(String::New(buttonString));
+	info.GetReturnValue().Set(String::New(buttonString));
 }
 
-Handle<Value> Update(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(Update) {
+
 
 	SDL_GameControllerUpdate();
 
 	return Undefined();
 }
-Handle<Value> IsController(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(IsController) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -389,5 +388,5 @@ Handle<Value> IsController(const Arguments& args) {
 	int index = args[0]->Int32Value();
 	SDL_bool ret = SDL_IsGameController(index);
 
-	return scope.Close(Boolean::New(ret == SDL_TRUE ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret == SDL_TRUE ? true : false));
 }

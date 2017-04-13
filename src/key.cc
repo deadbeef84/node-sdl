@@ -7,8 +7,8 @@ using namespace v8;
 using namespace node;
 
 
-void sdl::key::Init(Handle<Object> exports) {
-	HandleScope scope;
+NAN_MODULE_INIT(sdl::key::Init) {
+
 
 	Handle<Object> KEY = Object::New();
 	exports->Set(String::NewSymbol("KEY"), KEY);
@@ -518,30 +518,30 @@ void sdl::key::Init(Handle<Object> exports) {
 	KMOD->Set(String::NewSymbol("ALT"), Number::New(KMOD_ALT));
 	KMOD->Set(String::NewSymbol("GUI"), Number::New(KMOD_GUI));
 
-	NODE_SET_METHOD(exports, "getKeyFromName", GetKeyFromName);
-	NODE_SET_METHOD(exports, "getKeyFromScancode", GetKeyFromScancode);
-	NODE_SET_METHOD(exports, "getKeyName", GetKeyName);
+	Nan::SetPrototypeMethod(exports, "getKeyFromName", GetKeyFromName);
+	Nan::SetPrototypeMethod(exports, "getKeyFromScancode", GetKeyFromScancode);
+	Nan::SetPrototypeMethod(exports, "getKeyName", GetKeyName);
 
-	NODE_SET_METHOD(exports, "getScancodeFromKey", GetScancodeFromKey);
-	NODE_SET_METHOD(exports, "getScancodeFromName", GetScancodeFromName);
-	NODE_SET_METHOD(exports, "getScancodeName", GetScancodeName);
+	Nan::SetPrototypeMethod(exports, "getScancodeFromKey", GetScancodeFromKey);
+	Nan::SetPrototypeMethod(exports, "getScancodeFromName", GetScancodeFromName);
+	Nan::SetPrototypeMethod(exports, "getScancodeName", GetScancodeName);
 
-	NODE_SET_METHOD(exports, "hasScreenKeyboardSupport", HasScreenKeyboardSupport);
-	NODE_SET_METHOD(exports, "isScreenKeyboardShown", IsScreenKeyboardShown);
+	Nan::SetPrototypeMethod(exports, "hasScreenKeyboardSupport", HasScreenKeyboardSupport);
+	Nan::SetPrototypeMethod(exports, "isScreenKeyboardShown", IsScreenKeyboardShown);
 
-	NODE_SET_METHOD(exports, "getKeyboardFocus", GetKeyboardFocus);
-	NODE_SET_METHOD(exports, "getKeyboardState", GetKeyboardState);
-	NODE_SET_METHOD(exports, "getModState", GetModState);
-	NODE_SET_METHOD(exports, "setModState", SetModState);
+	Nan::SetPrototypeMethod(exports, "getKeyboardFocus", GetKeyboardFocus);
+	Nan::SetPrototypeMethod(exports, "getKeyboardState", GetKeyboardState);
+	Nan::SetPrototypeMethod(exports, "getModState", GetModState);
+	Nan::SetPrototypeMethod(exports, "setModState", SetModState);
 
-	NODE_SET_METHOD(exports, "isTextInputActive", IsTextInputActive);
-	NODE_SET_METHOD(exports, "setTextInputRect", SetTextInputRect);
-	NODE_SET_METHOD(exports, "startTextInput", StartTextInput);
-	NODE_SET_METHOD(exports, "stopTextInput", StopTextInput);
+	Nan::SetPrototypeMethod(exports, "isTextInputActive", IsTextInputActive);
+	Nan::SetPrototypeMethod(exports, "setTextInputRect", SetTextInputRect);
+	Nan::SetPrototypeMethod(exports, "startTextInput", StartTextInput);
+	Nan::SetPrototypeMethod(exports, "stopTextInput", StopTextInput);
 }
 
-// Handle<Value> sdl::GetKeyFromName(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::GetKeyFromName) {
+//
 
 // 	if(args.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
@@ -551,15 +551,15 @@ void sdl::key::Init(Handle<Object> exports) {
 // 	String::Utf8Value name(args[0]);
 // 	SDL_Keycode code = SDL_GetKeyFromName(*name);
 
-// 	return scope.Close(Number::New(code));
+// 	info.GetReturnValue().Set(Number::New(code));
 // }
 FUNCTION_BEGINP(sdl, GetKeyFromName, 1)
 	EXTRACT_STRING(name, 0);
 	SDL_Keycode code = SDL_GetKeyFromName(*name);
 FUNCTION_END(Number::New(code))
 
-// Handle<Value> sdl::GetKeyFromScancode(const Arguments& args) {
-// 	HandleScope scope;
+// NAN_METHOD(sdl::GetKeyFromScancode) {
+//
 
 // 	if(args.Length() < 1) {
 // 		return ThrowException(Exception::TypeError(
@@ -569,15 +569,15 @@ FUNCTION_END(Number::New(code))
 // 	SDL_Scancode scan = static_cast<SDL_Scancode>(args[0]->Int32Value());
 // 	SDL_Keycode key = SDL_GetKeyFromScancode(scan);
 
-// 	return scope.Close(Number::New(key));
+// 	info.GetReturnValue().Set(Number::New(key));
 // }
 FUNCTION_BEGINP(sdl, GetKeyFromScancode, 1)
 	EXTRACT_INT32(scan, 0);
 	SDL_Keycode key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scan));
 FUNCTION_END(Number::New(key))
 
-Handle<Value> sdl::GetKeyName(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetKeyName) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -587,11 +587,11 @@ Handle<Value> sdl::GetKeyName(const Arguments& args) {
 	SDL_Keycode key = static_cast<SDL_Keycode>(args[0]->Int32Value());
 	const char *name = SDL_GetKeyName(key);
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
 
-Handle<Value> sdl::GetScancodeFromKey(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetScancodeFromKey) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -601,10 +601,10 @@ Handle<Value> sdl::GetScancodeFromKey(const Arguments& args) {
 	SDL_Keycode key = static_cast<SDL_Keycode>(args[0]->Int32Value());
 	SDL_Scancode scan = SDL_GetScancodeFromKey(key);
 
-	return scope.Close(Number::New(scan));
+	info.GetReturnValue().Set(Number::New(scan));
 }
-Handle<Value> sdl::GetScancodeFromName(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetScancodeFromName) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -614,10 +614,10 @@ Handle<Value> sdl::GetScancodeFromName(const Arguments& args) {
 	String::Utf8Value name(args[0]);
 	SDL_Scancode scan = SDL_GetScancodeFromName(*name);
 
-	return scope.Close(Number::New(scan));
+	info.GetReturnValue().Set(Number::New(scan));
 }
-Handle<Value> sdl::GetScancodeName(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetScancodeName) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -627,18 +627,18 @@ Handle<Value> sdl::GetScancodeName(const Arguments& args) {
 	SDL_Scancode scan = static_cast<SDL_Scancode>(args[0]->Int32Value());
 	const char *name = SDL_GetScancodeName(scan);
 
-	return scope.Close(String::New(name));
+	info.GetReturnValue().Set(String::New(name));
 }
 
-Handle<Value> sdl::HasScreenKeyboardSupport(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::HasScreenKeyboardSupport) {
+
 
 	SDL_bool ret = SDL_HasScreenKeyboardSupport();
 
-	return scope.Close(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
-Handle<Value> sdl::IsScreenKeyboardShown(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::IsScreenKeyboardShown) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -648,21 +648,21 @@ Handle<Value> sdl::IsScreenKeyboardShown(const Arguments& args) {
 	WindowWrapper* wrap = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(args[0]));
 	SDL_bool ret = SDL_IsScreenKeyboardShown(wrap->window_);
 
-	return scope.Close(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
 }
 
-Handle<Value> sdl::GetKeyboardFocus(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetKeyboardFocus) {
+
 
 	SDL_Window* window = SDL_GetKeyboardFocus();
 	Handle<Object> ret = Object::New();
 	WindowWrapper* wrap = new WindowWrapper(ret);
 	wrap->window_ = window;
 
-	return scope.Close(ret);
+	info.GetReturnValue().Set(ret);
 }
-Handle<Value> sdl::GetKeyboardState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetKeyboardState) {
+
 
 	int size;
 	const Uint8 *state = SDL_GetKeyboardState(&size);
@@ -678,17 +678,17 @@ Handle<Value> sdl::GetKeyboardState(const Arguments& args) {
 		jsState->Set(i, Boolean::New(state[i] == 1 ? true : false));
 	}
 
-	return scope.Close(jsState);
+	info.GetReturnValue().Set(jsState);
 }
-Handle<Value> sdl::GetModState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::GetModState) {
+
 
 	SDL_Keymod mod = SDL_GetModState();
 
-	return scope.Close(Number::New(mod));
+	info.GetReturnValue().Set(Number::New(mod));
 }
-Handle<Value> sdl::SetModState(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::SetModState) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -701,15 +701,15 @@ Handle<Value> sdl::SetModState(const Arguments& args) {
 	return Undefined();
 }
 
-Handle<Value> sdl::IsTextInputActive(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::IsTextInputActive) {
+
 
 	SDL_bool ret = SDL_IsTextInputActive();
 
-	return scope.Close(Boolean::New(ret));
+	info.GetReturnValue().Set(Boolean::New(ret));
 }
-Handle<Value> sdl::SetTextInputRect(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::SetTextInputRect) {
+
 
 	if(args.Length() < 1) {
 		return ThrowException(Exception::TypeError(
@@ -721,15 +721,15 @@ Handle<Value> sdl::SetTextInputRect(const Arguments& args) {
 
 	return Undefined();
 }
-Handle<Value> sdl::StartTextInput(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::StartTextInput) {
+
 
 	SDL_StartTextInput();
 
 	return Undefined();
 }
-Handle<Value> sdl::StopTextInput(const Arguments& args) {
-	HandleScope scope;
+NAN_METHOD(sdl::StopTextInput) {
+
 
 	SDL_StopTextInput();
 

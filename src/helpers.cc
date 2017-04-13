@@ -5,7 +5,6 @@
 #include "SDL_ttf.h"
 
 #include "helpers.h"
-#include "struct_wrappers.h"
 
 using namespace v8;
 using namespace node;
@@ -22,22 +21,6 @@ namespace sdl {
       String::Concat(String::New(name), String::New(": ")),
       String::New(SDL_GetError())
       ));
-  }
-
-  char* BufferData(Buffer *b) {
-    return Buffer::Data(b->handle_);
-  }
-
-  size_t BufferLength(Buffer *b) {
-    return Buffer::Length(b->handle_);
-  }
-
-  char* BufferData(Local<Object> buf_obj) {
-    return Buffer::Data(buf_obj);
-  }
-
-  size_t BufferLength(Local<Object> buf_obj) {
-    return Buffer::Length(buf_obj);
   }
 
   Local<Object> SDLEventToJavascriptObject(const SDL_Event& event) {
