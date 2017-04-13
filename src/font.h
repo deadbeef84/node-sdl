@@ -1,6 +1,7 @@
 #ifndef NODEJS_FONT_H
 #define NODEJS_FONT_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -10,7 +11,7 @@
 
 namespace sdl {
 	namespace TTF {
-		class FontWrapper : public node::ObjectWrap {
+		class FontWrapper : public Nan::ObjectWrap {
 		public:
 			static v8::Persistent<v8::FunctionTemplate> constructor;
 
@@ -21,17 +22,17 @@ namespace sdl {
 			static NAN_METHOD(New);
 
 			static NAN_METHOD(RenderTextSolid);
-			static v8::Handle<v8::Value> RenderUTF8Solid(const v8::Arguments& args);
+			static NAN_METHOD(RenderUTF8Solid);
 			static NAN_METHOD(RenderUnicodeSolid);
 			static NAN_METHOD(RenderGlyphSolid);
 
 			static NAN_METHOD(RenderTextShaded);
-			static v8::Handle<v8::Value> RenderUTF8Shaded(const v8::Arguments& args);
+			static NAN_METHOD(RenderUTF8Shaded);
 			static NAN_METHOD(RenderUnicodeShaded);
 			static NAN_METHOD(RenderGlyphShaded);
 
 			static NAN_METHOD(RenderTextBlended);
-			static v8::Handle<v8::Value> RenderUTF8Blended(const v8::Arguments& args);
+			static NAN_METHOD(RenderUTF8Blended);
 			static NAN_METHOD(RenderUnicodeBlended);
 			static NAN_METHOD(RenderGlyphBlended);
 

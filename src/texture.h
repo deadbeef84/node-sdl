@@ -1,6 +1,7 @@
 #ifndef NODESDL_TEXTURE_H
 #define NODESDL_TEXTURE_H
 
+#include <nan.h>
 #include <node.h>
 #include <v8.h>
 
@@ -8,7 +9,7 @@
 
 
 namespace sdl {
-	class TextureWrapper : public node::ObjectWrap {
+	class TextureWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 

@@ -11,6 +11,8 @@
 #define TOKENPASTE(x, y) x ## y
 #define TOKENPASTE2(x, y) TOKENPASTE(x, y)
 
+#define STRING_NEW(x) Nan::New(x).ToLocalChecked()
+
 #ifdef ENABLE_ARG_CHECKING
 #define CHECK_ARGLEN(function_name, num_args) \
 	if(!args[0]->IsExternal() && args.Length() < num_args) { \
@@ -20,8 +22,8 @@
 		ss << " arguments for function '"; \
 		ss << S(function_name); \
 		ss << "'."; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_STRING(arg_n) \
@@ -30,8 +32,8 @@
 		ss << "Invalid arguments: Expected argument "; \
 		ss << arg_n; \
 		ss << " to be a String."; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 #define CHECK_STRING_F(arg_n, function_name) \
 	if(!args[arg_n]->IsString()) { \
@@ -41,8 +43,8 @@
 		ss << " to be a String. (function: "; \
 		ss << S(function_name); \
 		ss << ")"; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_NUMBER(arg_n) \
@@ -51,8 +53,8 @@
 		ss << "Invalid arguments: Expected argument "; \
 		ss << arg_n; \
 		ss << " to be a Number."; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 #define CHECK_NUMBER_F(arg_n, function_name) \
 	if(!args[arg_n]->IsNumber()) { \
@@ -62,8 +64,8 @@
 		ss << " to be a Number. (function: "; \
 		ss << S(function_name); \
 		ss << ")"; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_BOOL(arg_n) \
@@ -72,8 +74,8 @@
 		ss << "Invalid arguments: Expected argument "; \
 		ss << arg_n; \
 		ss << " to be a Boolean."; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 #define CHECK_BOOL_F(arg_n, function_name) \
 	if(!args[arg_n]->IsBoolean()) { \
@@ -83,8 +85,8 @@
 		ss << " to be a Boolean. (function: "; \
 		ss << S(function_name); \
 		ss << ")"; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_WRAPPER(name, type) \
@@ -93,16 +95,16 @@
 		ss << "Invalid call: Expected this to be a "; \
 		ss << S(type); \
 		ss << "."; \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			v8::String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_CONSTRUCT(class_name) \
 	if(!args.IsConstructCall()) { \
 		std::stringstream ss; \
 		ss << "Must use the new operator to create instances of class " << S(type); \
-		return v8::ThrowException(v8::Exception::TypeError( \
-			String::New(ss.str().c_str()))); \
+		Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
 	}
 
 #define CHECK_EXTERNAL(arg_n) \
@@ -111,8 +113,8 @@
     ss << "Invalid arguments: Expected argument "; \
     ss << arg_n; \
     ss << " to be an External."; \
-    return v8::ThrowException(v8::Exception::TypeError( \
-      v8::String::New(ss.str().c_str()))); \
+    Nan::ThrowTypeError(v8::STRING_NEW(ss.str().c_str())); \
+		return; \
   }
 #else
 #define CHECK_ARGLEN(function_name, num_args)
@@ -200,7 +202,7 @@
 #define VALUE_UINT32(name) \
 	if(value->IsUint32()) { \
 		uint32_t name = value->Uint32Value();
-#define UNWRAP_THIS_SETTER(type, from, name) type* name = node::ObjectWrap::Unwrap<type>(from.This()); \
+#define UNWRAP_THIS_SETTER(type, from, name) type* name = Nan::ObjectWrap::Unwrap<type>(from.This()); \
 	if(NULL != name) {
 #define END_VALUE } else { \
 	std::cout << "Unable to unwrap value in '" << __func__ << ":" << __LINE__ << "'." << std::endl; \
@@ -222,15 +224,15 @@
 #define VALUE_UINT32(name) \
 	uint32_t name = value->Uint32Value();
 #define UNWRAP_THIS_SETTER(type, from, name) \
-	type* name = node::ObjectWrap::Unwrap<type>(from.This());
+	type* name = Nan::ObjectWrap::Unwrap<type>(from.This());
 #define END_VALUE
 #define UNWRAP_END
 #endif
 
-#define UNWRAP_THIS(type, from, name) type* name = node::ObjectWrap::Unwrap<type>(from.This()); \
+#define UNWRAP_THIS(type, from, name) type* name = Nan::ObjectWrap::Unwrap<type>(from.This()); \
 	CHECK_WRAPPER(name, type)
 
-#define OPEN_OBJECTWRAP(type) class type : public node::ObjectWrap { \
+#define OPEN_OBJECTWRAP(type) class type : public Nan::ObjectWrap { \
 	public: \
 		static v8::Persistent<v8::FunctionTemplate> constructor; \
 		~type(); \
@@ -243,10 +245,10 @@
 	v8::Local<v8::FunctionTemplate> tpl = v8::FunctionTemplate::New(New); \
 	template = v8::Persistent<v8::FunctionTemplate>::New(tpl); \
 	template->InstanceTemplate()->SetInternalFieldCount(2); \
-	template->SetClassName(v8::String::NewSymbol(S(type)));
-#define GETTER(template, name, fun) template->PrototypeTemplate()->SetAccessor(String::NewSymbol(name), fun);
-#define GETTER_SETTER(template, name, get, set) template->PrototypeTemplate()->SetAccessor(String::NewSymbol(name), get, set);
-#define SET(target, symbol, object) target->Set(String::NewSymbol(symbol), object)
+	template->SetClassName(v8::STRING_NEW(S(type)));
+#define GETTER(template, name, fun) template->PrototypeTemplate()->SetAccessor(STRING_NEW(name), fun);
+#define GETTER_SETTER(template, name, get, set) template->PrototypeTemplate()->SetAccessor(STRING_NEW(name), get, set);
+#define SET(target, symbol, object) target->Set(STRING_NEW(symbol), object)
 #define START_INIT(prefix, type) \
   v8::Persistent<v8::FunctionTemplate> prefix::type::constructor; \
   void prefix::type::Init(Handle<Object> target) { \
@@ -256,7 +258,7 @@
 
 #define PROTO_METHOD(target, name, callback) \
     v8::Local<v8::FunctionTemplate> TOKENPASTE2(template, name) = v8::FunctionTemplate::New(callback); \
-    target->PrototypeTemplate()->Set(v8::String::NewSymbol(S(name)), TOKENPASTE2(template, name));
+    target->PrototypeTemplate()->Set(v8::STRING_NEW(S(name)), TOKENPASTE2(template, name));
 
 #define UNWRAP_EXTERNAL(type, name, arg) \
   CHECK_EXTERNAL(arg) \
@@ -276,8 +278,7 @@
 namespace sdl {
 
   // Error reporting helpers
-  v8::Handle<v8::Value> ThrowSDLException(const char* name);
-  v8::Local<v8::Value> MakeSDLException(const char* name);
+  void ThrowSDLException(const char* name);
 
   v8::Local<v8::Object> SDLDisplayModeToJavascriptObject(const SDL_DisplayMode& mode);
 

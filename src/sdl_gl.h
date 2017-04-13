@@ -1,6 +1,7 @@
 #ifndef NODESDL_SDLGL_H
 #define NODESDL_SDLGL_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -11,7 +12,7 @@ namespace sdl {
 	namespace gl {
 		NAN_MODULE_INIT(Init);
 
-		class ContextWrapper : node::ObjectWrap {
+		class ContextWrapper : Nan::ObjectWrap {
 		public:
 			ContextWrapper();
 			ContextWrapper(v8::Handle<v8::Object> obj);

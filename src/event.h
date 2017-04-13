@@ -1,6 +1,7 @@
 #ifndef NODEJS_EVENT_H
 #define NODEJS_EVENT_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 #include "SDL.h"

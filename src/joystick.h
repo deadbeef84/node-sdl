@@ -1,6 +1,7 @@
 #ifndef NODESDL_JOYSTICK_H
 #define NODESDL_JOYSTICK_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -12,7 +13,7 @@ namespace sdl {
 		NAN_MODULE_INIT(Init);
 	}
 
-	class JoystickWrapper : public node::ObjectWrap {
+	class JoystickWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 

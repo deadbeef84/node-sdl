@@ -20,6 +20,7 @@
 // If this is not defined, the entire SDL_ttf wrapper will not be included in the build.
 // #define ENABLE_TTF
 
+#include <nan.h>
 #include <node.h>
 #include <v8.h>
 #include <map>

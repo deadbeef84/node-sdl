@@ -1,13 +1,14 @@
 #ifndef NODESDL_WINDOW_H
 #define NODESDL_WINDOW_H
 
+#include <nan.h>
 #include <node.h>
 #include <v8.h>
 
 #include "SDL.h"
 
 namespace sdl {
-	class WindowWrapper : public node::ObjectWrap {
+	class WindowWrapper : public Nan::ObjectWrap {
 	public:
 		WindowWrapper();
 		WindowWrapper(v8::Handle<v8::Object> obj);

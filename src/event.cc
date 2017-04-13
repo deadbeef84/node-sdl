@@ -41,19 +41,18 @@ NAN_MODULE_INIT(sdl::event::Init) {
 //
 // 	return Undefined();
 // }
+
 NAN_METHOD(sdl::EventState) {
-
-
 	if(info.Length() < 2) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected EventState(Number, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected EventState(Number, Number)"));
+		return;
 	}
 
 	int type = info[0]->Int32Value();
 	int state = info[1]->Int32Value();
 	int8_t ret = SDL_EventState(type, state);
 
-	info.GetReturnValue().Set(Number::New(ret));
+	info.GetReturnValue().Set(Nan::New<Number>(ret));
 }
 
 // TODO: Implement these in a way that will be able to call Javascript functions on the
@@ -73,46 +72,36 @@ NAN_METHOD(sdl::EventState) {
 // }
 
 NAN_METHOD(sdl::FlushEvent) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected FlushEvent(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected FlushEvent(Number)"));
+		return;
 	}
 
 	int type = info[0]->Int32Value();
 	SDL_FlushEvent(type);
-
-	return Undefined();
 }
+
 NAN_METHOD(sdl::FlushEvents) {
-
-
 	if(info.Length() < 2) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected FlushEvent(Number, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected FlushEvent(Number, Number)"));
+		return;
 	}
 
 	int typeMin = info[0]->Int32Value();
 	int typeMax = info[1]->Int32Value();
 	SDL_FlushEvents(typeMin, typeMax);
-
-	return Undefined();
 }
 
 NAN_METHOD(sdl::GetNumTouchDevices) {
-
-
 	int ret = SDL_GetNumTouchDevices();
 
-	info.GetReturnValue().Set(Number::New(ret));
+	info.GetReturnValue().Set(Nan::New<Number>(ret));
 }
+
 NAN_METHOD(sdl::GetNumTouchFingers) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetNumTouchFingers(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetNumTouchFingers(Number)"));
+		return;
 	}
 
 	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
@@ -121,14 +110,13 @@ NAN_METHOD(sdl::GetNumTouchFingers) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(ret));
+	info.GetReturnValue().Set(Nan::New<Number>(ret));
 }
+
 NAN_METHOD(sdl::GetTouchDevice) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetTouchDevice(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetTouchDevice(Number)"));
+		return;
 	}
 
 	int index = info[0]->Int32Value();
@@ -137,14 +125,13 @@ NAN_METHOD(sdl::GetTouchDevice) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(device));
+	info.GetReturnValue().Set(Nan::New<Number>(device));
 }
+
 NAN_METHOD(sdl::GetTouchFinger) {
-
-
 	if(info.Length() < 2) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetTouchFinger(Number, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetTouchFinger(Number, Number)"));
+		return;
 	}
 
 	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
@@ -154,18 +141,17 @@ NAN_METHOD(sdl::GetTouchFinger) {
 		return ThrowSDLException(__func__);
 	}
 
-	Local<Object> toWrap = Object::New();
+	Local<Object> toWrap = Nan::New<Object>();
 	FingerWrapper* ret = new FingerWrapper(toWrap);
 	ret->finger_ = finger;
 
 	info.GetReturnValue().Set(toWrap);
 }
+
 NAN_METHOD(sdl::RecordGesture) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected RecordGesture(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected RecordGesture(Number)"));
+		return;
 	}
 
 	SDL_TouchID id = static_cast<SDL_TouchID>(info[0]->IntegerValue());
@@ -173,36 +159,30 @@ NAN_METHOD(sdl::RecordGesture) {
 	if(0 == err) {
 		return ThrowSDLException(__func__);
 	}
-
-	return Undefined();
 }
 
 NAN_METHOD(sdl::HasEvent) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected HasEvent(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected HasEvent(Number)"));
+		return;
 	}
 
 	int type = info[0]->Int32Value();
 	SDL_bool ret = SDL_HasEvent(type);
 
-	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Nan::New<Boolean>(ret ? true : false));
 }
 NAN_METHOD(sdl::HasEvents) {
-
-
 	if(info.Length() < 2) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected HasEvents(Number, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected HasEvents(Number, Number)"));
+		return;
 	}
 
 	int typeMin = info[0]->Int32Value();
 	int typeMax = info[1]->Int32Value();
 	SDL_bool ret = SDL_HasEvents(typeMin, typeMax);
 
-	info.GetReturnValue().Set(Boolean::New(ret ? true : false));
+	info.GetReturnValue().Set(Nan::New<Boolean>(ret ? true : false));
 }
 
 // TODO: Implement these, along with RWOps wrapper.
@@ -224,10 +204,9 @@ NAN_METHOD(sdl::HasEvents) {
 // }
 
 NAN_METHOD(sdl::WaitEvent) {
-
-
 	if (!(info.Length() == 1 && info[0]->IsFunction())) {
-		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEvent(Function)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected WaitEvent(Function)"));
+		return;
 	}
 
 	SDL_Event e;
@@ -235,19 +214,18 @@ NAN_METHOD(sdl::WaitEvent) {
 	if(0 == err) {
 		std::string err = "WaitEvent failed: ";
 		err += SDL_GetError();
-		return ThrowException(MakeSDLException(err.c_str()));
+		ThrowSDLException(err.c_str());
+		return
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
 	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
-	return Undefined();
 }
 
 NAN_METHOD(sdl::WaitEventTimeout) {
-
-
 	if(!(info.Length() == 2 && info[0]->IsFunction() && info[1]->IsNumber())) {
-		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected WaitEventTimeout(Function, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected WaitEventTimeout(Function, Number)"));
+		return;
 	}
 
 	SDL_Event e;
@@ -256,24 +234,23 @@ NAN_METHOD(sdl::WaitEventTimeout) {
 	if(0 == err) {
 		std::string err = "WaitEventTimeout failed: ";
 		err += SDL_GetError();
-		return ThrowException(MakeSDLException(err.c_str()));
+		Nan::ThrowException(MakeSDLException(err.c_str()));
+		return
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
 	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
-	return Undefined();
 }
 
 NAN_METHOD(sdl::PollEvent) {
-
-
 	if (!(info.Length() == 0)) {
-		return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected PollEvent()")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected PollEvent()"));
+		return;
 	}
 
 	SDL_Event event;
 	if (!SDL_PollEvent(&event)) {
-		return Undefined();
+		return;
 	}
 
 	Local<Object> evt = SDLEventToJavascriptObject(event);
@@ -303,8 +280,8 @@ NAN_METHOD(sdl::PollEvent) {
 //
 
 // 	if(info.Length() < 1) {
-// 		return ThrowException(Exception::TypeError(
-// 			String::New("Invalid arguments: Expected PushEvent(Event)")));
+// 		Nan::ThrowTypeError(// 			STRING_NEW("Invalid arguments: Expected PushEvent(Event)"));
+		return;
 // 	}
 
 // 	return Undefined();
@@ -318,73 +295,71 @@ NAN_METHOD(sdl::PollEvent) {
 // }
 
 NAN_METHOD(sdl::QuitRequested) {
-
-
 	bool ret = SDL_QuitRequested();
 
-	info.GetReturnValue().Set(Boolean::New(ret));
+	info.GetReturnValue().Set(Nan::New<Boolean>(ret));
 }
 
 // TODO: Improve on how events are created. Gotta be a better way than this...
 Local<Object> SDLEventToJavascriptObject(const SDL_Event& event) {
-	Local<Object> evt = Object::New();
+	Local<Object> evt = Nan::New<Object>();
 
 	switch (event.type) {
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
-			evt->Set(String::New("type"), String::New(event.type == SDL_KEYDOWN ? "KEYDOWN" : "KEYUP"));
-			evt->Set(String::New("scancode"), Number::New(event.key.keysym.scancode));
-			evt->Set(String::New("sym"), Number::New(event.key.keysym.sym));
-			evt->Set(String::New("mod"), Number::New(event.key.keysym.mod));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New(event.type == SDL_KEYDOWN ? "KEYDOWN" : "KEYUP").ToLocalChecked());
+			evt->Set(Nan::New("scancode").ToLocalChecked(), Nan::New<Number>(event.key.keysym.scancode));
+			evt->Set(Nan::New("sym").ToLocalChecked(), Nan::New<Number>(event.key.keysym.sym));
+			evt->Set(Nan::New("mod").ToLocalChecked(), Nan::New<Number>(event.key.keysym.mod));
 			break;
 		case SDL_MOUSEMOTION:
-			evt->Set(String::New("type"), String::New("MOUSEMOTION"));
-			evt->Set(String::New("state"), Number::New(event.motion.state));
-			evt->Set(String::New("which"), Number::New(event.motion.which));
-			evt->Set(String::New("x"), Number::New(event.motion.x));
-			evt->Set(String::New("y"), Number::New(event.motion.y));
-			evt->Set(String::New("xrel"), Number::New(event.motion.xrel));
-			evt->Set(String::New("yrel"), Number::New(event.motion.yrel));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("MOUSEMOTION").ToLocalChecked());
+			evt->Set(Nan::New("state").ToLocalChecked(), Nan::New<Number>(event.motion.state));
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.motion.which));
+			evt->Set(Nan::New("x").ToLocalChecked(), Nan::New<Number>(event.motion.x));
+			evt->Set(Nan::New("y").ToLocalChecked(), Nan::New<Number>(event.motion.y));
+			evt->Set(Nan::New("xrel").ToLocalChecked(), Nan::New<Number>(event.motion.xrel));
+			evt->Set(Nan::New("yrel").ToLocalChecked(), Nan::New<Number>(event.motion.yrel));
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
-			evt->Set(String::New("type"), String::New(event.type == SDL_MOUSEBUTTONDOWN ? "MOUSEBUTTONDOWN" : "MOUSEBUTTONUP"));
-			evt->Set(String::New("button"), Number::New(event.button.button));
-			evt->Set(String::New("which"), Number::New(event.button.which));
-			evt->Set(String::New("x"), Number::New(event.button.x));
-			evt->Set(String::New("y"), Number::New(event.button.y));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New(event.type == SDL_MOUSEBUTTONDOWN ? "MOUSEBUTTONDOWN" : "MOUSEBUTTONUP").ToLocalChecked());
+			evt->Set(Nan::New("button").ToLocalChecked(), Nan::New<Number>(event.button.button));
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.button.which));
+			evt->Set(Nan::New("x").ToLocalChecked(), Nan::New<Number>(event.button.x));
+			evt->Set(Nan::New("y").ToLocalChecked(), Nan::New<Number>(event.button.y));
 			break;
 		case SDL_JOYAXISMOTION:
-			evt->Set(String::New("type"), String::New("JOYAXISMOTION"));
-			evt->Set(String::New("which"), Number::New(event.jaxis.which));
-			evt->Set(String::New("axis"), Number::New(event.jaxis.axis));
-			evt->Set(String::New("value"), Number::New(event.jaxis.value));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("JOYAXISMOTION").ToLocalChecked());
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.jaxis.which));
+			evt->Set(Nan::New("axis").ToLocalChecked(), Nan::New<Number>(event.jaxis.axis));
+			evt->Set(Nan::New("value").ToLocalChecked(), Nan::New<Number>(event.jaxis.value));
 			break;
 		case SDL_JOYBALLMOTION:
-			evt->Set(String::New("type"), String::New("JOYBALLMOTION"));
-			evt->Set(String::New("which"), Number::New(event.jball.which));
-			evt->Set(String::New("ball"), Number::New(event.jball.ball));
-			evt->Set(String::New("xrel"), Number::New(event.jball.xrel));
-			evt->Set(String::New("yrel"), Number::New(event.jball.yrel));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("JOYBALLMOTION").ToLocalChecked());
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.jball.which));
+			evt->Set(Nan::New("ball").ToLocalChecked(), Nan::New<Number>(event.jball.ball));
+			evt->Set(Nan::New("xrel").ToLocalChecked(), Nan::New<Number>(event.jball.xrel));
+			evt->Set(Nan::New("yrel").ToLocalChecked(), Nan::New<Number>(event.jball.yrel));
 			break;
 		case SDL_JOYHATMOTION:
-			evt->Set(String::New("type"), String::New("JOYHATMOTION"));
-			evt->Set(String::New("which"), Number::New(event.jhat.which));
-			evt->Set(String::New("hat"), Number::New(event.jhat.hat));
-			evt->Set(String::New("value"), Number::New(event.jhat.value));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("JOYHATMOTION").ToLocalChecked());
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.jhat.which));
+			evt->Set(Nan::New("hat").ToLocalChecked(), Nan::New<Number>(event.jhat.hat));
+			evt->Set(Nan::New("value").ToLocalChecked(), Nan::New<Number>(event.jhat.value));
 			break;
 		case SDL_JOYBUTTONDOWN:
 		case SDL_JOYBUTTONUP:
-			evt->Set(String::New("type"), String::New(event.type == SDL_JOYBUTTONDOWN ? "JOYBUTTONDOWN" : "JOYBUTTONUP"));
-			evt->Set(String::New("which"), Number::New(event.jbutton.which));
-			evt->Set(String::New("button"), Number::New(event.jbutton.button));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New(event.type == SDL_JOYBUTTONDOWN ? "JOYBUTTONDOWN" : "JOYBUTTONUP").ToLocalChecked());
+			evt->Set(Nan::New("which").ToLocalChecked(), Nan::New<Number>(event.jbutton.which));
+			evt->Set(Nan::New("button").ToLocalChecked(), Nan::New<Number>(event.jbutton.button));
 			break;
 		case SDL_QUIT:
-			evt->Set(String::New("type"), String::New("QUIT"));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("QUIT").ToLocalChecked());
 			break;
 		default:
-			evt->Set(String::New("type"), String::New("UNKNOWN"));
-			evt->Set(String::New("typeCode"), Number::New(event.type));
+			evt->Set(Nan::New("type").ToLocalChecked(), Nan::New("UNKNOWN").ToLocalChecked());
+			evt->Set(Nan::New("typeCode").ToLocalChecked(), Nan::New<Number>(event.type));
 			break;
 	}
 

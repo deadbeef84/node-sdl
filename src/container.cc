@@ -5,7 +5,7 @@
 #include "struct_wrappers.h"
 
 using namespace v8;
-
+/*
 sdl::RectWrapper::~RectWrapper() {
 	if(NULL != wrapped) {
 		delete wrapped;
@@ -45,19 +45,19 @@ END_NEW
 
 GETTER_BEGIN(sdl::RectWrapper, GetX)
 	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Number::New(wrap->wrapped->x))
+GETTER_END(Nan::New<Number>(wrap->wrapped->x))
 
 GETTER_BEGIN(sdl::RectWrapper, GetY)
 	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Number::New(wrap->wrapped->y))
+GETTER_END(Nan::New<Number>(wrap->wrapped->y))
 
 GETTER_BEGIN(sdl::RectWrapper, GetW)
 	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Number::New(wrap->wrapped->w));
+GETTER_END(Nan::New<Number>(wrap->wrapped->w));
 
 GETTER_BEGIN(sdl::RectWrapper, GetH)
 	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Number::New(wrap->wrapped->h))
+GETTER_END(Nan::New<Number>(wrap->wrapped->h))
 
 SETTER_BEGIN(sdl::RectWrapper, SetX)
 	UNWRAP_THIS_SETTER(RectWrapper, info, wrap)
@@ -109,13 +109,13 @@ END_INIT("Color")
 
 NAN_METHOD(sdl::ColorWrapper::New) {
 	if(!info.IsConstructCall()) {
-		return ThrowException(Exception::TypeError(
-			String::New("Use the new operator to create instance of a Color.")));
+		Nan::ThrowTypeError(STRING_NEW("Use the new operator to create instance of a Color."));
+		return;
 	}
 
 	if(info.Length() < 3) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected new sdl.Color(Number, Number, Number[, Number])")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected new sdl.Color(Number, Number, Number[, Number])"));
+		return;
 	}
 
 	uint8_t r = static_cast<uint8_t>(info[0]->Int32Value());
@@ -136,39 +136,40 @@ NAN_METHOD(sdl::ColorWrapper::New) {
 
 Handle<Value> sdl::ColorWrapper::GetRed(Local<String> name, const AccessorInfo& info) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	info.GetReturnValue().Set(Number::New(obj->color_->r));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->r));
 }
 Handle<Value> sdl::ColorWrapper::GetGreen(Local<String> name, const AccessorInfo& info) {
 
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	info.GetReturnValue().Set(Number::New(obj->color_->g));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->g));
 }
 Handle<Value> sdl::ColorWrapper::GetBlue(Local<String> name, const AccessorInfo& info) {
 
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	info.GetReturnValue().Set(Number::New(obj->color_->b));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->b));
 }
 Handle<Value> sdl::ColorWrapper::GetAlpha(Local<String> name, const AccessorInfo& info) {
 
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
-	info.GetReturnValue().Set(Number::New(obj->color_->a));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->a));
 }
+
 NAN_METHOD(sdl::ColorWrapper::GetColor) {
 
 
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid argument: Expected GetColor(PixelFormat)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid argument: Expected GetColor(PixelFormat)"));
+		return;
 	}
 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	SDL_PixelFormat* format = UnwrapPixelFormat(Handle<Object>::Cast(info[0]));
 	SDL_Color* c = obj->color_;
 	uint32_t color = SDL_MapRGBA(format, c->r, c->g, c->b, c->a);
-	info.GetReturnValue().Set(Number::New(color));
+	info.GetReturnValue().Set(Nan::New<Number>(color));
 }
 
 void sdl::ColorWrapper::SetRed(Local<String> name, Local<Value> value, const AccessorInfo& info) {
@@ -207,7 +208,7 @@ NAN_METHOD(sdl::ColorWrapper::ToString) {
 	SDL_Color* c = obj->color_;
 	std::stringstream ss;
 	ss << "{r:" << (int)c->r << ", g:" << (int)c->g << ", b:" << (int)c->b << ", a:" << (int)c->a << "}";
-	info.GetReturnValue().Set(String::New(ss.str().c_str()));
+	info.GetReturnValue().Set(STRING_NEW(ss.str().c_str()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,28 +230,28 @@ sdl::FingerWrapper::~FingerWrapper() {
 NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-	tpl->SetClassName(String::NewSymbol("FingerWrapper"));
+	tpl->SetClassName(STRING_NEW("FingerWrapper"));
 
 	Local<ObjectTemplate> templ = tpl->PrototypeTemplate();
-	templ->SetAccessor(String::NewSymbol("fingerID"), GetFingerID);
-	templ->SetAccessor(String::NewSymbol("x"), GetX);
-	templ->SetAccessor(String::NewSymbol("y"), GetY);
-	templ->SetAccessor(String::NewSymbol("pressure"), GetPressure);
+	templ->SetAccessor(STRING_NEW("fingerID"), GetFingerID);
+	templ->SetAccessor(STRING_NEW("x"), GetX);
+	templ->SetAccessor(STRING_NEW("y"), GetY);
+	templ->SetAccessor(STRING_NEW("pressure"), GetPressure);
 
 	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Finger"), constructor);
+	exports->Set(STRING_NEW("Finger"), constructor);
 }
 NAN_METHOD(sdl::FingerWrapper::New) {
 	if(!info.IsConstructCall()) {
-		return ThrowException(Exception::TypeError(
-			String::New("Can only construct a FingerWrapper with the new operator.")));
+		Nan::ThrowTypeError(STRING_NEW("Can only construct a FingerWrapper with the new operator."));
+		return;
 	}
 
 
 
 	if(info.Length() < 4) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected new sdl.Finger(Number, Number, Number, Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected new sdl.Finger(Number, Number, Number, Number)"));
+		return;
 	}
 
 	SDL_FingerID id = static_cast<SDL_FingerID>(info[0]->IntegerValue());
@@ -276,26 +277,27 @@ Handle<Value> sdl::FingerWrapper::GetFingerID(Local<String> name, const Accessor
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	info.GetReturnValue().Set(Number::New(obj->finger_->id));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->id));
 }
 Handle<Value> sdl::FingerWrapper::GetX(Local<String> name, const AccessorInfo& info) {
 
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	info.GetReturnValue().Set(Number::New(obj->finger_->x));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->x));
 }
 Handle<Value> sdl::FingerWrapper::GetY(Local<String> name, const AccessorInfo& info) {
 
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	info.GetReturnValue().Set(Number::New(obj->finger_->y));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->y));
 }
 Handle<Value> sdl::FingerWrapper::GetPressure(Local<String> name, const AccessorInfo& info) {
 
 
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
-	info.GetReturnValue().Set(Number::New(obj->finger_->pressure));
+	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->pressure));
 }
+*/

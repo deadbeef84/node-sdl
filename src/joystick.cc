@@ -37,7 +37,7 @@ sdl::JoystickWrapper::~JoystickWrapper() {
 NAN_MODULE_INIT(sdl::JoystickWrapper::Init) {
 	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-	tpl->SetClassName(String::NewSymbol("JoystickWrapper"));
+	tpl->SetClassName(STRING_NEW("JoystickWrapper"));
 
 	Nan::SetPrototypeMethod(tpl, "getAttached", GetAttached);
 	Nan::SetPrototypeMethod(tpl, "getAxis", GetAxis);
@@ -52,19 +52,18 @@ NAN_MODULE_INIT(sdl::JoystickWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "getNumHats", GetNumHats);
 
 	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Joystick"), constructor);
+	exports->Set(STRING_NEW("Joystick"), constructor);
 }
+
 NAN_METHOD(sdl::JoystickWrapper::New) {
 	if(!info.IsConstructCall()) {
-		return ThrowException(Exception::TypeError(
-			String::New("Must create an sdl.Joystick with the new operator.")));
+		Nan::ThrowTypeError(Nan::New("Must create an sdl.Joystick with the new operator.").ToLocalChecked());
+		return;
 	}
 
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected new sdl.Joystick(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected new sdl.Joystick(Number)"));
+		return;
 	}
 
 	if(info[0]->IsExternal()) {
@@ -94,19 +93,16 @@ NAN_METHOD(sdl::JoystickWrapper::New) {
 }
 
 NAN_METHOD(sdl::JoystickWrapper::GetAttached) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	SDL_bool attached = SDL_JoystickGetAttached(wrap->joystick_);
 
-	info.GetReturnValue().Set(Boolean::New(attached ? true : false));
+	info.GetReturnValue().Set(Nan::New<Boolean>(attached ? true : false));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetAxis) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetAxis(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetAxis(Number)"));
+		return;
 	}
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
@@ -116,14 +112,13 @@ NAN_METHOD(sdl::JoystickWrapper::GetAxis) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(position));
+	info.GetReturnValue().Set(Nan::New<Number>(position));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetBall) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetBall(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetBall(Number)"));
+		return;
 	}
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
@@ -134,123 +129,110 @@ NAN_METHOD(sdl::JoystickWrapper::GetBall) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Object> ret = Object::New();
-	ret->Set(String::NewSymbol("dx"), Number::New(dx));
-	ret->Set(String::NewSymbol("dy"), Number::New(dy));
+	Handle<Object> ret = Nan::New<Object>();
+	ret->Set(STRING_NEW("dx"), Nan::New<Number>(dx));
+	ret->Set(STRING_NEW("dy"), Nan::New<Number>(dy));
 
 	info.GetReturnValue().Set(ret);
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetButton) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetButton(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetButton(Number)"));
+		return;
 	}
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int button = info[0]->Int32Value();
 	uint8_t ret = SDL_JoystickGetButton(wrap->joystick_, button);
 
-	info.GetReturnValue().Set(Boolean::New(ret == 1 ? true : false));
+	info.GetReturnValue().Set(Nan::New<Boolean>(ret == 1 ? true : false));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetGUID) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	SDL_JoystickGUID guid = SDL_JoystickGetGUID(wrap->joystick_);
 
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 elements.
 	Handle<Array> ret = Array::New(16);
 	for(int i = 0; i < 16; i++) {
-		ret->Set(i, Number::New(guid.data[i]));
+		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}
 
 	info.GetReturnValue().Set(ret);
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetHat) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected GetHat(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetHat(Number)"));
+		return;
 	}
 
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int hat = info[0]->Int32Value();
 	uint8_t ret = SDL_JoystickGetHat(wrap->joystick_, hat);
 
-	info.GetReturnValue().Set(Number::New(ret));
+	info.GetReturnValue().Set(Nan::New<Number>(ret));
 }
 
 NAN_METHOD(sdl::JoystickWrapper::GetName) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	const char* name = SDL_JoystickName(wrap->joystick_);
 	if(NULL == name) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(String::New(name));
+	info.GetReturnValue().Set(Nan::New(name).ToLocalChecked());
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetNumAxes) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int axes = SDL_JoystickNumAxes(wrap->joystick_);
 	if(axes < 0) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(axes));
+	info.GetReturnValue().Set(Nan::New<Number>(axes));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetNumButtons) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int buttons = SDL_JoystickNumButtons(wrap->joystick_);
 	if(buttons < 0) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(buttons));
+	info.GetReturnValue().Set(Nan::New<Number>(buttons));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetNumBalls) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int balls = SDL_JoystickNumBalls(wrap->joystick_);
 	if(balls < 0) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(balls));
+	info.GetReturnValue().Set(Nan::New<Number>(balls));
 }
+
 NAN_METHOD(sdl::JoystickWrapper::GetNumHats) {
-
-
 	JoystickWrapper* wrap = ObjectWrap::Unwrap<JoystickWrapper>(Handle<Object>::Cast(info.This()));
 	int hats = SDL_JoystickNumHats(wrap->joystick_);
 	if(hats < 0) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(Number::New(hats));
+	info.GetReturnValue().Set(Nan::New<Number>(hats));
 }
 
 NAN_METHOD(sdl::NumJoysticks) {
-
-
-	info.GetReturnValue().Set(Number::New(SDL_NumJoysticks()));
+	info.GetReturnValue().Set(Nan::New<Number>(SDL_NumJoysticks()));
 }
 
 NAN_METHOD(sdl::JoystickNameForIndex) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected JoystickNameForIndex(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected JoystickNameForIndex(Number)"));
+		return;
 	}
 
 	int index = info[0]->Int32Value();
@@ -259,15 +241,13 @@ NAN_METHOD(sdl::JoystickNameForIndex) {
 		return ThrowSDLException(__func__);
 	}
 
-	info.GetReturnValue().Set(String::New(name));
+	info.GetReturnValue().Set(Nan::New(name).ToLocalChecked());
 }
 
 NAN_METHOD(sdl::JoystickGetDeviceGUID) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected JoystickGetDeviceGUID(Number)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected JoystickGetDeviceGUID(Number)"));
+		return;
 	}
 
 	int index = info[0]->Int32Value();
@@ -276,17 +256,16 @@ NAN_METHOD(sdl::JoystickGetDeviceGUID) {
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 elements.
 	Handle<Array> ret = Array::New(16);
 	for(int i = 0; i < 16; i++) {
-		ret->Set(i, Number::New(guid.data[i]));
+		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}
 
 	info.GetReturnValue().Set(ret);
 }
+
 NAN_METHOD(sdl::JoystickGetGUIDFromString) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected JoystickGetGUIDFromString(String)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected JoystickGetGUIDFromString(String)"));
+		return;
 	}
 
 	String::Utf8Value pchGuid(info[0]);
@@ -295,17 +274,16 @@ NAN_METHOD(sdl::JoystickGetGUIDFromString) {
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 uint8_t elements.
 	Handle<Array> ret = Array::New(16);
 	for(int i = 0; i < 16; i++) {
-		ret->Set(i, Number::New(guid.data[i]));
+		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}
 
 	info.GetReturnValue().Set(ret);
 }
+
 NAN_METHOD(sdl::JoystickGetGUIDString) {
-
-
 	if(info.Length() < 1) {
-		return ThrowException(Exception::TypeError(
-			String::New("Invalid arguments: Expected JoystickGetGUIDString(String)")));
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected JoystickGetGUIDString(String)"));
+		return;
 	}
 
 	Handle<Array> guidArr = Handle<Array>::Cast(info[0]);
@@ -317,28 +295,23 @@ NAN_METHOD(sdl::JoystickGetGUIDString) {
 	char pszGuid[200];
 	SDL_JoystickGetGUIDString(guid, pszGuid, 200);
 
-	info.GetReturnValue().Set(String::New(pszGuid));
+	info.GetReturnValue().Set(Nan::New(pszGuid).ToLocalChecked());
 }
 
 NAN_METHOD(sdl::JoystickUpdate) {
-
-
 	SDL_JoystickUpdate();
-
-	return Undefined();
 }
 
 NAN_METHOD(sdl::JoystickEventState) {
-
-
 	int state;
 	if (info.Length() == 0) {
 		state = SDL_QUERY;
 	} else {
 		if (!(info.Length() == 1 && info[0]->IsBoolean())) {
-			return ThrowException(Exception::TypeError(String::New("Invalid arguments: Expected JoystickEventState([Boolean])")));
+			Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected JoystickEventState([Boolean])"));
+		return;
 		}
 		state = info[0]->BooleanValue() ? SDL_ENABLE : SDL_IGNORE;
 	}
-	return Boolean::New(SDL_JoystickEventState(state));
+	info.GetReturnValue().Set(Nan::New<Boolean>(SDL_JoystickEventState(state)));
 }

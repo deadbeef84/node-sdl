@@ -10,6 +10,7 @@
 
 
 namespace sdl {
+	/*
 	OPEN_OBJECTWRAP(RectWrapper)
 		static GETTER_DEF(GetX);
 		static GETTER_DEF(GetY);
@@ -21,7 +22,8 @@ namespace sdl {
 		static SETTER_DEF(SetW);
 		static SETTER_DEF(SetH);
 	CLOSE_OBJECTWRAP(SDL_Rect)
-	// class RectWrapper : public node::ObjectWrap {
+
+	// class RectWrapper : public Nan::ObjectWrap {
 	// public:
 	// 	static v8::Persistent<v8::FunctionTemplate> constructor;
 
@@ -45,7 +47,7 @@ namespace sdl {
 	// 	SDL_Rect* wrapped;
 	// };
 
-	class ColorWrapper : public node::ObjectWrap {
+	class ColorWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 
@@ -70,7 +72,7 @@ namespace sdl {
 		SDL_Color* color_;
 	};
 
-	class FingerWrapper : public node::ObjectWrap {
+	class FingerWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 
@@ -88,6 +90,7 @@ namespace sdl {
 
 		SDL_Finger* finger_;
 	};
+	*/
 }
 
 #endif

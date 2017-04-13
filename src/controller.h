@@ -1,6 +1,7 @@
 #ifndef NODESDL_CONTROLLER_H
 #define NODESDL_CONTROLLER_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -11,7 +12,7 @@ namespace sdl {
 	namespace controller {
 		NAN_MODULE_INIT(Init);
 
-		class GameControllerWrapper : public node::ObjectWrap {
+		class GameControllerWrapper : public Nan::ObjectWrap {
 		public:
 			static v8::Persistent<v8::FunctionTemplate> constructor;
 

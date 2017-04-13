@@ -100,7 +100,7 @@ namespace sdl {
 			for(int j = 0; j < symbols; j++) {
 				// std::cout << "Creating symbol: " << symbolNames[j] << std::endl;
 				// std::cout << "This symbol " << (setters[j] != 0 ? "has" : "does not have") << " a setter." << std::endl;
-				raw_template->SetAccessor(String::NewSymbol(symbolNames[j].c_str()), getters[j], setters[j] == 0 ? 0 : setters[j]);
+				raw_template->SetAccessor(STRING_NEW(symbolNames[j].c_str()), getters[j], setters[j] == 0 ? 0 : setters[j]);
 			}
 
 			// std::cout << "Directly setting the ObjectTemplate with the template that has the accessors." << std::endl;
@@ -133,20 +133,20 @@ namespace sdl {
 	NAN_MODULE_INIT(sdl::PointWrapper::Init) {
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
 		tpl->InstanceTemplate()->SetInternalFieldCount(1);
-		tpl->SetClassName(String::NewSymbol("PointWrapper"));
+		tpl->SetClassName(STRING_NEW("PointWrapper"));
 
 		Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
-		proto->SetAccessor(String::NewSymbol("x"), GetX, SetX);
-		proto->SetAccessor(String::NewSymbol("y"), GetY, SetY);
+		proto->SetAccessor(STRING_NEW("x"), GetX, SetX);
+		proto->SetAccessor(STRING_NEW("y"), GetY, SetY);
 		Nan::SetPrototypeMethod(tpl, "toString", ToString);
 
 		constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-		exports->Set(String::NewSymbol("Point"), constructor);
+		exports->Set(STRING_NEW("Point"), constructor);
 	}
 	NAN_METHOD(sdl::PointWrapper::New) {
 		if(!info.IsConstructCall()) {
-			return ThrowException(Exception::TypeError(
-				String::New("Use the new operator to create instances of a Point.")));
+			Nan::ThrowTypeError(Nan::New("Use the new operator to create instances of a Point.").ToLocalChecked());
+		return;
 		}
 
 
@@ -165,13 +165,13 @@ namespace sdl {
 
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		info.GetReturnValue().Set(Number::New(obj->point_->x));
+		info.GetReturnValue().Set(Nan::New<Number>(obj->point_->x));
 	}
 	Handle<Value> sdl::PointWrapper::GetY(Local<String> name, const AccessorInfo& info) {
 
 
 		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		info.GetReturnValue().Set(Number::New(obj->point_->y));
+		info.GetReturnValue().Set(Nan::New<Number>(obj->point_->y));
 	}
 	void sdl::PointWrapper::SetX(Local<String> name, Local<Value> value, const AccessorInfo& info) {
 
@@ -192,11 +192,11 @@ namespace sdl {
 
 
 		// PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		int x = info.This()->Get(String::New("x"))->Int32Value();
-		int y = info.This()->Get(String::New("y"))->Int32Value();
+		int x = info.This()->Get(Nan::New("x").ToLocalChecked())->Int32Value();
+		int y = info.This()->Get(Nan::New("y").ToLocalChecked())->Int32Value();
 		std::stringstream ss;
 		ss << "{x: " << x << ", y:" << y << "}";
-		info.GetReturnValue().Set(String::New(ss.str().c_str()));
+		info.GetReturnValue().Set(STRING_NEW(ss.str().c_str()));
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -205,7 +205,8 @@ namespace sdl {
 
 
 		if(info.Length() < 1) {
-			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructRect(x, y, width, height)")));
+			Nan::ThrowTypeError(STRING_NEW("Invalid call. Excpected: ConstructRect(x, y, width, height)"));
+		return;
 		}
 
 		SDL_Color *color = new SDL_Color;
@@ -249,19 +250,19 @@ namespace sdl {
 	// Property getters.
 	Handle<Value> GetColorRed(Local<String> name, const AccessorInfo& info) {
 		SDL_Color* color = UnwrapColor(info.Holder());
-		return Number::New(color->r);
+		info.GetReturnValue().Set(Nan::New<Number>(color->r));
 	}
 	Handle<Value> GetColorGreen(Local<String> name, const AccessorInfo& info) {
 		SDL_Color* color = UnwrapColor(info.Holder());
-		return Number::New(color->g);
+		info.GetReturnValue().Set(Nan::New<Number>(color->g));
 	}
 	Handle<Value> GetColorBlue(Local<String> name, const AccessorInfo& info) {
 		SDL_Color* color = UnwrapColor(info.Holder());
-		return Number::New(color->b);
+		info.GetReturnValue().Set(Nan::New<Number>(color->b));
 	}
 	Handle<Value> GetColorAlpha(Local<String> name, const AccessorInfo& info) {
 		SDL_Color* color = UnwrapColor(info.Holder());
-		return Number::New(color->a);
+		info.GetReturnValue().Set(Nan::New<Number>(color->a));
 	}
 	// Property setters.
 	void SetColorRed(Local<String> name, Local<Value> value, const AccessorInfo& info) {
@@ -295,7 +296,8 @@ namespace sdl {
 
 
 		if(info.Length() < 1) {
-			return ThrowException(Exception::TypeError(String::New("Invalid call. Excpected: ConstructPalette(Array)")));
+			Nan::ThrowTypeError(STRING_NEW("Invalid call. Excpected: ConstructPalette(Array)"));
+		return;
 		}
 
 		Handle<Array> colors = Handle<Array>::Cast(info[0]);
@@ -344,7 +346,7 @@ namespace sdl {
 	// Property getters.
 	Handle<Value> GetNcolors(Local<String> name, const AccessorInfo& info) {
 		SDL_Palette* palette = UnwrapPalette(info.Holder());
-		return Number::New(palette->ncolors);
+		info.GetReturnValue().Set(Nan::New<Number>(palette->ncolors));
 	}
 	Handle<Value> GetColors(Local<String> name, const AccessorInfo& info) {
 		SDL_Palette* palette = UnwrapPalette(info.Holder());
@@ -364,10 +366,10 @@ namespace sdl {
 		Handle<ObjectTemplate> result = ObjectTemplate::New();
 		result->SetInternalFieldCount(1);
 
-		result->SetAccessor(String::NewSymbol("format"), GetDisplayModeFormat);
-		result->SetAccessor(String::NewSymbol("w"), GetDisplayModeWidth);
-		result->SetAccessor(String::NewSymbol("h"), GetDisplayModeHeight);
-		result->SetAccessor(String::NewSymbol("refreshRate"), GetDisplayModeRefreshRate);
+		result->SetAccessor(STRING_NEW("format"), GetDisplayModeFormat);
+		result->SetAccessor(STRING_NEW("w"), GetDisplayModeWidth);
+		result->SetAccessor(STRING_NEW("h"), GetDisplayModeHeight);
+		result->SetAccessor(STRING_NEW("refreshRate"), GetDisplayModeRefreshRate);
 
 		info.GetReturnValue().Set(result);
 	}
@@ -391,19 +393,19 @@ namespace sdl {
 
 	Handle<Value> GetDisplayModeFormat(Local<String> name, const AccessorInfo& info) {
 		SDL_DisplayMode* mode = UnwrapDisplayMode(info.Holder());
-		return Number::New(mode->format);
+		info.GetReturnValue().Set(Nan::New<Number>(mode->format));
 	}
 	Handle<Value> GetDisplayModeWidth(Local<String> name, const AccessorInfo& info) {
 		SDL_DisplayMode* mode = UnwrapDisplayMode(info.Holder());
-		return Number::New(mode->w);
+		info.GetReturnValue().Set(Nan::New<Number>(mode->w));
 	}
 	Handle<Value> GetDisplayModeHeight(Local<String> name, const AccessorInfo& info) {
 		SDL_DisplayMode* mode = UnwrapDisplayMode(info.Holder());
-		return Number::New(mode->h);
+		info.GetReturnValue().Set(Nan::New<Number>(mode->h));
 	}
 	Handle<Value> GetDisplayModeRefreshRate(Local<String> name, const AccessorInfo& info) {
 		SDL_DisplayMode* mode = UnwrapDisplayMode(info.Holder());
-		return Number::New(mode->refresh_rate);
+		info.GetReturnValue().Set(Nan::New<Number>(mode->refresh_rate));
 	}
 
 
@@ -441,7 +443,7 @@ namespace sdl {
 	// Property getters.
 	Handle<Value> GetFormatFormat(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->format);
+		info.GetReturnValue().Set(Nan::New<Number>(format->format));
 	}
 	Handle<Value> GetFormatPalette(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
@@ -449,27 +451,27 @@ namespace sdl {
 	}
 	Handle<Value> GetFormatBits(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->BitsPerPixel);
+		info.GetReturnValue().Set(Nan::New<Number>(format->BitsPerPixel));
 	}
 	Handle<Value> GetFormatBytes(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->BytesPerPixel);
+		info.GetReturnValue().Set(Nan::New<Number>(format->BytesPerPixel));
 	}
 	Handle<Value> GetFormatRmask(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->Rmask);
+		info.GetReturnValue().Set(Nan::New<Number>(format->Rmask));
 	}
 	Handle<Value> GetFormatGmask(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->Gmask);
+		info.GetReturnValue().Set(Nan::New<Number>(format->Gmask));
 	}
 	Handle<Value> GetFormatBmask(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->Bmask);
+		info.GetReturnValue().Set(Nan::New<Number>(format->Bmask));
 	}
 	Handle<Value> GetFormatAmask(Local<String> name, const AccessorInfo& info) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return Number::New(format->Amask);
+		info.GetReturnValue().Set(Nan::New<Number>(format->Amask));
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -506,31 +508,31 @@ namespace sdl {
 	// Property getters.
 	Handle<Value> GetRendererInfoName(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		return String::New(rinfo->name);
+		info.GetReturnValue().Set(Nan::New(rinfo->name).ToLocalChecked());
 	}
 	Handle<Value> GetRendererInfoFlags(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		return Number::New(rinfo->flags);
+		info.GetReturnValue().Set(Nan::New<Number>(rinfo->flags));
 	}
 	Handle<Value> GetRendererInfoNumTextureFormats(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		return Number::New(rinfo->num_texture_formats);
+		info.GetReturnValue().Set(Nan::New<Number>(rinfo->num_texture_formats));
 	}
 	Handle<Value> GetRendererInfoTextureFormats(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
 		Handle<Array> ret = Array::New(rinfo->num_texture_formats);
 		for(unsigned int i = 0; i < rinfo->num_texture_formats; i++) {
-			ret->Set(i, Number::New(rinfo->texture_formats[i]));
+			ret->Set(i, Nan::New<Number>(rinfo->texture_formats[i]));
 		}
 		return ret;
 	}
 	Handle<Value> GetRendererInfoMaxTextureWidth(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		return Number::New(rinfo->max_texture_width);
+		info.GetReturnValue().Set(Nan::New<Number>(rinfo->max_texture_width));
 	}
 	Handle<Value> GetRendererInfoMaxTextureHeight(Local<String> name, const AccessorInfo& info) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		return Number::New(rinfo->max_texture_height);
+		info.GetReturnValue().Set(Nan::New<Number>(rinfo->max_texture_height));
 	}
 
 	///////////////////////////////////////////////////////////////////////////////

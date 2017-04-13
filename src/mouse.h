@@ -1,6 +1,7 @@
 #ifndef NODEJS_MOUSE_H
 #define NODEJS_MOUSE_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -12,7 +13,7 @@ namespace sdl {
 		NAN_MODULE_INIT(Init);
 	}
 
-	class CursorWrapper : public node::ObjectWrap {
+	class CursorWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 

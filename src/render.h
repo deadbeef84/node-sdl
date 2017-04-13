@@ -1,6 +1,7 @@
 #ifndef NODESDL_RENDER_H
 #define NODESDL_RENDER_H
 
+#include <nan.h>
 #include <node.h>
 #include <v8.h>
 
@@ -8,7 +9,7 @@
 
 
 namespace sdl {
-	class RendererWrapper : public node::ObjectWrap {
+	class RendererWrapper : public Nan::ObjectWrap {
 	public:
 		static v8::Persistent<v8::FunctionTemplate> constructor;
 

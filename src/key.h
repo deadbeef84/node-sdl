@@ -1,6 +1,7 @@
 #ifndef NODEJS_KEY_H
 #define NODEJS_KEY_H
 
+#include <nan.h>
 #include <v8.h>
 #include <node.h>
 
@@ -14,7 +15,7 @@ namespace sdl {
 	}
 
 	// NAN_METHOD(GetKeyFromName);
-	FUNCTION_DEF(GetKeyFromName);
+	NAN_METHOD(GetKeyFromName);
 	NAN_METHOD(GetKeyFromScancode);
 	NAN_METHOD(GetKeyName);
 
