@@ -5,91 +5,54 @@
 #include "struct_wrappers.h"
 
 using namespace v8;
-/*
+
 sdl::RectWrapper::~RectWrapper() {
 	if(NULL != wrapped) {
 		delete wrapped;
 	}
 }
 
-START_INIT(sdl, RectWrapper)
-  GETTER_SETTER(tpl, "x", GetX, SetX)
-  GETTER_SETTER(tpl, "y", GetY, SetY)
-  GETTER_SETTER(tpl, "w", GetW, SetW)
-  GETTER_SETTER(tpl, "h", GetH, SetH)
-END_INIT("Rect")
+NAN_MODULE_INIT(sdl::RectWrapper::Init) {
+	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(STRING_NEW("RectWrapper"));
 
-START_NEW(sdl, RectWrapper, 4)
-  if(info[0]->IsExternal()) {
-    UNWRAP_EXTERNAL(SDL_Rect, rect, 0);
-    RectWrapper* wrap = new RectWrapper();
-    wrap->wrapped = rect;
-    wrap->Wrap(info.This());
-  }
-  else {
-    EXTRACT_INT32(x, 0);
-    EXTRACT_INT32(y, 1);
-    EXTRACT_INT32(w, 2);
-    EXTRACT_INT32(h, 3);
-    SDL_Rect* rect = new SDL_Rect;
-    rect->x = x;
-    rect->y = y;
-    rect->w = w;
-    rect->h = h;
+	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	Nan::SetAccessor(proto, STRING_NEW("x"), GetX, SetX);
+  Nan::SetAccessor(proto, STRING_NEW("y"), GetY, SetY);
+  Nan::SetAccessor(proto, STRING_NEW("h"), GetH, SetH);
+  Nan::SetAccessor(proto, STRING_NEW("w"), GetW, SetW);
 
-    RectWrapper* wrap = new RectWrapper();
-    wrap->wrapped = rect;
-    wrap->Wrap(info.This());
-  }
-END_NEW
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(STRING_NEW("Rect"), constructor);
+}
 
-GETTER_BEGIN(sdl::RectWrapper, GetX)
-	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Nan::New<Number>(wrap->wrapped->x))
+NAN_METHOD(sdl::RectWrapper::New) {
+	if(!info.IsConstructCall()) {
+		Nan::ThrowTypeError(STRING_NEW("Use the new operator to create instance of a Rect."));
+		return;
+	}
 
-GETTER_BEGIN(sdl::RectWrapper, GetY)
-	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Nan::New<Number>(wrap->wrapped->y))
+	if(info.Length() < 4) {
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected new sdl.Rect(Number, Number, Number, Number)"));
+		return;
+	}
 
-GETTER_BEGIN(sdl::RectWrapper, GetW)
-	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Nan::New<Number>(wrap->wrapped->w));
+	uint32_t x = static_cast<uint32_t>(info[0]->Int32Value());
+	uint32_t y = static_cast<uint32_t>(info[1]->Int32Value());
+	uint32_t w = static_cast<uint32_t>(info[2]->Int32Value());
+	uint32_t h = static_cast<uint32_t>(info[2]->Int32Value());
+	SDL_Rect* rect = new SDL_Rect;
+	rect->x = x;
+	rect->y = y;
+	rect->w = w;
+	rect->h = h;
 
-GETTER_BEGIN(sdl::RectWrapper, GetH)
-	UNWRAP_THIS(RectWrapper, info, wrap)
-GETTER_END(Nan::New<Number>(wrap->wrapped->h))
-
-SETTER_BEGIN(sdl::RectWrapper, SetX)
-	UNWRAP_THIS_SETTER(RectWrapper, info, wrap)
-		VALUE_INT32(x);
-			wrap->wrapped->x = x;
-		END_VALUE
-	UNWRAP_END
-SETTER_END
-
-SETTER_BEGIN(sdl::RectWrapper, SetY)
-	UNWRAP_THIS_SETTER(RectWrapper, info, wrap)
-		VALUE_INT32(y);
-			wrap->wrapped->y = y;
-		END_VALUE
-	UNWRAP_END
-SETTER_END
-
-SETTER_BEGIN(sdl::RectWrapper, SetW)
-	UNWRAP_THIS_SETTER(RectWrapper, info, wrap)
-		VALUE_INT32(w);
-			wrap->wrapped->w = w;
-		END_VALUE
-	UNWRAP_END
-SETTER_END
-
-SETTER_BEGIN(sdl::RectWrapper, SetH)
-	UNWRAP_THIS_SETTER(RectWrapper, info, wrap)
-		VALUE_INT32(h);
-			wrap->wrapped->h = h;
-		END_VALUE
-	UNWRAP_END
-SETTER_END
+	RectWrapper* obj = new RectWrapper();
+	obj->rect_ = rect;
+	obj->Wrap(info.This());
+	return info.This();
+}
 
 sdl::ColorWrapper::~ColorWrapper() {
 	if(NULL != color_) {
@@ -97,15 +60,20 @@ sdl::ColorWrapper::~ColorWrapper() {
 	}
 }
 
-START_INIT(sdl, ColorWrapper)
-	GETTER_SETTER(tpl, "r", GetRed, SetRed);
-	GETTER_SETTER(tpl, "g", GetGreen, SetGreen);
-	GETTER_SETTER(tpl, "b", GetBlue, SetBlue);
-	GETTER_SETTER(tpl, "a", GetAlpha, SetAlpha);
+NAN_MODULE_INIT(sdl::ColorWrapper::Init) {
+	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	tpl->InstanceTemplate()->SetInternalFieldCount(1);
+	tpl->SetClassName(STRING_NEW("ColorWrapper"));
 
-  PROTO_METHOD(tpl, getColor, GetColor);
-  PROTO_METHOD(tpl, toString, ToString);
-END_INIT("Color")
+	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	Nan::SetAccessor(proto, STRING_NEW("r"), GetRed, SetRed);
+  Nan::SetAccessor(proto, STRING_NEW("g"), GetGreen, SetGreen);
+  Nan::SetAccessor(proto, STRING_NEW("b"), GetBlue, SetBlue);
+  Nan::SetAccessor(proto, STRING_NEW("a"), GetAlpha, SetAlpha);
+
+	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	exports->Set(STRING_NEW("Color"), constructor);
+}
 
 NAN_METHOD(sdl::ColorWrapper::New) {
 	if(!info.IsConstructCall()) {
@@ -138,28 +106,23 @@ Handle<Value> sdl::ColorWrapper::GetRed(Local<String> name, const AccessorInfo& 
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->r));
 }
+
 Handle<Value> sdl::ColorWrapper::GetGreen(Local<String> name, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->g));
 }
+
 Handle<Value> sdl::ColorWrapper::GetBlue(Local<String> name, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->b));
 }
+
 Handle<Value> sdl::ColorWrapper::GetAlpha(Local<String> name, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->a));
 }
 
 NAN_METHOD(sdl::ColorWrapper::GetColor) {
-
-
 	if(info.Length() < 1) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid argument: Expected GetColor(PixelFormat)"));
 		return;
@@ -173,42 +136,35 @@ NAN_METHOD(sdl::ColorWrapper::GetColor) {
 }
 
 void sdl::ColorWrapper::SetRed(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t r = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->r = r;
 }
+
 void sdl::ColorWrapper::SetGreen(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t g = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->g = g;
 }
+
 void sdl::ColorWrapper::SetBlue(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t b = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->b = b;
 }
+
 void sdl::ColorWrapper::SetAlpha(Local<String> name, Local<Value> value, const AccessorInfo& info) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t a = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->a = a;
 }
 
 NAN_METHOD(sdl::ColorWrapper::ToString) {
-
-
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	SDL_Color* c = obj->color_;
 	std::stringstream ss;
 	ss << "{r:" << (int)c->r << ", g:" << (int)c->g << ", b:" << (int)c->b << ", a:" << (int)c->a << "}";
-	info.GetReturnValue().Set(STRING_NEW(ss.str().c_str()));
+	info.GetReturnValue().Set(STRING_NEW(ss.str()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -232,22 +188,21 @@ NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("FingerWrapper"));
 
-	Local<ObjectTemplate> templ = tpl->PrototypeTemplate();
-	templ->SetAccessor(STRING_NEW("fingerID"), GetFingerID);
-	templ->SetAccessor(STRING_NEW("x"), GetX);
-	templ->SetAccessor(STRING_NEW("y"), GetY);
-	templ->SetAccessor(STRING_NEW("pressure"), GetPressure);
+	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+	Nan::SetAccessor(proto, STRING_NEW("fingerID"), GetFingerID);
+	Nan::SetAccessor(proto, STRING_NEW("x"), GetX);
+	Nan::SetAccessor(proto, STRING_NEW("y"), GetY);
+	Nan::SetAccessor(proto, STRING_NEW("pressure"), GetPressure);
 
 	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
 	exports->Set(STRING_NEW("Finger"), constructor);
 }
+
 NAN_METHOD(sdl::FingerWrapper::New) {
 	if(!info.IsConstructCall()) {
 		Nan::ThrowTypeError(STRING_NEW("Can only construct a FingerWrapper with the new operator."));
 		return;
 	}
-
-
 
 	if(info.Length() < 4) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected new sdl.Finger(Number, Number, Number, Number)"));
@@ -273,31 +228,25 @@ NAN_METHOD(sdl::FingerWrapper::New) {
 }
 
 Handle<Value> sdl::FingerWrapper::GetFingerID(Local<String> name, const AccessorInfo& info) {
-
-
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->id));
 }
+
 Handle<Value> sdl::FingerWrapper::GetX(Local<String> name, const AccessorInfo& info) {
-
-
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->x));
 }
+
 Handle<Value> sdl::FingerWrapper::GetY(Local<String> name, const AccessorInfo& info) {
-
-
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->y));
 }
+
 Handle<Value> sdl::FingerWrapper::GetPressure(Local<String> name, const AccessorInfo& info) {
-
-
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->pressure));
 }
-*/

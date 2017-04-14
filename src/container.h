@@ -10,42 +10,27 @@
 
 
 namespace sdl {
-	/*
-	OPEN_OBJECTWRAP(RectWrapper)
-		static GETTER_DEF(GetX);
-		static GETTER_DEF(GetY);
-		static GETTER_DEF(GetW);
-		static GETTER_DEF(GetH);
 
-		static SETTER_DEF(SetX);
-		static SETTER_DEF(SetY);
-		static SETTER_DEF(SetW);
-		static SETTER_DEF(SetH);
-	CLOSE_OBJECTWRAP(SDL_Rect)
 
-	// class RectWrapper : public Nan::ObjectWrap {
-	// public:
-	// 	static v8::Persistent<v8::FunctionTemplate> constructor;
+	class RectWrapper : public Nan::ObjectWrap {
+	public:
+		static v8::Persistent<v8::FunctionTemplate> constructor;
 
-	// 	RectWrapper();
-	// 	RectWrapper(v8::Handle<v8::Object> toWrap);
-	// 	~RectWrapper();
+		static NAN_MODULE_INIT(Init);
+		static NAN_METHOD(New);
 
-	// 	static NAN_MODULE_INIT(Init);
-	// 	static NAN_METHOD(New);
+		static NAN_GETTER(GetX);
+		static NAN_GETTER(GetY);
+		static NAN_GETTER(GetW);
+		static NAN_GETTER(GetH);
 
-	// 	static GETTER_DEF(GetX);
-	// 	static GETTER_DEF(GetY);
-	// 	static GETTER_DEF(GetW);
-	// 	static GETTER_DEF(GetH);
+		static NAN_SETTER(SetX);
+		static NAN_SETTER(SetY);
+		static NAN_SETTER(SetW);
+		static NAN_SETTER(SetH);
 
-	// 	static void SetX(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-	// 	static void SetY(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-	// 	static void SetW(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-	// 	static void SetH(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-
-	// 	SDL_Rect* wrapped;
-	// };
+		SDL_Rect* rect_;
+	};
 
 	class ColorWrapper : public Nan::ObjectWrap {
 	public:
@@ -56,16 +41,17 @@ namespace sdl {
 		static NAN_MODULE_INIT(Init);
 		static NAN_METHOD(New);
 
-		static v8::Handle<v8::Value> GetRed(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetGreen(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetBlue(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetAlpha(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+		static NAN_GETTER(GetRed);
+		static NAN_GETTER(GetGreen);
+		static NAN_GETTER(GetBlue);
+		static NAN_GETTER(GetAlpha);
+
 		static NAN_METHOD(GetColor);
 
-		static void SetRed(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-		static void SetGreen(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-		static void SetBlue(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
-		static void SetAlpha(v8::Local<v8::String> name, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
+		static NAN_SETTER(SetRed);
+		static NAN_SETTER(SetGreen);
+		static NAN_SETTER(SetBlue);
+		static NAN_SETTER(SetAlpha);
 
 		static NAN_METHOD(ToString);
 
@@ -83,14 +69,13 @@ namespace sdl {
 		static NAN_MODULE_INIT(Init);
 		static NAN_METHOD(New);
 
-		static v8::Handle<v8::Value> GetFingerID(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetX(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetY(v8::Local<v8::String> name, const v8::AccessorInfo& info);
-		static v8::Handle<v8::Value> GetPressure(v8::Local<v8::String> name, const v8::AccessorInfo& info);
+		static NAN_GETTER(GetFingerID);
+		static NAN_GETTER(GetX);
+		static NAN_GETTER(GetY);
+		static NAN_GETTER(GetPressure);
 
 		SDL_Finger* finger_;
 	};
-	*/
 }
 
 #endif

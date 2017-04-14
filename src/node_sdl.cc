@@ -390,14 +390,16 @@ NAN_METHOD(sdl::GetDisplayBounds) {
     return ThrowSDLException(__func__);
   }
 
-  NEW_WRAPPED(bounds, RectWrapper, ret);
+
 //   Handle<Value> argv[] = {External::New(bounds)};
 //   Handle<Object> ret = RectWrapper::tpl->GetFunction()->NewInstance(1, argv);
 //   Handle<Object> ret = Nan::New<Object>();
 //   RectWrapper* wrap = new RectWrapper(ret);
 //   wrap->wrapped = bounds;
 
-  info.GetReturnValue().Set(ret);
+  // TODO: Jesper
+  // NEW_WRAPPED(bounds, RectWrapper, ret);
+  // info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::GetDisplayMode) {
@@ -537,7 +539,7 @@ NAN_METHOD(sdl::GetError) {
 		return;
   }
 
-  return STRING_NEW(SDL_GetError());
+  info.GetReturnValue().Set(STRING_NEW(SDL_GetError()));
 }
 
 NAN_METHOD(sdl::SetError) {
@@ -796,9 +798,9 @@ NAN_METHOD(sdl::IMG::Load) {
     return;
   }
 
-  NEW_WRAPPED(image, SurfaceWrapper, ret)
-
-  info.GetReturnValue().Set(ret);
+  // TODO: Jesper
+  // NEW_WRAPPED(image, SurfaceWrapper, ret)
+  // info.GetReturnValue().Set(ret);
 }
 
 NODE_MODULE(node_sdl, init)
