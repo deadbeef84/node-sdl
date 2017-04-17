@@ -41,7 +41,7 @@ NAN_METHOD(sdl::RectWrapper::New) {
 	uint32_t x = static_cast<uint32_t>(info[0]->Int32Value());
 	uint32_t y = static_cast<uint32_t>(info[1]->Int32Value());
 	uint32_t w = static_cast<uint32_t>(info[2]->Int32Value());
-	uint32_t h = static_cast<uint32_t>(info[2]->Int32Value());
+	uint32_t h = static_cast<uint32_t>(info[3]->Int32Value());
 	SDL_Rect* rect = new SDL_Rect;
 	rect->x = x;
 	rect->y = y;
