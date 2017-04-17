@@ -224,7 +224,7 @@ namespace sdl {
 		return scope.Escape(result);
 	}
 
-	SDL_DisplayMode* UnwrapDisplayMode(Handle<Value> val) {
+	SDL_DisplayMode* UnwrapDisplayMode(Handle<Object> val) {
 		Handle<Object> obj = Handle<Object>::Cast(val);
 		Handle<External> field = Handle<External>::Cast(obj->GetInternalField(0));
 		void* ptr = field->Value();
