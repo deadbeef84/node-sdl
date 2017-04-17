@@ -14,32 +14,10 @@ namespace sdl {
 	void InitWrappers(v8::Handle<v8::Object> exports);
 
 	///////////////////////////////////////////////////////////////////////////////
-  	// Wrappers and Unwrappers.
-  	// These include v8::ObjectTemplates which have properties for the same fields
-  	// as defined in the SDL documentation. (excluding anything SDL uses internally
-  	// or is just plain unused)
-
-
-	///////////////////////////////////////////////////////////////////////////////
-	// SDL_Point Wrapper/Unwrapper.
-	class PointWrapper : public Nan::ObjectWrap {
-	public:
-	    static v8::Persistent<v8::FunctionTemplate> constructor;
-
-		PointWrapper();
-		~PointWrapper();
-
-		static NAN_MODULE_INIT(Init);
-		static NAN_METHOD(New);
-
-		static NAN_GETTER(GetX);
-		static NAN_GETTER(GetY);
-		static NAN_SETTER(SetX);
-		static NAN_SETTER(SetY);
-		static NAN_METHOD(ToString);
-
-		SDL_Point* point_;
-	};
+	// Wrappers and Unwrappers.
+	// These include v8::ObjectTemplates which have properties for the same fields
+	// as defined in the SDL documentation. (excluding anything SDL uses internally
+	// or is just plain unused)
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Color Wrapper/Unwrapper.

@@ -101,37 +101,37 @@ init(Handle<Object> target)
   sdl::controller::Init(target);
 
   // Initialization and Shutdown.
-  Nan::SetPrototypeMethod(target, "init", sdl::Init);
-  Nan::SetPrototypeMethod(target, "initSubSystem", sdl::InitSubSystem);
-  Nan::SetPrototypeMethod(target, "wasInit", sdl::WasInit);
-  Nan::SetPrototypeMethod(target, "quit", sdl::Quit);
-  Nan::SetPrototypeMethod(target, "quitSubSystem", sdl::QuitSubSystem);
+  Nan::Export(target, "init", sdl::Init);
+  Nan::Export(target, "initSubSystem", sdl::InitSubSystem);
+  Nan::Export(target, "wasInit", sdl::WasInit);
+  Nan::Export(target, "quit", sdl::Quit);
+  Nan::Export(target, "quitSubSystem", sdl::QuitSubSystem);
 
   // Display and Window Management.
 
-  Nan::SetPrototypeMethod(target, "clearError", sdl::ClearError);
-  Nan::SetPrototypeMethod(target, "getError", sdl::GetError);
-  Nan::SetPrototypeMethod(target, "setError", sdl::SetError);
+  Nan::Export(target, "clearError", sdl::ClearError);
+  Nan::Export(target, "getError", sdl::GetError);
+  Nan::Export(target, "setError", sdl::SetError);
 
-  Nan::SetPrototypeMethod(target, "mapRGB", sdl::MapRGB);
-  Nan::SetPrototypeMethod(target, "mapRGBA", sdl::MapRGBA);
-  Nan::SetPrototypeMethod(target, "getRGB", sdl::GetRGB);
-  Nan::SetPrototypeMethod(target, "getRGBA", sdl::GetRGBA);
+  Nan::Export(target, "mapRGB", sdl::MapRGB);
+  Nan::Export(target, "mapRGBA", sdl::MapRGBA);
+  Nan::Export(target, "getRGB", sdl::GetRGB);
+  Nan::Export(target, "getRGBA", sdl::GetRGBA);
 
-  Nan::SetPrototypeMethod(target, "AddHintCallback", sdl::AddHintCallback);
-  Nan::SetPrototypeMethod(target, "getHint", sdl::GetHint);
-  Nan::SetPrototypeMethod(target, "setHint", sdl::SetHint);
-  Nan::SetPrototypeMethod(target, "setHintWithPriority", sdl::SetHintWithPriority);
+  Nan::Export(target, "AddHintCallback", sdl::AddHintCallback);
+  Nan::Export(target, "getHint", sdl::GetHint);
+  Nan::Export(target, "setHint", sdl::SetHint);
+  Nan::Export(target, "setHintWithPriority", sdl::SetHintWithPriority);
 
-  Nan::SetPrototypeMethod(target, "compiledVersion", sdl::CompiledVersion);
-  Nan::SetPrototypeMethod(target, "compiledRevision", sdl::CompiledRevision);
-  Nan::SetPrototypeMethod(target, "getRevision", sdl::GetRevision);
-  Nan::SetPrototypeMethod(target, "getRevisionNumber", sdl::GetRevisionNumber);
-  Nan::SetPrototypeMethod(target, "getVersion", sdl::GetVersion);
+  Nan::Export(target, "compiledVersion", sdl::CompiledVersion);
+  Nan::Export(target, "compiledRevision", sdl::CompiledRevision);
+  Nan::Export(target, "getRevision", sdl::GetRevision);
+  Nan::Export(target, "getRevisionNumber", sdl::GetRevisionNumber);
+  Nan::Export(target, "getVersion", sdl::GetVersion);
 
-  Nan::SetPrototypeMethod(target, "getClipboardText", sdl::GetClipboardText);
-  Nan::SetPrototypeMethod(target, "hasClipboardText", sdl::HasClipboardText);
-  Nan::SetPrototypeMethod(target, "setClipboardText", sdl::SetClipboardText);
+  Nan::Export(target, "getClipboardText", sdl::GetClipboardText);
+  Nan::Export(target, "hasClipboardText", sdl::HasClipboardText);
+  Nan::Export(target, "setClipboardText", sdl::SetClipboardText);
 
   Local<Object> INIT = Nan::New<Object>();
   target->Set(Nan::New("INIT").ToLocalChecked(), INIT);
@@ -187,7 +187,7 @@ init(Handle<Object> target)
   Local<Object> IMG = Nan::New<Object>();
   target->Set(Nan::New("IMG").ToLocalChecked(), IMG);
 
-  Nan::SetPrototypeMethod(IMG, "load", sdl::IMG::Load);
+  Nan::Export(IMG, "load", sdl::IMG::Load);
 
   Local<Object> WM = Nan::New<Object>();
   target->Set(Nan::New("WM").ToLocalChecked(), WM);
@@ -626,18 +626,18 @@ NAN_METHOD(sdl::GetRGBA) {
 ////////////////////////////////////////////////////////////////////////////////
 // SDL Hint Handling.
 static void HintCallbackHandler(void *userData, const char *name, const char *oldValue, const char *newValue) {
-  Persistent<Function> callback = *static_cast<Persistent<Function>*>(userData);
+  Nan::Callback *callback = static_cast<Nan::Callback*>(userData);
 
   Local<Value> nodeName = Nan::New(name).ToLocalChecked();
   Local<Value> nodeOldValue = Nan::New(oldValue).ToLocalChecked();
   Local<Value> nodeNewValue = Nan::New(newValue).ToLocalChecked();
 
   Local<Value> argv[3] = {nodeName, nodeOldValue, nodeNewValue};
-  Local<Value> retValue = callback->Call(Context::GetCurrent()->Global(), 3, argv);
+  Local<Value> retValue = callback->Call(Nan::GetCurrentContext()->Global(), 3, argv);
   Local<Boolean> ret = retValue->ToBoolean();
   if(ret->BooleanValue()) {
     SDL_DelHintCallback(name, HintCallbackHandler, userData);
-    callback.Dispose();
+    delete callback;
   }
 }
 
@@ -648,9 +648,8 @@ NAN_METHOD(sdl::AddHintCallback) {
   }
 
   String::Utf8Value name(info[0]);
-  Handle<Function> callback = Handle<Function>::Cast(info[1]);
-  Persistent<Function> userData = Persistent<Function>::New(callback);
-  SDL_AddHintCallback(*name, HintCallbackHandler, static_cast<void*>(&userData));
+  Nan::Callback *callback = new Nan::Callback(info[1].As<Function>());
+  SDL_AddHintCallback(*name, HintCallbackHandler, static_cast<void*>(callback));
 }
 
 // TODO: Implement a way to call SDL_ClearHints safely. Currently, because we store a Persistent
@@ -791,10 +790,10 @@ NAN_METHOD(sdl::IMG::Load) {
   SDL_Surface *image;
   image=IMG_Load(*file);
   if(!image) {
-    Nan::ThrowException(Exception::Error(String::Concat(
+    Nan::ThrowError(String::Concat(
       Nan::New("IMG::Load: ").ToLocalChecked(),
       STRING_NEW(IMG_GetError())
-    )));
+    ));
     return;
   }
 

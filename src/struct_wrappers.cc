@@ -12,183 +12,70 @@ using namespace v8;
 namespace sdl {
 	typedef Handle<ObjectTemplate> (*TemplateMaker)();
 
-	static Persistent<ObjectTemplate> wrappedtemplate_;
-	static Persistent<ObjectTemplate> point_template_;
-	static Persistent<ObjectTemplate> color_template_;
-	static Persistent<ObjectTemplate> palette_template_;
-	static Persistent<ObjectTemplate> pixelformat_template_;
-	static Persistent<ObjectTemplate> rendererinfo_template_;
-	static Persistent<ObjectTemplate> displaymode_template_;
-	static Persistent<ObjectTemplate> joystick_template_;
-	static Persistent<ObjectTemplate> font_template_;
+	static Nan::Persistent<ObjectTemplate> color_template_;
+	static Nan::Persistent<ObjectTemplate> palette_template_;
+	static Nan::Persistent<ObjectTemplate> pixelformat_template_;
+	static Nan::Persistent<ObjectTemplate> rendererinfo_template_;
+	static Nan::Persistent<ObjectTemplate> displaymode_template_;
+	static Nan::Persistent<ObjectTemplate> joystick_template_;
+	static Nan::Persistent<ObjectTemplate> font_template_;
 
 	///////////////////////////////////////////////////////////////////////////////
 	// Initialize everything we need to use the wrappers.
 	void InitWrappers(Handle<Object> exports) {
-		// std::cout << "About to initialize SDL struct wrappers." << std::endl;
+		// Color
+		Local<ObjectTemplate> color_template = ObjectTemplate::New();
+		color_template->SetInternalFieldCount(1);
+		Nan::SetAccessor(color_template, STRING_NEW("r"), GetColorRed, SetColorRed);
+		Nan::SetAccessor(color_template, STRING_NEW("g"), GetColorGreen, SetColorGreen);
+		Nan::SetAccessor(color_template, STRING_NEW("b"), GetColorBlue, SetColorBlue);
+		Nan::SetAccessor(color_template, STRING_NEW("a"), GetColorAlpha, SetColorAlpha);
+		color_template_.Reset(color_template);
 
-		// std::cout << "Created scope for struct wrapper initialization." << std::endl;
+		// Palette
+		Local<ObjectTemplate> palette_template = ObjectTemplate::New();
+		palette_template->SetInternalFieldCount(1);
+		Nan::SetAccessor(palette_template, STRING_NEW("ncolors"), GetNcolors);
+		Nan::SetAccessor(palette_template, STRING_NEW("colors"), GetColors);
+		palette_template_.Reset(palette_template);
 
-		// std::cout << "Putting together information for color wrapper..." << std::endl;
-		const int numColor = 4;
-		std::string colorSymbols[] = {"r", "g", "b", "a"};
-		AccessorGetter colorGetters[] = {GetColorRed, GetColorGreen, GetColorBlue, GetColorAlpha};
-		AccessorSetter colorSetters[] = {SetColorRed, SetColorGreen, SetColorBlue, SetColorAlpha};
+		// DisplayMode
+		Local<ObjectTemplate> displaymode_template = ObjectTemplate::New();
+		displaymode_template->SetInternalFieldCount(1);
+		Nan::SetAccessor(displaymode_template, STRING_NEW("format"), GetDisplayModeFormat);
+		Nan::SetAccessor(displaymode_template, STRING_NEW("w"), GetDisplayModeWidth);
+		Nan::SetAccessor(displaymode_template, STRING_NEW("h"), GetDisplayModeHeight);
+		Nan::SetAccessor(displaymode_template, STRING_NEW("refreshRate"), GetDisplayModeRefreshRate);
+		displaymode_template_.Reset(displaymode_template);
 
-		// std::cout << "Putting together information for palette wrapper..." << std::endl;
-		const int numberPalette = 2;
-		std::string paletteSymbols[] = {"ncolors", "colors"};
-		AccessorGetter paletteGetters[] = {GetNcolors, GetColors};
-		AccessorSetter paletteSetters[] = {0, 0};
+		// PixelFormat
+		Local<ObjectTemplate> pixelformat_template = ObjectTemplate::New();
+		pixelformat_template->SetInternalFieldCount(1);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("format"), GetFormatFormat);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("palette"), GetFormatPalette);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("bitsPerPixel"), GetFormatBits);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("bytesPerPixel"), GetFormatBytes);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("rmask"), GetFormatRmask);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("gmask"), GetFormatGmask);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("bmask"), GetFormatBmask);
+		Nan::SetAccessor(pixelformat_template, STRING_NEW("amask"), GetFormatAmask);
+		pixelformat_template_.Reset(pixelformat_template);
 
-		// std::cout << "Putting together information for display mode wrapper..." << std::endl;
-		const int numberDisplayMode = 4;
-		std::string displayModeSymbols[] = {"format", "w", "h", "refreshRate"};
-		AccessorGetter displayModeGetters[] = {GetDisplayModeFormat, GetDisplayModeWidth,
-											   GetDisplayModeHeight, GetDisplayModeRefreshRate};
-		AccessorSetter displayModeSetters[] = {0, 0, 0, 0};
+		// RendererInfo
+		Local<ObjectTemplate> rendererinfo_template = ObjectTemplate::New();
+		rendererinfo_template->SetInternalFieldCount(1);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("name"), GetRendererInfoName);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("flags"), GetRendererInfoFlags);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("numTextureFormats"), GetRendererInfoNumTextureFormats);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("textureFormats"), GetRendererInfoTextureFormats);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("maxTextureWidth"), GetRendererInfoMaxTextureWidth);
+		Nan::SetAccessor(rendererinfo_template, STRING_NEW("maxTextureHeight"), GetRendererInfoMaxTextureHeight);
+		rendererinfo_template_.Reset(rendererinfo_template);
 
-		// std::cout << "Putting together information for pixel format wrapper..." << std::endl;
-		const int numberPixelFormat = 8;
-		std::string pixelFormatSymbols[] = {"format", "palette", "bitsPerPixel", "bytesPerPixel",
-											"rmask", "gmask", "bmask", "amask"};
-		AccessorGetter pixelFormatGetters[] = {GetFormatFormat, GetFormatPalette, GetFormatBits,
-											   GetFormatBytes, GetFormatRmask, GetFormatGmask,
-											   GetFormatBmask, GetFormatAmask};
-		AccessorSetter pixelFormatSetters[] = {0, 0, 0, 0, 0, 0, 0, 0};
+		Nan::Export(exports, "Color", ConstructColor);
+		Nan::Export(exports, "Palette", ConstructPalette);
 
-		const int numberRendererInfo = 6;
-		std::string rendererInfoSymbols[] = {"name", "flags", "numTextureFormats", "textureFormats",
-											 "maxTextureWidth", "maxTextureHeight"};
-		AccessorGetter rendererInfoGetters[] = {GetRendererInfoName, GetRendererInfoFlags,
-												GetRendererInfoNumTextureFormats,
-												GetRendererInfoTextureFormats,
-												GetRendererInfoMaxTextureWidth,
-												GetRendererInfoMaxTextureHeight};
-		AccessorSetter rendererInfoSetters[] = {0, 0, 0, 0, 0, 0};
-
-		// std::cout << "Putting together meta information for creating wrapping bindings..." << std::endl;
-		const int numberTemplates = 5;
-		Handle<ObjectTemplate> *templates[] = {&color_template_,
-											   &palette_template_, &displaymode_template_,
-											   &pixelformat_template_, &rendererinfo_template_};
-		int numberSymbols[] = {numColor, numberPalette, numberDisplayMode,
-							   numberPixelFormat, numberRendererInfo};
-		std::string *allSymbols[] = {colorSymbols, paletteSymbols,
-									 displayModeSymbols, pixelFormatSymbols, rendererInfoSymbols};
-		AccessorGetter *allGetters[] = {colorGetters, paletteGetters,
-										displayModeGetters, pixelFormatGetters, rendererInfoGetters};
-		AccessorSetter *allSetters[] = {colorSetters, paletteSetters,
-										displayModeSetters, pixelFormatSetters, rendererInfoSetters};
-		InvocationCallback allConstructors[] = {ConstructColor,
-											    ConstructPalette, 0, 0, 0};
-		std::string constructorNames[] = {"Color", "Palette",
-										  "DisplayMode", "PixelFormat", "RendererInfo"};
-
-		// std::cout << std::endl << "About to begin loop to create wrapping bindings..." << std::endl;
-		for(int i = 0; i < numberTemplates; i++) {
-			// std::cout << "Creating new ObjectTemplate." << std::endl;
-			Handle<ObjectTemplate> raw_template = ObjectTemplate::New();
-			// std::cout << "Setting internal field count for ObjectTemplate to 1." << std::endl;
-			raw_template->SetInternalFieldCount(1);
-
-			const int symbols = numberSymbols[i];
-			// std::cout << "There are " << symbols << " symbols to create." << std::endl;
-			std::string *symbolNames = allSymbols[i];
-			AccessorGetter *getters = allGetters[i];
-			AccessorSetter *setters = allSetters[i];
-			for(int j = 0; j < symbols; j++) {
-				// std::cout << "Creating symbol: " << symbolNames[j] << std::endl;
-				// std::cout << "This symbol " << (setters[j] != 0 ? "has" : "does not have") << " a setter." << std::endl;
-				raw_template->SetAccessor(STRING_NEW(symbolNames[j].c_str()), getters[j], setters[j] == 0 ? 0 : setters[j]);
-			}
-
-			// std::cout << "Directly setting the ObjectTemplate with the template that has the accessors." << std::endl;
-			*(templates[i]) = Persistent<ObjectTemplate>::New(raw_template);
-
-			if(allConstructors[i] != 0) {
-				// std::cout << "Creating constructor with name: " << constructorNames[i] << "." << std::endl;
-				Nan::SetPrototypeMethod(exports, constructorNames[i].c_str(), allConstructors[i]);
-			}
-			// std::cout << std::endl;
-		}
-
-		PointWrapper::Init(exports);
-		// std::cout << "Finished initializing wrappers." << std::endl;
 		// TODO: Joystick and Font.
-	}
-
-	///////////////////////////////////////////////////////////////////////////////
-	// SDL_Point Wrapper/Unwrapper.
-    Persistent<FunctionTemplate> sdl::PointWrapper::constructor;
-
-	sdl::PointWrapper::PointWrapper() {
-	}
-	sdl::PointWrapper::~PointWrapper() {
-		if(NULL != point_) {
-			delete point_;
-		}
-	}
-
-	NAN_MODULE_INIT(sdl::PointWrapper::Init) {
-		Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-		tpl->InstanceTemplate()->SetInternalFieldCount(1);
-		tpl->SetClassName(STRING_NEW("PointWrapper"));
-
-		Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
-		proto->SetAccessor(STRING_NEW("x"), GetX, SetX);
-		proto->SetAccessor(STRING_NEW("y"), GetY, SetY);
-		Nan::SetPrototypeMethod(tpl, "toString", ToString);
-
-		constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-		exports->Set(STRING_NEW("Point"), constructor);
-	}
-
-	NAN_METHOD(sdl::PointWrapper::New) {
-		if(!info.IsConstructCall()) {
-			Nan::ThrowTypeError(Nan::New("Use the new operator to create instances of a Point.").ToLocalChecked());
-			return;
-		}
-
-		int x = info[0]->IsUndefined() ? 0 : info[0]->Int32Value();
-		int y = info[0]->IsUndefined() ? 0 : info[1]->Int32Value();
-		PointWrapper* obj = new PointWrapper();
-		obj->point_ = new SDL_Point;
-		obj->point_->x = x;
-		obj->point_->y = y;
-		obj->Wrap(info.This());
-		return info.This();
-	}
-
-	NAN_GETTER(GetX) {
-		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		info.GetReturnValue().Set(Nan::New<Number>(obj->point_->x));
-	}
-
-	NAN_GETTER(GetY) {
-		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		info.GetReturnValue().Set(Nan::New<Number>(obj->point_->y));
-	}
-
-	NAN_SETTER(SetX) {
-		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		int x = value->Int32Value();
-		obj->point_->x = x;
-	}
-
-	NAN_SETTER(SetY) {
-		PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		int y = value->Int32Value();
-		obj->point_->y = y;
-	}
-
-	NAN_METHOD(sdl::PointWrapper::ToString) {
-		// PointWrapper* obj = ObjectWrap::Unwrap<PointWrapper>(info.This());
-		int x = info.This()->Get(Nan::New("x").ToLocalChecked())->Int32Value();
-		int y = info.This()->Get(Nan::New("y").ToLocalChecked())->Int32Value();
-		std::stringstream ss;
-		ss << "{x: " << x << ", y:" << y << "}";
-		info.GetReturnValue().Set(STRING_NEW(ss.str().c_str()));
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -196,7 +83,7 @@ namespace sdl {
 	NAN_METHOD(ConstructColor) {
 		if(info.Length() < 1) {
 			Nan::ThrowTypeError(STRING_NEW("Invalid call. Excpected: ConstructRect(x, y, width, height)"));
-		return;
+			return;
 		}
 
 		SDL_Color *color = new SDL_Color;
@@ -209,26 +96,12 @@ namespace sdl {
 	}
 
 	Handle<Object> WrapColor(SDL_Color* color) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-		Handle<ObjectTemplate> templ = color_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(color);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+		Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(color_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(color);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_Color* UnwrapColor(Handle<Object> obj) {
@@ -292,7 +165,7 @@ namespace sdl {
 	NAN_METHOD(ConstructPalette) {
 		if(info.Length() < 1) {
 			Nan::ThrowTypeError(STRING_NEW("Invalid call. Excpected: ConstructPalette(Array)"));
-		return;
+			return;
 		}
 
 		Handle<Array> colors = Handle<Array>::Cast(info[0]);
@@ -310,26 +183,12 @@ namespace sdl {
 	}
 
 	Handle<Object> WrapPalette(SDL_Palette* palette) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-		Handle<ObjectTemplate> templ = palette_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(palette);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+  		Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(palette_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(palette);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_Palette* UnwrapPalette(Handle<Object> obj) {
@@ -346,34 +205,23 @@ namespace sdl {
 
 	NAN_GETTER(GetColors) {
 		SDL_Palette* palette = UnwrapPalette(info.Holder());
-		Handle<Array> ret = Array::New(palette->ncolors);
+		Handle<Array> ret = Nan::New<Array>(palette->ncolors);
 		for(int i = 0; i < palette->ncolors; i++) {
 			ret->Set(i, WrapColor(palette->colors + i));
 		}
-		return ret;
+		info.GetReturnValue().Set(ret);
 	}
 	// Property setters.
 
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_DisplayMode Wrapper/Unwrapper.
-	Handle<ObjectTemplate> MakeDisplayModeTemplate() {
-		Handle<ObjectTemplate> result = ObjectTemplate::New();
-		result->SetInternalFieldCount(1);
-
-		result->SetAccessor(STRING_NEW("format"), GetDisplayModeFormat);
-		result->SetAccessor(STRING_NEW("w"), GetDisplayModeWidth);
-		result->SetAccessor(STRING_NEW("h"), GetDisplayModeHeight);
-		result->SetAccessor(STRING_NEW("refreshRate"), GetDisplayModeRefreshRate);
-
-		info.GetReturnValue().Set(result);
-	}
-
 	Handle<Object> WrapDisplayMode(SDL_DisplayMode* mode) {
-		Handle<ObjectTemplate> templ = displaymode_template_;
-		Handle<Object> result = templ->NewInstance();
-		Handle<External> request_ptr = External::New(mode);
-		result->SetInternalField(0, request_ptr);
-		info.GetReturnValue().Set(result);
+		Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(displaymode_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(mode);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_DisplayMode* UnwrapDisplayMode(Handle<Value> val) {
@@ -407,26 +255,12 @@ namespace sdl {
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_PixelFormat Wrapper/Unwrapper.
 	Handle<Object> WrapPixelFormat(SDL_PixelFormat* pixelformat) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-		Handle<ObjectTemplate> templ = pixelformat_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(pixelformat);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+  	Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(pixelformat_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(pixelformat);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_PixelFormat* UnwrapPixelFormat(Handle<Object> obj) {
@@ -443,7 +277,7 @@ namespace sdl {
 
 	NAN_GETTER(GetFormatPalette) {
 		SDL_PixelFormat* format = UnwrapPixelFormat(info.Holder());
-		return WrapPalette(format->palette);
+		info.GetReturnValue().Set(WrapPalette(format->palette));
 	}
 
 	NAN_GETTER(GetFormatBits) {
@@ -479,26 +313,12 @@ namespace sdl {
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_RendererInfo Wrapper/Unwrapper.
 	Handle<Object> WrapRendererInfo(SDL_RendererInfo* info) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-		Handle<ObjectTemplate> templ = rendererinfo_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(info);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+  	Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(rendererinfo_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(info);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_RendererInfo* UnwrapRendererInfo(Handle<Object> obj) {
@@ -525,11 +345,11 @@ namespace sdl {
 
 	NAN_GETTER(GetRendererInfoTextureFormats) {
 		SDL_RendererInfo* rinfo = UnwrapRendererInfo(info.Holder());
-		Handle<Array> ret = Array::New(rinfo->num_texture_formats);
+		Handle<Array> ret = Nan::New<Array>(rinfo->num_texture_formats);
 		for(unsigned int i = 0; i < rinfo->num_texture_formats; i++) {
 			ret->Set(i, Nan::New<Number>(rinfo->texture_formats[i]));
 		}
-		return ret;
+		info.GetReturnValue().Set(ret);
 	}
 
 	NAN_GETTER(GetRendererInfoMaxTextureWidth) {
@@ -545,28 +365,12 @@ namespace sdl {
 	///////////////////////////////////////////////////////////////////////////////
 	// SDL_Joystick Wrapper/Unwrapper.
 	Handle<Object> WrapJoystick(SDL_Joystick* joystick) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-  		// Fetch the template for creating JavaScript http request wrappers.
-  		// It only has to be created once, which we do on demand.
-		Handle<ObjectTemplate> templ = joystick_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(joystick);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+  	Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(joystick_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(joystick);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	SDL_Joystick* UnwrapJoystick(Handle<Object> obj) {
@@ -578,28 +382,12 @@ namespace sdl {
 	///////////////////////////////////////////////////////////////////////////////
 	// TTF_Font Wrapper/Unwrapper.
 	Handle<Object> WrapFont(TTF_Font* font) {
-  		// Handle scope for temporary handles.
-		HandleScope handle_scope;
-
-  		// Fetch the template for creating JavaScript http request wrappers.
-  		// It only has to be created once, which we do on demand.
-		Handle<ObjectTemplate> templ = font_template_;
-
-  		// Create an empty http request wrapper.
-		Handle<Object> result = templ->NewInstance();
-
-  		// Wrap the raw C++ pointer in an External so it can be referenced
-  		// from within JavaScript.
-		Handle<External> request_ptr = External::New(font);
-
-  		// Store the request pointer in the JavaScript wrapper.
-		result->SetInternalField(0, request_ptr);
-
-  		// Return the result through the current handle scope.  Since each
-  		// of these handles will go away when the handle scope is deleted
-  		// we need to call Close to let one, the result, escape into the
-  		// outer handle scope.
-		return handle_scope.Close(result);
+  	Nan::EscapableHandleScope scope;
+		Local<ObjectTemplate> templ = Nan::New<ObjectTemplate>(font_template_);
+		Local<Object> result = templ->NewInstance();
+		Local<External> class_ptr = Nan::New<External>(font);
+		result->SetInternalField(0, class_ptr);
+		return scope.Escape(result);
 	}
 
 	TTF_Font* UnwrapFont(Handle<Object> obj) {

@@ -169,7 +169,7 @@ NAN_METHOD(sdl::ColorWrapper::ToString) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // FingerWrapper Class Definition.
-v8::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::tpl;
+v8::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::constructor;
 
 sdl::FingerWrapper::FingerWrapper() {
 }
