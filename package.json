@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git://github.com/creationix/node-sdl.git"
   },
-  "main": "sdl.js",
+  "main": "index.js",
   "engines": {
     "node": ">=0.10.0"
   },
