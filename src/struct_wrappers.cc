@@ -24,7 +24,7 @@ namespace sdl {
 	// Initialize everything we need to use the wrappers.
 	void InitWrappers(Handle<Object> exports) {
 		// Color
-		Local<ObjectTemplate> color_template = ObjectTemplate::New();
+		Local<ObjectTemplate> color_template = Nan::New<ObjectTemplate>();
 		color_template->SetInternalFieldCount(1);
 		Nan::SetAccessor(color_template, STRING_NEW("r"), GetColorRed, SetColorRed);
 		Nan::SetAccessor(color_template, STRING_NEW("g"), GetColorGreen, SetColorGreen);
@@ -33,14 +33,14 @@ namespace sdl {
 		color_template_.Reset(color_template);
 
 		// Palette
-		Local<ObjectTemplate> palette_template = ObjectTemplate::New();
+		Local<ObjectTemplate> palette_template = Nan::New<ObjectTemplate>();
 		palette_template->SetInternalFieldCount(1);
 		Nan::SetAccessor(palette_template, STRING_NEW("ncolors"), GetNcolors);
 		Nan::SetAccessor(palette_template, STRING_NEW("colors"), GetColors);
 		palette_template_.Reset(palette_template);
 
 		// DisplayMode
-		Local<ObjectTemplate> displaymode_template = ObjectTemplate::New();
+		Local<ObjectTemplate> displaymode_template = Nan::New<ObjectTemplate>();
 		displaymode_template->SetInternalFieldCount(1);
 		Nan::SetAccessor(displaymode_template, STRING_NEW("format"), GetDisplayModeFormat);
 		Nan::SetAccessor(displaymode_template, STRING_NEW("w"), GetDisplayModeWidth);
@@ -49,7 +49,7 @@ namespace sdl {
 		displaymode_template_.Reset(displaymode_template);
 
 		// PixelFormat
-		Local<ObjectTemplate> pixelformat_template = ObjectTemplate::New();
+		Local<ObjectTemplate> pixelformat_template = Nan::New<ObjectTemplate>();
 		pixelformat_template->SetInternalFieldCount(1);
 		Nan::SetAccessor(pixelformat_template, STRING_NEW("format"), GetFormatFormat);
 		Nan::SetAccessor(pixelformat_template, STRING_NEW("palette"), GetFormatPalette);
@@ -62,7 +62,7 @@ namespace sdl {
 		pixelformat_template_.Reset(pixelformat_template);
 
 		// RendererInfo
-		Local<ObjectTemplate> rendererinfo_template = ObjectTemplate::New();
+		Local<ObjectTemplate> rendererinfo_template = Nan::New<ObjectTemplate>();
 		rendererinfo_template->SetInternalFieldCount(1);
 		Nan::SetAccessor(rendererinfo_template, STRING_NEW("name"), GetRendererInfoName);
 		Nan::SetAccessor(rendererinfo_template, STRING_NEW("flags"), GetRendererInfoFlags);

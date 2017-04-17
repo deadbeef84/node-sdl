@@ -391,11 +391,11 @@ NAN_METHOD(sdl::GetDisplayBounds) {
   }
 
 
-//   Handle<Value> argv[] = {External::New(bounds)};
+//   Handle<Value> argv[] = {Nan::New<External>(bounds)};
 //   Handle<Object> ret = RectWrapper::tpl->GetFunction()->NewInstance(1, argv);
 //   Handle<Object> ret = Nan::New<Object>();
 //   RectWrapper* wrap = new RectWrapper(ret);
-//   wrap->wrapped = bounds;
+//   wrap->rect_ = bounds;
 
   // TODO: Jesper
   // NEW_WRAPPED(bounds, RectWrapper, ret);

@@ -14,7 +14,7 @@ namespace sdl {
 		WindowWrapper(v8::Handle<v8::Object> obj);
 		~WindowWrapper();
 
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		static NAN_MODULE_INIT(Init);
 		static NAN_METHOD(New);

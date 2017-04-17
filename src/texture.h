@@ -11,7 +11,7 @@
 namespace sdl {
 	class TextureWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		TextureWrapper();
 		TextureWrapper(v8::Handle<v8::Object> toWrap);

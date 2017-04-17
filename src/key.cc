@@ -11,7 +11,7 @@ NAN_MODULE_INIT(sdl::key::Init) {
 
 
 	Handle<Object> KEY = Nan::New<Object>();
-	exports->Set(STRING_NEW("KEY"), KEY);
+	Nan::Set(target, STRING_NEW("KEY"), KEY);
 	// Keys are set in the order that they are listed on this page:
 	//  http://wiki.libsdl.org/SDLKeycodeLookup
 	KEY->Set(STRING_NEW("BACKSPACE"), Nan::New<Number>(SDLK_BACKSPACE));
@@ -255,7 +255,7 @@ NAN_MODULE_INIT(sdl::key::Init) {
 	KEY->Set(STRING_NEW("SLEEP"), Nan::New<Number>(SDLK_SLEEP));
 
 	Handle<Object> SCANCODE = Nan::New<Object>();
-	exports->Set(STRING_NEW("SCANCODE"), SCANCODE);
+	Nan::Set(target, STRING_NEW("SCANCODE"), SCANCODE);
 	// Keys are set in the order that they are listed on this page:
 	//  http://wiki.libsdl.org/SDLScancodeLookup
 	SCANCODE->Set(STRING_NEW("UNKNOWN"), Nan::New<Number>(SDL_SCANCODE_UNKNOWN));
@@ -500,7 +500,7 @@ NAN_MODULE_INIT(sdl::key::Init) {
 	SCANCODE->Set(STRING_NEW("SLEEP"), Nan::New<Number>(SDL_SCANCODE_SLEEP));
 
 	Handle<Object> KMOD = Nan::New<Object>();
-	exports->Set(STRING_NEW("KMOD"), KMOD);
+	Nan::Set(target, STRING_NEW("KMOD"), KMOD);
 	KMOD->Set(STRING_NEW("NONE"), Nan::New<Number>(KMOD_NONE));
 	KMOD->Set(STRING_NEW("LSHIFT"), Nan::New<Number>(KMOD_LSHIFT));
 	KMOD->Set(STRING_NEW("RSHIFT"), Nan::New<Number>(KMOD_RSHIFT));
@@ -660,7 +660,7 @@ NAN_METHOD(sdl::GetKeyboardState) {
 	//
 	// SDL uses the value 1 and 0 to indicate pressed or not. This is translated to true
 	// or false Javascript boolean values instead.
-	Handle<Array> jsState = Array::New(size);
+	Handle<Array> jsState = Nan::New<Array>(size);
 	for(int i = 0; i < size; i++) {
 		jsState->Set(i, Nan::New<Boolean>(state[i] == 1 ? true : false));
 	}
@@ -696,7 +696,7 @@ NAN_METHOD(sdl::SetTextInputRect) {
 	}
 
 	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
-	SDL_SetTextInputRect(rect->wrapped);
+	SDL_SetTextInputRect(rect->rect_);
 }
 
 NAN_METHOD(sdl::StartTextInput) {

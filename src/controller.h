@@ -14,7 +14,7 @@ namespace sdl {
 
 		class GameControllerWrapper : public Nan::ObjectWrap {
 		public:
-			static v8::Persistent<v8::FunctionTemplate> constructor;
+			static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 			GameControllerWrapper();
 			~GameControllerWrapper();

@@ -25,7 +25,7 @@ NAN_MODULE_INIT(sdl::mouse::Init) {
 	Nan::SetPrototypeMethod(exports, "button", ButtonMacroWrapper);
 
 	Handle<Object> SYSTEM_CURSOR = Nan::New<Object>();
-	exports->Set(STRING_NEW("SYSTEM_CURSOR"), SYSTEM_CURSOR);
+	Nan::Set(target, STRING_NEW("SYSTEM_CURSOR"), SYSTEM_CURSOR);
 	SYSTEM_CURSOR->Set(STRING_NEW("ARROW"), Nan::New<Number>(SDL_SYSTEM_CURSOR_ARROW));
 	SYSTEM_CURSOR->Set(STRING_NEW("IBEAM"), Nan::New<Number>(SDL_SYSTEM_CURSOR_IBEAM));
 	SYSTEM_CURSOR->Set(STRING_NEW("WAIT"), Nan::New<Number>(SDL_SYSTEM_CURSOR_WAIT));
@@ -40,7 +40,7 @@ NAN_MODULE_INIT(sdl::mouse::Init) {
 	SYSTEM_CURSOR->Set(STRING_NEW("HAND"), Nan::New<Number>(SDL_SYSTEM_CURSOR_HAND));
 
 	Handle<Object> BUTTON = Nan::New<Object>();
-	exports->Set(STRING_NEW("BUTTON"), BUTTON);
+	Nan::Set(target, STRING_NEW("BUTTON"), BUTTON);
 	BUTTON->Set(STRING_NEW("LEFT"), Nan::New<Number>(SDL_BUTTON_LEFT));
 	BUTTON->Set(STRING_NEW("MIDDLE"), Nan::New<Number>(SDL_BUTTON_MIDDLE));
 	BUTTON->Set(STRING_NEW("RIGHT"), Nan::New<Number>(SDL_BUTTON_RIGHT));
@@ -53,7 +53,7 @@ NAN_MODULE_INIT(sdl::mouse::Init) {
 	BUTTON->Set(STRING_NEW("X2MASK"), Nan::New<Number>(SDL_BUTTON_X2MASK));
 }
 
-Persistent<FunctionTemplate> sdl::CursorWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::CursorWrapper::constructor;
 
 sdl::CursorWrapper::CursorWrapper() {
 }
@@ -101,7 +101,7 @@ NAN_METHOD(sdl::CursorWrapper::New) {
 	wrap->cursor_ = cursor;
 	wrap->Wrap(info.This());
 
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 	if(!info.IsConstructCall()) {
@@ -124,7 +124,7 @@ NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 	wrap->cursor_ = cursor;
 	wrap->Wrap(info.This());
 
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
 // TODO: Implement this function. See:
@@ -203,7 +203,7 @@ NAN_METHOD(sdl::GetMouseState) {
 	int x, y;
 	uint32_t mask = SDL_GetMouseState(&x, &y);
 
-	Handle<Array> ret = Array::New(3);
+	Handle<Array> ret = Nan::New<Array>(3);
 	ret->Set(0, Nan::New<Number>(x));
 	ret->Set(1, Nan::New<Number>(y));
 	ret->Set(2, Nan::New<Number>(mask));
@@ -221,7 +221,7 @@ NAN_METHOD(sdl::GetRelativeMouseState) {
 	int x, y;
 	uint32_t mask = SDL_GetRelativeMouseState(&x, &y);
 
-	Handle<Array> ret = Array::New(3);
+	Handle<Array> ret = Nan::New<Array>(3);
 	ret->Set(0, Nan::New<Number>(x));
 	ret->Set(1, Nan::New<Number>(y));
 	ret->Set(2, Nan::New<Number>(mask));

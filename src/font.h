@@ -13,7 +13,7 @@ namespace sdl {
 	namespace TTF {
 		class FontWrapper : public Nan::ObjectWrap {
 		public:
-			static v8::Persistent<v8::FunctionTemplate> constructor;
+			static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 			FontWrapper();
 			~FontWrapper();

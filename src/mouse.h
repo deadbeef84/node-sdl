@@ -15,7 +15,7 @@ namespace sdl {
 
 	class CursorWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		CursorWrapper();
 		CursorWrapper(v8::Handle<v8::Object> toWrap);

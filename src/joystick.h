@@ -15,7 +15,7 @@ namespace sdl {
 
 	class JoystickWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		JoystickWrapper();
 		JoystickWrapper(bool owned);

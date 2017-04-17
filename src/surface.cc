@@ -7,7 +7,7 @@
 using namespace v8;
 using namespace node;
 
-Persistent<FunctionTemplate> sdl::SurfaceWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::SurfaceWrapper::constructor;
 
 sdl::SurfaceWrapper::SurfaceWrapper() {
 }
@@ -77,7 +77,7 @@ NAN_METHOD(sdl::SurfaceWrapper::New) {
 		SurfaceWrapper* obj = new SurfaceWrapper();
 		obj->surface_ = static_cast<SDL_Surface*>(Handle<External>::Cast(info[0])->Value());
 		obj->Wrap(info.This());
-		return info.This();
+		info.GetReturnValue().Set(info.This());
 	}
 	else {
 		if(info.Length() < 2) {
@@ -109,7 +109,7 @@ NAN_METHOD(sdl::SurfaceWrapper::New) {
 	    SurfaceWrapper* obj = new SurfaceWrapper();
 	    obj->surface_ = surface;
 	    obj->Wrap(info.This());
-	    return info.This();
+	    info.GetReturnValue().Set(info.This());
 	}
 }
 
@@ -169,9 +169,9 @@ NAN_METHOD(sdl::SurfaceWrapper::BlitScaled) {
 	RectWrapper* dst = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
 	RectWrapper* src = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
 	int err = SDL_BlitScaled(obj->surface_,
-		src == NULL ? NULL : src->wrapped,
+		src == NULL ? NULL : src->rect_,
 		other->surface_,
-		dst == NULL ? NULL : dst->wrapped);
+		dst == NULL ? NULL : dst->rect_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
@@ -187,7 +187,7 @@ NAN_METHOD(sdl::SurfaceWrapper::BlitSurface) {
 	SurfaceWrapper* other = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	RectWrapper* dst = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
 	RectWrapper* src = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
-	int err = SDL_BlitSurface(obj->surface_, src->wrapped, other->surface_, dst == NULL ? NULL : dst->wrapped);
+	int err = SDL_BlitSurface(obj->surface_, src->rect_, other->surface_, dst == NULL ? NULL : dst->rect_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
@@ -203,7 +203,7 @@ NAN_METHOD(sdl::SurfaceWrapper::LowerBlit) {
 	SurfaceWrapper* other = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	RectWrapper* dst = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
 	RectWrapper* src = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
-	int err = SDL_LowerBlit(obj->surface_, src->wrapped, other->surface_, dst == NULL ? NULL : dst->wrapped);
+	int err = SDL_LowerBlit(obj->surface_, src->rect_, other->surface_, dst == NULL ? NULL : dst->rect_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
@@ -220,9 +220,9 @@ NAN_METHOD(sdl::SurfaceWrapper::LowerBlitScaled) {
 	RectWrapper* dst = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
 	RectWrapper* src = info[2]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[2]));
 	int err = SDL_LowerBlitScaled(obj->surface_,
-		src == NULL ? NULL : src->wrapped,
+		src == NULL ? NULL : src->rect_,
 		other->surface_,
-		dst == NULL ? NULL : dst->wrapped);
+		dst == NULL ? NULL : dst->rect_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
@@ -278,7 +278,7 @@ NAN_METHOD(sdl::SurfaceWrapper::FillRect) {
 	SurfaceWrapper* self = ObjectWrap::Unwrap<SurfaceWrapper>(handleObj);
 	int color = info[0]->Int32Value();
 	RectWrapper* rect = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
-	int err = SDL_FillRect(self->surface_, rect == NULL ? NULL : rect->wrapped, color);
+	int err = SDL_FillRect(self->surface_, rect == NULL ? NULL : rect->rect_, color);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
@@ -297,7 +297,7 @@ NAN_METHOD(sdl::SurfaceWrapper::FillRects) {
 	SDL_Rect* rects = new SDL_Rect[numRects];
 	for(int i = 0; i < numRects; i++) {
 		RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(arr->Get(i)));
-		rects[i] = *rect->wrapped;
+		rects[i] = *rect->rect_;
 	}
 	int err = SDL_FillRects(self->surface_, rects, numRects, color);
 	delete rects;
@@ -357,7 +357,7 @@ NAN_METHOD(sdl::SurfaceWrapper::GetColorMod) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Array> ret = Array::New(3);
+	Handle<Array> ret = Nan::New<Array>(3);
 	ret->Set(0, Nan::New<Number>(r));
 	ret->Set(1, Nan::New<Number>(g));
 	ret->Set(2, Nan::New<Number>(b));
@@ -391,7 +391,7 @@ NAN_METHOD(sdl::SurfaceWrapper::SetClipRect) {
 	}
 	SurfaceWrapper* self = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info.This()));
 	RectWrapper* clip = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
-	SDL_bool ret = SDL_SetClipRect(self->surface_, clip->wrapped);
+	SDL_bool ret = SDL_SetClipRect(self->surface_, clip->rect_);
 
 	info.GetReturnValue().Set(Nan::New<Boolean>(ret));
 }

@@ -21,7 +21,7 @@ NAN_MODULE_INIT(sdl::joystick::Init) {
 	Nan::SetPrototypeMethod(exports, "joystickEventState", JoystickEventState);
 }
 
-Persistent<FunctionTemplate> sdl::JoystickWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::JoystickWrapper::constructor;
 
 sdl::JoystickWrapper::JoystickWrapper() {
 }
@@ -89,7 +89,7 @@ NAN_METHOD(sdl::JoystickWrapper::New) {
 		wrap->Wrap(info.This());
 	}
 
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(sdl::JoystickWrapper::GetAttached) {
@@ -154,7 +154,7 @@ NAN_METHOD(sdl::JoystickWrapper::GetGUID) {
 	SDL_JoystickGUID guid = SDL_JoystickGetGUID(wrap->joystick_);
 
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 elements.
-	Handle<Array> ret = Array::New(16);
+	Handle<Array> ret = Nan::New<Array>(16);
 	for(int i = 0; i < 16; i++) {
 		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}
@@ -254,7 +254,7 @@ NAN_METHOD(sdl::JoystickGetDeviceGUID) {
 	SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(index);
 
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 elements.
-	Handle<Array> ret = Array::New(16);
+	Handle<Array> ret = Nan::New<Array>(16);
 	for(int i = 0; i < 16; i++) {
 		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}
@@ -272,7 +272,7 @@ NAN_METHOD(sdl::JoystickGetGUIDFromString) {
 	SDL_JoystickGUID guid = SDL_JoystickGetGUIDFromString(*pchGuid);
 
 	// SDL_JoystickGUID is defined as a struct holding a single array of 16 uint8_t elements.
-	Handle<Array> ret = Array::New(16);
+	Handle<Array> ret = Nan::New<Array>(16);
 	for(int i = 0; i < 16; i++) {
 		ret->Set(i, Nan::New<Number>(guid.data[i]));
 	}

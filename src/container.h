@@ -14,7 +14,9 @@ namespace sdl {
 
 	class RectWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
+
+		~RectWrapper();
 
 		static NAN_MODULE_INIT(Init);
 		static NAN_METHOD(New);
@@ -34,7 +36,7 @@ namespace sdl {
 
 	class ColorWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		~ColorWrapper();
 
@@ -60,7 +62,7 @@ namespace sdl {
 
 	class FingerWrapper : public Nan::ObjectWrap {
 	public:
-		static v8::Persistent<v8::FunctionTemplate> constructor;
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
 
 		FingerWrapper();
 		FingerWrapper(v8::Handle<v8::Object> toWrap);
@@ -75,6 +77,24 @@ namespace sdl {
 		static NAN_GETTER(GetPressure);
 
 		SDL_Finger* finger_;
+	};
+
+	class PointWrapper : public Nan::ObjectWrap {
+	public:
+		static Nan::Persistent<v8::FunctionTemplate> constructor;
+
+		~PointWrapper();
+
+		static NAN_MODULE_INIT(Init);
+		static NAN_METHOD(New);
+
+		static NAN_GETTER(GetX);
+		static NAN_GETTER(GetY);
+
+		static NAN_SETTER(SetX);
+		static NAN_SETTER(SetY);
+
+		SDL_Point* point_;
 	};
 }
 

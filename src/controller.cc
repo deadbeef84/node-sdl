@@ -43,14 +43,14 @@ NAN_MODULE_INIT(sdl::controller::Init) {
 	Nan::SetPrototypeMethod(exports, "getButtonFromString", GetButtonFromString);
 
 	Handle<Object> BINDTYPE = Nan::New<Object>();
-	exports->Set(STRING_NEW("BINDTYPE"), BINDTYPE);
+	Nan::Set(target, STRING_NEW("BINDTYPE"), BINDTYPE);
 	BINDTYPE->Set(STRING_NEW("NONE"), Nan::New<Number>(SDL_CONTROLLER_BINDTYPE_NONE));
 	BINDTYPE->Set(STRING_NEW("BUTTON"), Nan::New<Number>(SDL_CONTROLLER_BINDTYPE_BUTTON));
 	BINDTYPE->Set(STRING_NEW("AXIS"), Nan::New<Number>(SDL_CONTROLLER_BINDTYPE_AXIS));
 	BINDTYPE->Set(STRING_NEW("HAT"), Nan::New<Number>(SDL_CONTROLLER_BINDTYPE_HAT));
 
 	Handle<Object> AXIS = Nan::New<Object>();
-	exports->Set(STRING_NEW("AXIS"), AXIS);
+	Nan::Set(target, STRING_NEW("AXIS"), AXIS);
 	AXIS->Set(STRING_NEW("INVALID"), Nan::New<Number>(SDL_CONTROLLER_AXIS_INVALID));
 	AXIS->Set(STRING_NEW("LEFTX"), Nan::New<Number>(SDL_CONTROLLER_AXIS_LEFTX));
 	AXIS->Set(STRING_NEW("LEFTY"), Nan::New<Number>(SDL_CONTROLLER_AXIS_LEFTY));
@@ -61,7 +61,7 @@ NAN_MODULE_INIT(sdl::controller::Init) {
 	AXIS->Set(STRING_NEW("MAX"), Nan::New<Number>(SDL_CONTROLLER_AXIS_MAX));
 
 	Handle<Object> BUTTON = Nan::New<Object>();
-	exports->Set(STRING_NEW("BUTTON"), BUTTON);
+	Nan::Set(target, STRING_NEW("BUTTON"), BUTTON);
 	BUTTON->Set(STRING_NEW("INVALID"), Nan::New<Number>(SDL_CONTROLLER_BUTTON_INVALID));
 	BUTTON->Set(STRING_NEW("A"), Nan::New<Number>(SDL_CONTROLLER_BUTTON_A));
 	BUTTON->Set(STRING_NEW("B"), Nan::New<Number>(SDL_CONTROLLER_BUTTON_B));
@@ -81,7 +81,7 @@ NAN_MODULE_INIT(sdl::controller::Init) {
 	BUTTON->Set(STRING_NEW("MAX"), Nan::New<Number>(SDL_CONTROLLER_BUTTON_MAX));
 }
 
-Persistent<FunctionTemplate> sdl::controller::GameControllerWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::controller::GameControllerWrapper::constructor;
 
 sdl::controller::GameControllerWrapper::GameControllerWrapper() {
 }
@@ -133,7 +133,7 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::New) {
 	wrap->controller_ = controller;
 	wrap->Wrap(info.This());
 
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(sdl::controller::GameControllerWrapper::GetAttached) {
@@ -199,7 +199,7 @@ NAN_METHOD(sdl::controller::GameControllerWrapper::GetJoystick) {
 	GameControllerWrapper* wrap = ObjectWrap::Unwrap<GameControllerWrapper>(info.This());
 	SDL_Joystick* joystick = SDL_GameControllerGetJoystick(wrap->controller_);
 
-	Handle<Value> arg = External::New(joystick);
+	Handle<Value> arg = Nan::New<External>(joystick);
 	Handle<Value> argv[] = {arg, Nan::New<Boolean>(false)};
 	info.GetReturnValue().Set(JoystickWrapper::tpl->GetFunction()->NewInstance(2, argv));
 }

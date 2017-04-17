@@ -8,6 +8,10 @@
 #include <iostream>
 
 #define STRING_NEW(x) Nan::New(x).ToLocalChecked()
+#define NEW_WRAPPED(pointer, type, ret) \
+  v8::Handle<v8::Value> argv[] = { Nan::New<v8::External>(pointer) }; \
+  v8::Handle<v8::Object> ret = Nan::New<v8::FunctionTemplate>(type::constructor)->GetFunction()->NewInstance(1, argv);
+
 
 namespace sdl {
 

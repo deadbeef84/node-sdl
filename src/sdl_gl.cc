@@ -9,26 +9,26 @@ using namespace node;
 
 NAN_MODULE_INIT(sdl::gl::Init) {
 	Local<Object> GL = Nan::New<Object>();
-	exports->Set(Nan::New("GL").ToLocalChecked(), GL);
+	Nan::Set(target, Nan::New("GL").ToLocalChecked(), GL);
 	ContextWrapper::Init(GL);
 
-	Nan::SetPrototypeMethod(GL, "bindTexture", BindTexture);
-	Nan::SetPrototypeMethod(GL, "unbindTexture", UnbindTexture);
+	Nan::Export(GL, "bindTexture", BindTexture);
+	Nan::Export(GL, "unbindTexture", UnbindTexture);
 
-	Nan::SetPrototypeMethod(GL, "extensionSupported", ExtensionSupported);
+	Nan::Export(GL, "extensionSupported", ExtensionSupported);
 
-	Nan::SetPrototypeMethod(GL, "loadLibrary", LoadLibrary);
-	Nan::SetPrototypeMethod(GL, "unloadLibrary", UnloadLibrary);
+	Nan::Export(GL, "loadLibrary", LoadLibrary);
+	Nan::Export(GL, "unloadLibrary", UnloadLibrary);
 
-	Nan::SetPrototypeMethod(GL, "setAttribute", SetAttribute);
-	Nan::SetPrototypeMethod(GL, "makeCurrent", MakeCurrent);
-	Nan::SetPrototypeMethod(GL, "setSwapInterval", SetSwapInterval);
+	Nan::Export(GL, "setAttribute", SetAttribute);
+	Nan::Export(GL, "makeCurrent", MakeCurrent);
+	Nan::Export(GL, "setSwapInterval", SetSwapInterval);
 
-	Nan::SetPrototypeMethod(GL, "getAttribute", GetAttribute);
-	Nan::SetPrototypeMethod(GL, "getCurrentContext", GetCurrentContext);
-	Nan::SetPrototypeMethod(GL, "getCurrentWindow", GetCurrentWindow);
-	Nan::SetPrototypeMethod(GL, "getDrawableSize", GetDrawableSize);
-	Nan::SetPrototypeMethod(GL, "getSwapInterval", GetSwapInterval);
+	Nan::Export(GL, "getAttribute", GetAttribute);
+	Nan::Export(GL, "getCurrentContext", GetCurrentContext);
+	Nan::Export(GL, "getCurrentWindow", GetCurrentWindow);
+	Nan::Export(GL, "getDrawableSize", GetDrawableSize);
+	Nan::Export(GL, "getSwapInterval", GetSwapInterval);
 
 	// SDL_GLattr enum.
 	GL->Set(Nan::New("RED_SIZE").ToLocalChecked(), Nan::New<Number>(SDL_GL_RED_SIZE));
@@ -66,7 +66,7 @@ NAN_MODULE_INIT(sdl::gl::Init) {
 	GL->Set(Nan::New("CONTEXT_RESET_ISOLATION_FLAG").ToLocalChecked(), Nan::New<Number>(SDL_GL_CONTEXT_RESET_ISOLATION_FLAG));
 }
 
-Persistent<FunctionTemplate> sdl::gl::ContextWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::gl::ContextWrapper::constructor;
 
 sdl::gl::ContextWrapper::ContextWrapper() {
 }
@@ -85,7 +85,7 @@ NAN_MODULE_INIT(sdl::gl::ContextWrapper::Init) {
 	tpl->SetClassName(STRING_NEW("ContextWrapper"));
 
 	constructor.Reset(tpl);
-	exports.Set(STRING_NEW("Context"), constructor)
+	Nan::Set(target, STRING_NEW("Context"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::gl::ContextWrapper::New) {
@@ -103,7 +103,7 @@ NAN_METHOD(sdl::gl::ContextWrapper::New) {
 	ContextWrapper* obj = new ContextWrapper();
 	obj->context_ = context;
 	obj->Wrap(info.This());
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(sdl::gl::BindTexture) {
@@ -117,14 +117,14 @@ NAN_METHOD(sdl::gl::BindTexture) {
 		return;
 	}
 
-	TextureWrapper* obj = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
+	TextureWrapper* obj = Nan::ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
 	float texw, texh;
 	int err = SDL_GL_BindTexture(obj->texture_, &texw, &texh);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(0, Nan::New<Number>(texw));
 	ret->Set(1, Nan::New<Number>(texh));
 	info.GetReturnValue().Set(ret);
@@ -263,7 +263,7 @@ NAN_METHOD(sdl::gl::GetDrawableSize) {
 	int w, h;
 	SDL_GL_GetDrawableSize(wrap->window_, &w, &h);
 
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(0, Nan::New<Number>(w));
 	ret->Set(0, Nan::New<Number>(h));
 	info.GetReturnValue().Set(ret);

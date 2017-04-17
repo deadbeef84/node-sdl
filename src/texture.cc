@@ -13,7 +13,7 @@ using namespace v8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TextureWrapper Class Definition.
-Persistent<FunctionTemplate> sdl::TextureWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::TextureWrapper::constructor;
 
 sdl::TextureWrapper::TextureWrapper() {
 }
@@ -99,7 +99,7 @@ NAN_METHOD(sdl::TextureWrapper::New) {
 	obj->Wrap(info.This());
 
 	// std::cout << "Texture::New - Returning info.This()." << std::endl;
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
 NAN_METHOD(sdl::TextureWrapper::GetAlphaMod) {
@@ -265,7 +265,7 @@ NAN_METHOD(sdl::TextureWrapper::Update) {
 		return;
 	}
 	RectWrapper* rect = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
-	int err = SDL_UpdateTexture(texture->texture_, rect == NULL ? NULL : rect->wrapped, surface->surface_->pixels, surface->surface_->pitch);
+	int err = SDL_UpdateTexture(texture->texture_, rect == NULL ? NULL : rect->rect_, surface->surface_->pixels, surface->surface_->pitch);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
 	}

@@ -11,7 +11,7 @@ using namespace v8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // WindowWrapper class definition.
-Persistent<FunctionTemplate> sdl::WindowWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::WindowWrapper::constructor;
 
 sdl::WindowWrapper::WindowWrapper() {
 }
@@ -153,10 +153,10 @@ NAN_METHOD(sdl::WindowWrapper::GetGammaRamp) {
 		return ThrowSDLException("Window->GetGammaRamp");
 	}
 
-	Handle<Array> ret = Array::New(3);
-	Handle<Array> jsRedArr = Array::New(256);
-	Handle<Array> jsGreenArr = Array::New(256);
-	Handle<Array> jsBlueArr = Array::New(256);
+	Handle<Array> ret = Nan::New<Array>(3);
+	Handle<Array> jsRedArr = Nan::New<Array>(256);
+	Handle<Array> jsGreenArr = Nan::New<Array>(256);
+	Handle<Array> jsBlueArr = Nan::New<Array>(256);
 	for(int i = 0; i < 256; i++) {
 		jsRedArr->Set(i, Nan::New<Number>(redArr[i]));
 		jsGreenArr->Set(i, Nan::New<Number>(greenArr[i]));
@@ -183,7 +183,7 @@ NAN_METHOD(sdl::WindowWrapper::GetMaximumSize) {
 	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int w, h;
 	SDL_GetWindowMaximumSize(obj->window_, &w, &h);
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(0, Nan::New<Number>(w));
 	ret->Set(1, Nan::New<Number>(h));
 	info.GetReturnValue().Set(ret);
@@ -193,7 +193,7 @@ NAN_METHOD(sdl::WindowWrapper::GetMinimumSize) {
 	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int w, h;
 	SDL_GetWindowMinimumSize(obj->window_, &w, &h);
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(0, Nan::New<Number>(w));
 	ret->Set(1, Nan::New<Number>(h));
 	info.GetReturnValue().Set(ret);
@@ -214,7 +214,7 @@ NAN_METHOD(sdl::WindowWrapper::GetPosition) {
 	int x, y;
 	SDL_GetWindowPosition(obj->window_, &x, &y);
 
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(1, Nan::New<Number>(x));
 	ret->Set(2, Nan::New<Number>(y));
 	info.GetReturnValue().Set(ret);
@@ -225,7 +225,7 @@ NAN_METHOD(sdl::WindowWrapper::GetSize) {
 	int w, h;
 	SDL_GetWindowSize(obj->window_, &w, &h);
 
-	Handle<Array> ret = Array::New(2);
+	Handle<Array> ret = Nan::New<Array>(2);
 	ret->Set(1, Nan::New<Number>(w));
 	ret->Set(2, Nan::New<Number>(h));
 	info.GetReturnValue().Set(ret);
@@ -304,7 +304,7 @@ NAN_METHOD(sdl::WindowWrapper::SetDisplayMode) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetDisplayMode(DisplayMode)"));
 		return;
 	}
-	SDL_DisplayMode* mode = UnwrapDisplayMode(info[0]);
+	SDL_DisplayMode* mode = UnwrapDisplayMode(Handle<Object>::Cast(info[0]));
 	int err = SDL_SetWindowDisplayMode(obj->window_, mode);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -446,7 +446,7 @@ NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurfaceRects) {
 	SDL_Rect* rects = new SDL_Rect[len];
 	for(int i = 0; i < len; i++) {
 		RectWrapper* wrap = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(arr->Get(i)));
-		rects[i] = *wrap->wrapped;
+		rects[i] = *wrap->rect_;
 	}
 
 	int err = SDL_UpdateWindowSurfaceRects(obj->window_, rects, len);

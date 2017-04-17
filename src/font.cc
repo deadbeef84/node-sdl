@@ -9,7 +9,7 @@ using namespace v8;
 using namespace node;
 
 
-Persistent<FunctionTemplate> sdl::TTF::FontWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::TTF::FontWrapper::constructor;
 
 sdl::TTF::FontWrapper::FontWrapper() {
 }
@@ -40,7 +40,7 @@ NAN_MODULE_INIT(sdl::TTF::FontWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "renderGlyphBlended", RenderGlyphBlended);
 
 	constructor.Reset(tpl);
-	exports->Set(Nan::New("Font").ToLocalChecked(), constructor);
+	Nan::Set(target, Nan::New("Font").ToLocalChecked(), constructor);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::New) {
@@ -53,7 +53,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::New) {
 		FontWrapper* obj = new FontWrapper();
 		obj->font_ = static_cast<TTF_Font*>(Handle<External>::Cast(info[0])->Value());
 		obj->Wrap(info.This());
-		return info.This();
+		info.GetReturnValue().Set(info.This());
 	}
 	else {
 		if(!info[0]->IsString()) {
@@ -75,7 +75,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::New) {
 		FontWrapper* obj = new FontWrapper();
 		obj->font_ = font;
 		obj->Wrap(info.This());
-		return info.This();
+		info.GetReturnValue().Set(info.This());
 	}
 }
 
@@ -109,7 +109,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextSolid) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -142,7 +142,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Solid) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -171,7 +171,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeSolid) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -204,7 +204,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphSolid) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -246,7 +246,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextShaded) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -288,7 +288,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Shaded) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -330,7 +330,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeShaded) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -376,7 +376,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphShaded) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -409,7 +409,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextBlended) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -442,7 +442,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Blended) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -471,7 +471,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeBlended) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -504,7 +504,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
 		return ThrowSDLException(__func__);
 	}
 
-	Handle<Value> arg = External::New(surface);
+	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
 	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
@@ -512,7 +512,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
 
 void sdl::TTF::Initialize(Handle<Object> exports) {
 	Handle<Object> TTF = Nan::New<Object>();
-	exports->Set(Nan::New("TTF").ToLocalChecked(), TTF);
+	Nan::Set(target, Nan::New("TTF").ToLocalChecked(), TTF);
 	Nan::SetPrototypeMethod(TTF, "init", Init);
 	Nan::SetPrototypeMethod(TTF, "wasInit", WasInit);
 	Nan::SetPrototypeMethod(TTF, "quit", Quit);

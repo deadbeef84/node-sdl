@@ -7,8 +7,8 @@
 using namespace v8;
 
 sdl::RectWrapper::~RectWrapper() {
-	if(NULL != wrapped) {
-		delete wrapped;
+	if(NULL != rect_) {
+		delete rect_;
 	}
 }
 
@@ -51,7 +51,41 @@ NAN_METHOD(sdl::RectWrapper::New) {
 	RectWrapper* obj = new RectWrapper();
 	obj->rect_ = rect;
 	obj->Wrap(info.This());
-	return info.This();
+	info.GetReturnValue().Set(info.This());
+}
+
+NAN_GETTER(sdl::RectWrapper::GetX) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->x));
+}
+NAN_GETTER(sdl::RectWrapper::GetY) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->y));
+}
+NAN_GETTER(sdl::RectWrapper::GetW) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->w));
+}
+NAN_GETTER(sdl::RectWrapper::GetH) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->h));
+}
+
+NAN_SETTER(sdl::RectWrapper::SetX) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	obj->rect_->x = value->Int32Value();
+}
+NAN_SETTER(sdl::RectWrapper::SetY) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	obj->rect_->y = value->Int32Value();
+}
+NAN_SETTER(sdl::RectWrapper::SetW) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	obj->rect_->w = value->Int32Value();
+}
+NAN_SETTER(sdl::RectWrapper::SetH) {
+	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	obj->rect_->h = value->Int32Value();
 }
 
 sdl::ColorWrapper::~ColorWrapper() {
@@ -99,25 +133,25 @@ NAN_METHOD(sdl::ColorWrapper::New) {
 	ColorWrapper* obj = new ColorWrapper();
 	obj->color_ = color;
 	obj->Wrap(info.This());
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
-Handle<Value> sdl::ColorWrapper::GetRed(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::ColorWrapper::GetRed) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->r));
 }
 
-Handle<Value> sdl::ColorWrapper::GetGreen(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::ColorWrapper::GetGreen) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->g));
 }
 
-Handle<Value> sdl::ColorWrapper::GetBlue(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::ColorWrapper::GetBlue) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->b));
 }
 
-Handle<Value> sdl::ColorWrapper::GetAlpha(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::ColorWrapper::GetAlpha) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->a));
 }
@@ -135,25 +169,25 @@ NAN_METHOD(sdl::ColorWrapper::GetColor) {
 	info.GetReturnValue().Set(Nan::New<Number>(color));
 }
 
-void sdl::ColorWrapper::SetRed(Local<String> name, Local<Value> value, const AccessorInfo& info) {
+NAN_SETTER(sdl::ColorWrapper::SetRed) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t r = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->r = r;
 }
 
-void sdl::ColorWrapper::SetGreen(Local<String> name, Local<Value> value, const AccessorInfo& info) {
+NAN_SETTER(sdl::ColorWrapper::SetGreen) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t g = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->g = g;
 }
 
-void sdl::ColorWrapper::SetBlue(Local<String> name, Local<Value> value, const AccessorInfo& info) {
+NAN_SETTER(sdl::ColorWrapper::SetBlue) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t b = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->b = b;
 }
 
-void sdl::ColorWrapper::SetAlpha(Local<String> name, Local<Value> value, const AccessorInfo& info) {
+NAN_SETTER(sdl::ColorWrapper::SetAlpha) {
 	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t a = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->a = a;
@@ -169,7 +203,7 @@ NAN_METHOD(sdl::ColorWrapper::ToString) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // FingerWrapper Class Definition.
-v8::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::constructor;
+Nan::Persistent<v8::FunctionTemplate> sdl::FingerWrapper::constructor;
 
 sdl::FingerWrapper::FingerWrapper() {
 }
@@ -224,28 +258,28 @@ NAN_METHOD(sdl::FingerWrapper::New) {
 	obj->finger_ = finger;
 	obj->Wrap(info.This());
 
-	return info.This();
+	info.GetReturnValue().Set(info.This());
 }
 
-Handle<Value> sdl::FingerWrapper::GetFingerID(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::FingerWrapper::GetFingerID) {
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->id));
 }
 
-Handle<Value> sdl::FingerWrapper::GetX(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::FingerWrapper::GetX) {
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->x));
 }
 
-Handle<Value> sdl::FingerWrapper::GetY(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::FingerWrapper::GetY) {
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->y));
 }
 
-Handle<Value> sdl::FingerWrapper::GetPressure(Local<String> name, const AccessorInfo& info) {
+NAN_GETTER(sdl::FingerWrapper::GetPressure) {
 	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->pressure));
