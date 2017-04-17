@@ -9,25 +9,25 @@ using namespace node;
 
 
 NAN_MODULE_INIT(sdl::event::Init) {
-	Nan::SetPrototypeMethod(exports, "eventState", EventState);
+	Nan::Export(target, "eventState", EventState);
 
-	Nan::SetPrototypeMethod(exports, "flushEvent", FlushEvent);
-	Nan::SetPrototypeMethod(exports, "flushEvents", FlushEvents);
+	Nan::Export(target, "flushEvent", FlushEvent);
+	Nan::Export(target, "flushEvents", FlushEvents);
 
-	Nan::SetPrototypeMethod(exports, "getNumtouchDevices", GetNumTouchDevices);
-	Nan::SetPrototypeMethod(exports, "getNumTouchFingers", GetNumTouchFingers);
-	Nan::SetPrototypeMethod(exports, "getTouchDevice", GetTouchDevice);
-	Nan::SetPrototypeMethod(exports, "getTouchFinger", GetTouchFinger);
-	Nan::SetPrototypeMethod(exports, "recordGesture", RecordGesture);
+	Nan::Export(target, "getNumtouchDevices", GetNumTouchDevices);
+	Nan::Export(target, "getNumTouchFingers", GetNumTouchFingers);
+	Nan::Export(target, "getTouchDevice", GetTouchDevice);
+	Nan::Export(target, "getTouchFinger", GetTouchFinger);
+	Nan::Export(target, "recordGesture", RecordGesture);
 
-	Nan::SetPrototypeMethod(exports, "hasEvent", HasEvent);
-	Nan::SetPrototypeMethod(exports, "hasEvents", HasEvents);
+	Nan::Export(target, "hasEvent", HasEvent);
+	Nan::Export(target, "hasEvents", HasEvents);
 
-	Nan::SetPrototypeMethod(exports, "waitEvent", sdl::WaitEvent);
-	Nan::SetPrototypeMethod(exports, "waitEventTimeout", sdl::WaitEventTimeout);
-	Nan::SetPrototypeMethod(exports, "pollEvent", sdl::PollEvent);
+	Nan::Export(target, "waitEvent", sdl::WaitEvent);
+	Nan::Export(target, "waitEventTimeout", sdl::WaitEventTimeout);
+	Nan::Export(target, "pollEvent", sdl::PollEvent);
 
-	Nan::SetPrototypeMethod(exports, "quitRequested", QuitRequested);
+	Nan::Export(target, "quitRequested", QuitRequested);
 }
 
 // TODO: Implement these in a way that will be able to call Javascript functions on the
@@ -215,11 +215,11 @@ NAN_METHOD(sdl::WaitEvent) {
 		std::string err = "WaitEvent failed: ";
 		err += SDL_GetError();
 		ThrowSDLException(err.c_str());
-		return
+		return;
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
-	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
+	Handle<Function>::Cast(info[0])->Call(Nan::GetCurrentContext()->Global(), 1, argv);
 }
 
 NAN_METHOD(sdl::WaitEventTimeout) {
@@ -234,12 +234,12 @@ NAN_METHOD(sdl::WaitEventTimeout) {
 	if(0 == err) {
 		std::string err = "WaitEventTimeout failed: ";
 		err += SDL_GetError();
-		Nan::ThrowException(MakeSDLException(err.c_str()));
-		return
+		ThrowSDLException(err.c_str());
+		return;
 	}
 	Handle<Value> argv[1];
 	argv[0] = sdl::SDLEventToJavascriptObject(e);
-	Handle<Function>::Cast(info[0])->Call(Context::GetCurrent()->Global(), 1, argv);
+	Handle<Function>::Cast(info[0])->Call(Nan::GetCurrentContext()->Global(), 1, argv);
 }
 
 NAN_METHOD(sdl::PollEvent) {
@@ -281,7 +281,7 @@ NAN_METHOD(sdl::PollEvent) {
 
 // 	if(info.Length() < 1) {
 // 		Nan::ThrowTypeError(// 			STRING_NEW("Invalid arguments: Expected PushEvent(Event)"));
-		return;
+		// return;
 // 	}
 
 // 	return Undefined();

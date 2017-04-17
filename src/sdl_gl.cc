@@ -94,7 +94,7 @@ NAN_METHOD(sdl::gl::ContextWrapper::New) {
 		return;
 	}
 
-	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	WindowWrapper* window = Nan::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_GLContext context = SDL_GL_CreateContext(window->window_);
 	if(NULL == context) {
 		return ThrowSDLException(__func__);
@@ -136,7 +136,7 @@ NAN_METHOD(sdl::gl::UnbindTexture) {
 		return;
 	}
 
-	TextureWrapper* obj = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
+	TextureWrapper* obj = Nan::ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info[0]));
 	int err = SDL_GL_UnbindTexture(obj->texture_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -193,8 +193,8 @@ NAN_METHOD(sdl::gl::MakeCurrent) {
 		return;
 	}
 
-	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
-	ContextWrapper* context = ObjectWrap::Unwrap<ContextWrapper>(Handle<Object>::Cast(info[1]));
+	WindowWrapper* window = Nan::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	ContextWrapper* context = Nan::ObjectWrap::Unwrap<ContextWrapper>(Handle<Object>::Cast(info[1]));
 	int err = SDL_GL_MakeCurrent(window->window_, context->context_);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -259,7 +259,7 @@ NAN_METHOD(sdl::gl::GetDrawableSize) {
 		return;
 	}
 
-	WindowWrapper* wrap = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	WindowWrapper* wrap = Nan::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
 	int w, h;
 	SDL_GL_GetDrawableSize(wrap->window_, &w, &h);
 

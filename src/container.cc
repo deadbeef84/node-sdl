@@ -55,36 +55,36 @@ NAN_METHOD(sdl::RectWrapper::New) {
 }
 
 NAN_GETTER(sdl::RectWrapper::GetX) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->x));
 }
 NAN_GETTER(sdl::RectWrapper::GetY) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->y));
 }
 NAN_GETTER(sdl::RectWrapper::GetW) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->w));
 }
 NAN_GETTER(sdl::RectWrapper::GetH) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->rect_->h));
 }
 
 NAN_SETTER(sdl::RectWrapper::SetX) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	obj->rect_->x = value->Int32Value();
 }
 NAN_SETTER(sdl::RectWrapper::SetY) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	obj->rect_->y = value->Int32Value();
 }
 NAN_SETTER(sdl::RectWrapper::SetW) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	obj->rect_->w = value->Int32Value();
 }
 NAN_SETTER(sdl::RectWrapper::SetH) {
-	RectWrapper* obj = ObjectWrap::Unwrap<RectWrapper>(info.This());
+	RectWrapper* obj = Nan::ObjectWrap::Unwrap<RectWrapper>(info.This());
 	obj->rect_->h = value->Int32Value();
 }
 
@@ -137,22 +137,22 @@ NAN_METHOD(sdl::ColorWrapper::New) {
 }
 
 NAN_GETTER(sdl::ColorWrapper::GetRed) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->r));
 }
 
 NAN_GETTER(sdl::ColorWrapper::GetGreen) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->g));
 }
 
 NAN_GETTER(sdl::ColorWrapper::GetBlue) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->b));
 }
 
 NAN_GETTER(sdl::ColorWrapper::GetAlpha) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(obj->color_->a));
 }
 
@@ -162,7 +162,7 @@ NAN_METHOD(sdl::ColorWrapper::GetColor) {
 		return;
 	}
 
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	SDL_PixelFormat* format = UnwrapPixelFormat(Handle<Object>::Cast(info[0]));
 	SDL_Color* c = obj->color_;
 	uint32_t color = SDL_MapRGBA(format, c->r, c->g, c->b, c->a);
@@ -170,31 +170,31 @@ NAN_METHOD(sdl::ColorWrapper::GetColor) {
 }
 
 NAN_SETTER(sdl::ColorWrapper::SetRed) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t r = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->r = r;
 }
 
 NAN_SETTER(sdl::ColorWrapper::SetGreen) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t g = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->g = g;
 }
 
 NAN_SETTER(sdl::ColorWrapper::SetBlue) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t b = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->b = b;
 }
 
 NAN_SETTER(sdl::ColorWrapper::SetAlpha) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	uint8_t a = static_cast<uint8_t>(value->Int32Value());
 	obj->color_->a = a;
 }
 
 NAN_METHOD(sdl::ColorWrapper::ToString) {
-	ColorWrapper* obj = ObjectWrap::Unwrap<ColorWrapper>(info.This());
+	ColorWrapper* obj = Nan::ObjectWrap::Unwrap<ColorWrapper>(info.This());
 	SDL_Color* c = obj->color_;
 	std::stringstream ss;
 	ss << "{r:" << (int)c->r << ", g:" << (int)c->g << ", b:" << (int)c->b << ", a:" << (int)c->a << "}";
@@ -262,25 +262,25 @@ NAN_METHOD(sdl::FingerWrapper::New) {
 }
 
 NAN_GETTER(sdl::FingerWrapper::GetFingerID) {
-	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
+	FingerWrapper* obj = Nan::ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->id));
 }
 
 NAN_GETTER(sdl::FingerWrapper::GetX) {
-	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
+	FingerWrapper* obj = Nan::ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->x));
 }
 
 NAN_GETTER(sdl::FingerWrapper::GetY) {
-	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
+	FingerWrapper* obj = Nan::ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->y));
 }
 
 NAN_GETTER(sdl::FingerWrapper::GetPressure) {
-	FingerWrapper* obj = ObjectWrap::Unwrap<FingerWrapper>(info.This());
+	FingerWrapper* obj = Nan::ObjectWrap::Unwrap<FingerWrapper>(info.This());
 
 	info.GetReturnValue().Set(Nan::New<Number>(obj->finger_->pressure));
 }

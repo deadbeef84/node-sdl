@@ -64,7 +64,7 @@ NAN_METHOD(sdl::TextureWrapper::New) {
 
 	SDL_Texture* tex;
 	// std::cout << "Texture::New - Unwrapping RendererWrapper from first argument." << std::endl;
-	RendererWrapper* r = ObjectWrap::Unwrap<RendererWrapper>(Handle<Object>::Cast(info[0]));
+	RendererWrapper* r = Nan::ObjectWrap::Unwrap<RendererWrapper>(Handle<Object>::Cast(info[0]));
 	// std::cout << "Texture::New - Done. Checking arguments length." << std::endl;
 	if(info.Length() > 2) {
 		// std::cout << "Texture::New - Found more than 2 arguments. Pulling format, access, w, h." << std::endl;
@@ -78,7 +78,7 @@ NAN_METHOD(sdl::TextureWrapper::New) {
 	}
 	else if(info.Length() == 2) {
 		// std::cout << "Texture::New - Found 2 arguments. Pulling SurfaceWrapper from second arg." << std::endl;
-		SurfaceWrapper* wrap = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[1]));
+		SurfaceWrapper* wrap = Nan::ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[1]));
 		// std::cout << "Texture::New - Done. Calling SDL_CreateTextureFromSurface." << std::endl;
 		tex = SDL_CreateTextureFromSurface(r->renderer_, wrap->surface_);
 		// std::cout << "Texture::New - Done." << std::endl;
@@ -104,7 +104,7 @@ NAN_METHOD(sdl::TextureWrapper::New) {
 
 NAN_METHOD(sdl::TextureWrapper::GetAlphaMod) {
 	uint8_t alpha;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_GetTextureAlphaMod(tex->texture_, &alpha);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -115,7 +115,7 @@ NAN_METHOD(sdl::TextureWrapper::GetAlphaMod) {
 
 NAN_METHOD(sdl::TextureWrapper::GetBlendMode) {
 	SDL_BlendMode mode;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_GetTextureBlendMode(tex->texture_, &mode);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -126,7 +126,7 @@ NAN_METHOD(sdl::TextureWrapper::GetBlendMode) {
 
 NAN_METHOD(sdl::TextureWrapper::GetColorMod) {
 	uint8_t r, g, b;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_GetTextureColorMod(tex->texture_, &r, &g, &b);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -142,7 +142,7 @@ NAN_METHOD(sdl::TextureWrapper::GetColorMod) {
 
 NAN_METHOD(sdl::TextureWrapper::GetFormat) {
 	uint32_t format;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_QueryTexture(tex->texture_, &format, NULL, NULL, NULL);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -153,7 +153,7 @@ NAN_METHOD(sdl::TextureWrapper::GetFormat) {
 
 NAN_METHOD(sdl::TextureWrapper::GetSize) {
 	int access;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_QueryTexture(tex->texture_, NULL, &access, NULL, NULL);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -163,7 +163,7 @@ NAN_METHOD(sdl::TextureWrapper::GetSize) {
 }
 NAN_METHOD(sdl::TextureWrapper::GetWidth) {
 	int width;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_QueryTexture(tex->texture_, NULL, NULL, &width, NULL);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -174,7 +174,7 @@ NAN_METHOD(sdl::TextureWrapper::GetWidth) {
 
 NAN_METHOD(sdl::TextureWrapper::GetHeight) {
 	int height;
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_QueryTexture(tex->texture_, NULL, NULL, NULL, &height);
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -189,7 +189,7 @@ NAN_METHOD(sdl::TextureWrapper::SetAlphaMod) {
 		return;
 	}
 
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_SetTextureAlphaMod(tex->texture_, static_cast<uint8_t>(info[0]->Uint32Value()));
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -202,7 +202,7 @@ NAN_METHOD(sdl::TextureWrapper::SetBlendMode) {
 		return;
 	}
 
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int err = SDL_SetTextureBlendMode(tex->texture_, static_cast<SDL_BlendMode>(info[0]->Int32Value()));
 	if(err < 0) {
 		return ThrowSDLException(__func__);
@@ -215,7 +215,7 @@ NAN_METHOD(sdl::TextureWrapper::SetColorMod) {
 		return;
 	}
 
-	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 	int r = info[0]->Int32Value();
 	int g = info[1]->Int32Value();
 	int b = info[2]->Int32Value();
@@ -228,7 +228,7 @@ NAN_METHOD(sdl::TextureWrapper::SetColorMod) {
 // NAN_METHOD(sdl::TextureWrapper::Lock) {
 //
 
-// 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+// 	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 // 	int err = SDL_LockTexture(tex->texture_);
 // 	if(err < 0) {
 // 		return ThrowSDLException(__func__);
@@ -239,7 +239,7 @@ NAN_METHOD(sdl::TextureWrapper::SetColorMod) {
 // NAN_METHOD(sdl::TextureWrapper::Unlock) {
 //
 
-// 	TextureWrapper* tex = ObjectWrap::Unwrap<TextureWrapper>(info.This());
+// 	TextureWrapper* tex = Nan::ObjectWrap::Unwrap<TextureWrapper>(info.This());
 // 	int err = SDL_UnlockTexture(tex->texture_);
 // 	if(err < 0) {
 // 		return ThrowSDLException(__func__);
@@ -254,17 +254,17 @@ NAN_METHOD(sdl::TextureWrapper::Update) {
 		return;
 	}
 
-	TextureWrapper* texture = ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info.This()));
+	TextureWrapper* texture = Nan::ObjectWrap::Unwrap<TextureWrapper>(Handle<Object>::Cast(info.This()));
 	if(NULL == texture) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Failed to unwrap this argument to a SurfaceWrapper. (is this not an sdl.Texture?)"));
 		return;
 	}
-	SurfaceWrapper* surface = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
+	SurfaceWrapper* surface = Nan::ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	if(NULL == surface) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Failed to unwrap first argument to a SurfaceWrapper. (did you not pass in an sdl.Surface?)"));
 		return;
 	}
-	RectWrapper* rect = info[1]->IsUndefined() ? NULL : ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
+	RectWrapper* rect = info[1]->IsUndefined() ? NULL : Nan::ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[1]));
 	int err = SDL_UpdateTexture(texture->texture_, rect == NULL ? NULL : rect->rect_, surface->surface_->pixels, surface->surface_->pitch);
 	if(err < 0) {
 		return ThrowSDLException(__func__);

@@ -518,63 +518,51 @@ NAN_MODULE_INIT(sdl::key::Init) {
 	KMOD->Set(STRING_NEW("ALT"), Nan::New<Number>(KMOD_ALT));
 	KMOD->Set(STRING_NEW("GUI"), Nan::New<Number>(KMOD_GUI));
 
-	Nan::SetPrototypeMethod(exports, "getKeyFromName", GetKeyFromName);
-	Nan::SetPrototypeMethod(exports, "getKeyFromScancode", GetKeyFromScancode);
-	Nan::SetPrototypeMethod(exports, "getKeyName", GetKeyName);
+	Nan::Export(target, "getKeyFromName", GetKeyFromName);
+	Nan::Export(target, "getKeyFromScancode", GetKeyFromScancode);
+	Nan::Export(target, "getKeyName", GetKeyName);
 
-	Nan::SetPrototypeMethod(exports, "getScancodeFromKey", GetScancodeFromKey);
-	Nan::SetPrototypeMethod(exports, "getScancodeFromName", GetScancodeFromName);
-	Nan::SetPrototypeMethod(exports, "getScancodeName", GetScancodeName);
+	Nan::Export(target, "getScancodeFromKey", GetScancodeFromKey);
+	Nan::Export(target, "getScancodeFromName", GetScancodeFromName);
+	Nan::Export(target, "getScancodeName", GetScancodeName);
 
-	Nan::SetPrototypeMethod(exports, "hasScreenKeyboardSupport", HasScreenKeyboardSupport);
-	Nan::SetPrototypeMethod(exports, "isScreenKeyboardShown", IsScreenKeyboardShown);
+	Nan::Export(target, "hasScreenKeyboardSupport", HasScreenKeyboardSupport);
+	Nan::Export(target, "isScreenKeyboardShown", IsScreenKeyboardShown);
 
-	Nan::SetPrototypeMethod(exports, "getKeyboardFocus", GetKeyboardFocus);
-	Nan::SetPrototypeMethod(exports, "getKeyboardState", GetKeyboardState);
-	Nan::SetPrototypeMethod(exports, "getModState", GetModState);
-	Nan::SetPrototypeMethod(exports, "setModState", SetModState);
+	Nan::Export(target, "getKeyboardFocus", GetKeyboardFocus);
+	Nan::Export(target, "getKeyboardState", GetKeyboardState);
+	Nan::Export(target, "getModState", GetModState);
+	Nan::Export(target, "setModState", SetModState);
 
-	Nan::SetPrototypeMethod(exports, "isTextInputActive", IsTextInputActive);
-	Nan::SetPrototypeMethod(exports, "setTextInputRect", SetTextInputRect);
-	Nan::SetPrototypeMethod(exports, "startTextInput", StartTextInput);
-	Nan::SetPrototypeMethod(exports, "stopTextInput", StopTextInput);
+	Nan::Export(target, "isTextInputActive", IsTextInputActive);
+	Nan::Export(target, "setTextInputRect", SetTextInputRect);
+	Nan::Export(target, "startTextInput", StartTextInput);
+	Nan::Export(target, "stopTextInput", StopTextInput);
 }
 
-// NAN_METHOD(sdl::GetKeyFromName) {
-//
-
-// 	if(info.Length() < 1) {
-// 		Nan::ThrowTypeError(// 			STRING_NEW("Invalid arguments: Expected GetKeyFromName(String)"));
+NAN_METHOD(sdl::GetKeyFromName) {
+	if(info.Length() < 1) {
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetKeyFromName(String)"));
 		return;
-// 	}
+	}
 
-// 	String::Utf8Value name(info[0]);
-// 	SDL_Keycode code = SDL_GetKeyFromName(*name);
-
-// 	info.GetReturnValue().Set(Nan::New<Number>(code));
-// }
-FUNCTION_BEGINP(sdl, GetKeyFromName, 1)
-	EXTRACT_STRING(name, 0);
+	String::Utf8Value name(info[0]);
 	SDL_Keycode code = SDL_GetKeyFromName(*name);
-FUNCTION_END(Nan::New<Number>(code))
 
-// NAN_METHOD(sdl::GetKeyFromScancode) {
-//
+	info.GetReturnValue().Set(Nan::New<Number>(code));
+}
 
-// 	if(info.Length() < 1) {
-// 		Nan::ThrowTypeError(// 			STRING_NEW("Invalid arguments: Expected GetKeyFromScancode(Number)"));
+NAN_METHOD(sdl::GetKeyFromScancode) {
+	if(info.Length() < 1) {
+		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected GetKeyFromScancode(Number)"));
 		return;
-// 	}
+	}
 
-// 	SDL_Scancode scan = static_cast<SDL_Scancode>(info[0]->Int32Value());
-// 	SDL_Keycode key = SDL_GetKeyFromScancode(scan);
+	SDL_Scancode scan = static_cast<SDL_Scancode>(info[0]->Int32Value());
+	SDL_Keycode key = SDL_GetKeyFromScancode(scan);
 
-// 	info.GetReturnValue().Set(Nan::New<Number>(key));
-// }
-FUNCTION_BEGINP(sdl, GetKeyFromScancode, 1)
-	EXTRACT_INT32(scan, 0);
-	SDL_Keycode key = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scan));
-FUNCTION_END(Nan::New<Number>(key))
+	info.GetReturnValue().Set(Nan::New<Number>(key));
+}
 
 NAN_METHOD(sdl::GetKeyName) {
 	if(info.Length() < 1) {
@@ -636,7 +624,7 @@ NAN_METHOD(sdl::IsScreenKeyboardShown) {
 		return;
 	}
 
-	WindowWrapper* wrap = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	WindowWrapper* wrap = Nan::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_bool ret = SDL_IsScreenKeyboardShown(wrap->window_);
 
 	info.GetReturnValue().Set(Nan::New<Boolean>(ret ? true : false));
@@ -695,7 +683,7 @@ NAN_METHOD(sdl::SetTextInputRect) {
 		return;
 	}
 
-	RectWrapper* rect = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
+	RectWrapper* rect = Nan::ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_SetTextInputRect(rect->rect_);
 }
 

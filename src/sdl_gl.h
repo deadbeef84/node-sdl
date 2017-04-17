@@ -12,7 +12,7 @@ namespace sdl {
 	namespace gl {
 		NAN_MODULE_INIT(Init);
 
-		class ContextWrapper : Nan::ObjectWrap {
+		class ContextWrapper : public Nan::ObjectWrap {
 		public:
 			ContextWrapper();
 			ContextWrapper(v8::Handle<v8::Object> obj);

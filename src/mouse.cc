@@ -8,21 +8,21 @@ using namespace node;
 
 
 NAN_MODULE_INIT(sdl::mouse::Init) {
-	CursorWrapper::Init(exports);
+	CursorWrapper::Init(target);
 
-	Nan::SetPrototypeMethod(exports, "showCursor", ShowCursor);
-	Nan::SetPrototypeMethod(exports, "getCursor", GetCursor);
-	Nan::SetPrototypeMethod(exports, "getDefaultCursor", GetDefaultCursor);
-	Nan::SetPrototypeMethod(exports, "getMouseFocus", GetMouseFocus);
-	Nan::SetPrototypeMethod(exports, "getMouseState", GetMouseState);
-	Nan::SetPrototypeMethod(exports, "getRelativeMouseMode", GetRelativeMouseMode);
-	Nan::SetPrototypeMethod(exports, "getRelativeMouseState", GetRelativeMouseState);
+	Nan::Export(target, "showCursor", ShowCursor);
+	Nan::Export(target, "getCursor", GetCursor);
+	Nan::Export(target, "getDefaultCursor", GetDefaultCursor);
+	Nan::Export(target, "getMouseFocus", GetMouseFocus);
+	Nan::Export(target, "getMouseState", GetMouseState);
+	Nan::Export(target, "getRelativeMouseMode", GetRelativeMouseMode);
+	Nan::Export(target, "getRelativeMouseState", GetRelativeMouseState);
 
-	Nan::SetPrototypeMethod(exports, "setRelativeMouseMode", SetRelativeMouseMode);
+	Nan::Export(target, "setRelativeMouseMode", SetRelativeMouseMode);
 
-	Nan::SetPrototypeMethod(exports, "warpMouseInWindow", WarpMouseInWindow);
+	Nan::Export(target, "warpMouseInWindow", WarpMouseInWindow);
 
-	Nan::SetPrototypeMethod(exports, "button", ButtonMacroWrapper);
+	Nan::Export(target, "button", ButtonMacroWrapper);
 
 	Handle<Object> SYSTEM_CURSOR = Nan::New<Object>();
 	Nan::Set(target, STRING_NEW("SYSTEM_CURSOR"), SYSTEM_CURSOR);
@@ -89,7 +89,7 @@ NAN_METHOD(sdl::CursorWrapper::New) {
 		return;
 	}
 
-	SurfaceWrapper* surface = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
+	SurfaceWrapper* surface = Nan::ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	int x = info[1]->Int32Value();
 	int y = info[2]->Int32Value();
 	SDL_Cursor* cursor = SDL_CreateColorCursor(surface->surface_, x, y);
@@ -135,13 +135,13 @@ NAN_METHOD(sdl::CursorWrapper::NewSystem) {
 // 	return Undefined();
 // }
 NAN_METHOD(sdl::CursorWrapper::FreeCursor) {
-	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(info.This());
+	CursorWrapper* wrap = Nan::ObjectWrap::Unwrap<CursorWrapper>(info.This());
 	SDL_FreeCursor(wrap->cursor_);
 	wrap->cursor_ = NULL;
 }
 
 NAN_METHOD(sdl::CursorWrapper::SetCursor) {
-	CursorWrapper* wrap = ObjectWrap::Unwrap<CursorWrapper>(info.This());
+	CursorWrapper* wrap = Nan::ObjectWrap::Unwrap<CursorWrapper>(info.This());
 	SDL_SetCursor(wrap->cursor_);
 }
 
@@ -163,7 +163,8 @@ NAN_METHOD(sdl::ShowCursor) {
 NAN_METHOD(sdl::GetCursor) {
 	SDL_Cursor* cursor = SDL_GetCursor();
 	if(NULL == cursor) {
-		return Null();
+		info.GetReturnValue().SetNull();
+		return;
 	}
 
 	Handle<Object> toWrap = Nan::New<Object>();
@@ -248,7 +249,7 @@ NAN_METHOD(sdl::WarpMouseInWindow) {
 		return;
 	}
 
-	WindowWrapper* window = ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
+	WindowWrapper* window = Nan::ObjectWrap::Unwrap<WindowWrapper>(Handle<Object>::Cast(info[0]));
 	int x = info[1]->Int32Value();
 	int y = info[2]->Int32Value();
 	SDL_WarpMouseInWindow(window->window_, x, y);

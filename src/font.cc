@@ -40,7 +40,7 @@ NAN_MODULE_INIT(sdl::TTF::FontWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "renderGlyphBlended", RenderGlyphBlended);
 
 	constructor.Reset(tpl);
-	Nan::Set(target, Nan::New("Font").ToLocalChecked(), constructor);
+	Nan::Set(target, Nan::New("Font").ToLocalChecked(), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::New) {
@@ -81,9 +81,9 @@ NAN_METHOD(sdl::TTF::FontWrapper::New) {
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderTextSolid) {
 
-	Context::Scope context_scope(Context::GetCurrent());
+	Context::Scope context_scope(Nan::GetCurrentContext());
 
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -98,7 +98,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextSolid) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderTextSolid for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -111,12 +111,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextSolid) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Solid) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -131,7 +131,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Solid) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUtf8Solid for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -144,12 +144,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Solid) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeSolid) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -160,7 +160,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeSolid) {
 	}
 
 	String::Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUnicodeSolid for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -173,12 +173,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeSolid) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphSolid) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -193,7 +193,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphSolid) {
 		Nan::ThrowTypeError(Nan::New("Invalid arguments: First argument to renderGlyphSolid must be able to convert to a string of at least length 1.").ToLocalChecked());
 		return;
 	}
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderGlyphSolid for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -206,12 +206,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphSolid) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderTextShaded) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -230,12 +230,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextShaded) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* fg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* fg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == fg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderTextShaded for some reason. (is it not an sdl.Color?)"));
 		return;
 	}
-	ColorWrapper* bg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
+	ColorWrapper* bg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
 	if(NULL == bg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap third argument to renderTextShaded for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -248,12 +248,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextShaded) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Shaded) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -272,12 +272,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Shaded) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* fg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* fg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == fg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUtf8Shaded for some reason. (is it not an sdl.Color?)"));
 		return;
 	}
-	ColorWrapper* bg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
+	ColorWrapper* bg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
 	if(NULL == bg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap third argument to renderUtf8Shaded for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -290,12 +290,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Shaded) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeShaded) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -314,12 +314,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeShaded) {
 	}
 
 	String::Value text(info[0]);
-	ColorWrapper* fg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* fg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == fg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUnicodeShaded for some reason. (is it not an sdl.Color?)"));
 		return;
 	}
-	ColorWrapper* bg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
+	ColorWrapper* bg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
 	if(NULL == bg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap third argument to renderUnicodeShaded for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -332,12 +332,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeShaded) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphShaded) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -360,12 +360,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphShaded) {
 		Nan::ThrowTypeError(Nan::New("Invalid arguments: First argument to renderGlyphShaded must be able to convert to a string of at least length 1.").ToLocalChecked());
 		return;
 	}
-	ColorWrapper* fg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* fg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == fg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUnicodeShaded for some reason. (is it not an sdl.Color?)"));
 		return;
 	}
-	ColorWrapper* bg = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
+	ColorWrapper* bg = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[2]));
 	if(NULL == bg) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap third argument to renderUnicodeShaded for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -378,12 +378,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphShaded) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderTextBlended) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -398,7 +398,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextBlended) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderTextBlended for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -411,12 +411,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderTextBlended) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Blended) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -431,7 +431,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Blended) {
 	}
 
 	String::Utf8Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUtf8Blended for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -444,12 +444,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUTF8Blended) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeBlended) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -460,7 +460,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeBlended) {
 	}
 
 	String::Value text(info[0]);
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderUnicodeBlended for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -473,12 +473,12 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderUnicodeBlended) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
-	FontWrapper* font = ObjectWrap::Unwrap<FontWrapper>(info.This());
+	FontWrapper* font = Nan::ObjectWrap::Unwrap<FontWrapper>(info.This());
 	if(NULL == font) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap 'this' for some reason. (did you not use a Font object?)"));
 		return;
@@ -493,7 +493,7 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
 		Nan::ThrowTypeError(Nan::New("Invalid arguments: First argument to renderGlyphBlended must be able to convert to a string of at least length 1.").ToLocalChecked());
 		return;
 	}
-	ColorWrapper* color = ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
+	ColorWrapper* color = Nan::ObjectWrap::Unwrap<ColorWrapper>(Handle<Object>::Cast(info[1]));
 	if(NULL == color) {
 		Nan::ThrowTypeError(STRING_NEW("Could not unwrap second argument to renderGlyphBlended for some reason. (is it not an sdl.Color?)"));
 		return;
@@ -506,17 +506,17 @@ NAN_METHOD(sdl::TTF::FontWrapper::RenderGlyphBlended) {
 
 	Handle<Value> arg = Nan::New<External>(surface);
 	Handle<Value> argv[] = {arg};
-	Handle<Object> ret = SurfaceWrapper::tpl->GetFunction()->NewInstance(1, argv);
+	Handle<Object> ret = Nan::New<v8::FunctionTemplate>(SurfaceWrapper::constructor)->GetFunction()->NewInstance(1, argv);
 	info.GetReturnValue().Set(ret);
 }
 
 void sdl::TTF::Initialize(Handle<Object> exports) {
 	Handle<Object> TTF = Nan::New<Object>();
-	Nan::Set(target, Nan::New("TTF").ToLocalChecked(), TTF);
-	Nan::SetPrototypeMethod(TTF, "init", Init);
-	Nan::SetPrototypeMethod(TTF, "wasInit", WasInit);
-	Nan::SetPrototypeMethod(TTF, "quit", Quit);
-	Nan::SetPrototypeMethod(TTF, "getError", GetError);
+	Nan::Set(exports, Nan::New("TTF").ToLocalChecked(), TTF);
+	Nan::Export(TTF, "init", Init);
+	Nan::Export(TTF, "wasInit", WasInit);
+	Nan::Export(TTF, "quit", Quit);
+	Nan::Export(TTF, "getError", GetError);
 
 	FontWrapper::Init(TTF);
 }
@@ -528,7 +528,7 @@ NAN_METHOD(sdl::TTF::Init) {
 	}
 
 	if (TTF_Init() < 0) {
-		Nan::ThrowException(Exception::Error(String::Concat(
+		Nan::ThrowError(Exception::Error(String::Concat(
 			Nan::New("TTF::Init: ").ToLocalChecked(),
 			STRING_NEW(TTF_GetError())
 			)));
@@ -564,7 +564,7 @@ NAN_METHOD(sdl::TTF::GetError) {
 
 // 	if (!(info.Length() == 2 && info[0]->IsString() && info[1]->IsNumber())) {
 // 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected TTF::OpenFont(String, Number)"));
-		return;
+		// return;
 // 	}
 
 // 	String::Utf8Value file(info[0]);
@@ -587,7 +587,7 @@ NAN_METHOD(sdl::TTF::GetError) {
 
 //   if (!(info.Length() == 3 && info[0]->IsObject() && info[1]->IsString() && info[2]->IsNumber())) {
 //     Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected TTF::RenderTextBlended(Font, String, Number)"));
-		return;
+		// return;
 //   }
 
 //   SDL_PixelFormat* vfmt = SDL_GetVideoInfo()->vfmt;

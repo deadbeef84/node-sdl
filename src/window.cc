@@ -102,14 +102,14 @@ NAN_METHOD(sdl::WindowWrapper::New) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetBrightness) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
   // SDL documentation does not say this function can return an erroneous value, so
   // we don't do any error checking.
 	info.GetReturnValue().Set(Nan::New<Number>(SDL_GetWindowBrightness(obj->window_)));
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetDisplayIndex) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int ret = SDL_GetWindowDisplayIndex(obj->window_);
   // SDL documentation says that values less than 0 are returned upon error.
 	if(ret < 0) {
@@ -120,7 +120,7 @@ NAN_METHOD(sdl::WindowWrapper::GetDisplayIndex) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetDisplayMode) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_DisplayMode mode;
 	int err = SDL_GetWindowDisplayIndex(obj->window_);
 	if(err < 0) {
@@ -137,14 +137,14 @@ NAN_METHOD(sdl::WindowWrapper::GetDisplayMode) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetFlags) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
   // TODO: Return an array of human-readable strings denoting each flag instead?
   // SDL documentation does not say this function can return an error code.
 	info.GetReturnValue().Set(Nan::New<Number>(SDL_GetWindowFlags(obj->window_)));
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetGammaRamp) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	uint16_t redArr[256];
 	uint16_t greenArr[256];
 	uint16_t blueArr[256];
@@ -170,17 +170,17 @@ NAN_METHOD(sdl::WindowWrapper::GetGammaRamp) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetGrab) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Boolean>(SDL_GetWindowGrab(obj->window_)));
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetWindowID) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	info.GetReturnValue().Set(Nan::New<Number>(SDL_GetWindowID(obj->window_)));
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetMaximumSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int w, h;
 	SDL_GetWindowMaximumSize(obj->window_, &w, &h);
 	Handle<Array> ret = Nan::New<Array>(2);
@@ -190,7 +190,7 @@ NAN_METHOD(sdl::WindowWrapper::GetMaximumSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetMinimumSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int w, h;
 	SDL_GetWindowMinimumSize(obj->window_, &w, &h);
 	Handle<Array> ret = Nan::New<Array>(2);
@@ -200,7 +200,7 @@ NAN_METHOD(sdl::WindowWrapper::GetMinimumSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetPixelFormat) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	uint32_t ret = SDL_GetWindowPixelFormat(obj->window_);
 	if(SDL_PIXELFORMAT_UNKNOWN == ret) {
 		return ThrowSDLException("Window->GetPixelFormat");
@@ -210,7 +210,7 @@ NAN_METHOD(sdl::WindowWrapper::GetPixelFormat) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetPosition) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int x, y;
 	SDL_GetWindowPosition(obj->window_, &x, &y);
 
@@ -221,7 +221,7 @@ NAN_METHOD(sdl::WindowWrapper::GetPosition) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int w, h;
 	SDL_GetWindowSize(obj->window_, &w, &h);
 
@@ -232,7 +232,7 @@ NAN_METHOD(sdl::WindowWrapper::GetSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetSurface) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_Surface* surf = SDL_GetWindowSurface(obj->window_);
 	if(NULL == surf) {
 		return ThrowSDLException("Window->GetSurface");
@@ -245,48 +245,48 @@ NAN_METHOD(sdl::WindowWrapper::GetSurface) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::GetTitle) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	info.GetReturnValue().Set(STRING_NEW(SDL_GetWindowTitle(obj->window_)));
 }
 
 NAN_METHOD(sdl::WindowWrapper::Hide) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_HideWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::Show) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_ShowWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::Maximize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_MaximizeWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::Minimize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_MinimizeWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::Raise) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_RaiseWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::Restore) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_RestoreWindow(obj->window_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetBordered) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	bool bordered = info[0]->IsUndefined() ? true : info[0]->BooleanValue();
 	SDL_SetWindowBordered(obj->window_, bordered ? SDL_TRUE : SDL_FALSE);
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetBrightness) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	double brightness = info[0]->IsUndefined() ? 1.0 : info[0]->NumberValue();
 	if(brightness > 1.0) {
 		brightness = 1.0;
@@ -299,7 +299,7 @@ NAN_METHOD(sdl::WindowWrapper::SetBrightness) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetDisplayMode) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info[0]->IsUndefined()) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetDisplayMode(DisplayMode)"));
 		return;
@@ -312,7 +312,7 @@ NAN_METHOD(sdl::WindowWrapper::SetDisplayMode) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetFullscreen) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info[0]->IsUndefined()) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetFullscreen(Number)"));
 		return;
@@ -325,7 +325,7 @@ NAN_METHOD(sdl::WindowWrapper::SetFullscreen) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetGammaRamp) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 3 ) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetGammaRamp(Array, Array, Array)"));
 		return;
@@ -353,7 +353,7 @@ NAN_METHOD(sdl::WindowWrapper::SetGammaRamp) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetGrab) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 1) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetGrab(Boolean)"));
 		return;
@@ -363,17 +363,17 @@ NAN_METHOD(sdl::WindowWrapper::SetGrab) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetIcon) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 1) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetIcon(Surface)"));
 		return;
 	}
-	SurfaceWrapper* wrap = ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
+	SurfaceWrapper* wrap = Nan::ObjectWrap::Unwrap<SurfaceWrapper>(Handle<Object>::Cast(info[0]));
 	SDL_SetWindowIcon(obj->window_, wrap->surface_);
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetMaximumSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 2) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetMaximumSize(Number, Number)"));
 		return;
@@ -384,7 +384,7 @@ NAN_METHOD(sdl::WindowWrapper::SetMaximumSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetMinimumSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 2) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetMinimumSize(Number, Number)"));
 		return;
@@ -395,7 +395,7 @@ NAN_METHOD(sdl::WindowWrapper::SetMinimumSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetPosition) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 2) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetPosition(Number, Number)"));
 		return;
@@ -406,7 +406,7 @@ NAN_METHOD(sdl::WindowWrapper::SetPosition) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetSize) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 2) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetSize(Number, Number)"));
 		return;
@@ -417,7 +417,7 @@ NAN_METHOD(sdl::WindowWrapper::SetSize) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::SetTitle) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 1) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected SetTitle(String)"));
 		return;
@@ -427,7 +427,7 @@ NAN_METHOD(sdl::WindowWrapper::SetTitle) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurface) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	int err = SDL_UpdateWindowSurface(obj->window_);
 	if(err < 0) {
 		return ThrowSDLException("Window->SetTitle");
@@ -435,7 +435,7 @@ NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurface) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurfaceRects) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	if(info.Length() < 1) {
 		Nan::ThrowTypeError(STRING_NEW("Invalid arguments: Expected UpdateWindowSurfaceRects(Array)"));
 		return;
@@ -445,7 +445,7 @@ NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurfaceRects) {
 	int len = arr->Length();
 	SDL_Rect* rects = new SDL_Rect[len];
 	for(int i = 0; i < len; i++) {
-		RectWrapper* wrap = ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(arr->Get(i)));
+		RectWrapper* wrap = Nan::ObjectWrap::Unwrap<RectWrapper>(Handle<Object>::Cast(arr->Get(i)));
 		rects[i] = *wrap->rect_;
 	}
 
@@ -457,6 +457,6 @@ NAN_METHOD(sdl::WindowWrapper::UpdateWindowSurfaceRects) {
 }
 
 NAN_METHOD(sdl::WindowWrapper::Swap) {
-	WindowWrapper* obj = ObjectWrap::Unwrap<WindowWrapper>(info.This());
+	WindowWrapper* obj = Nan::ObjectWrap::Unwrap<WindowWrapper>(info.This());
 	SDL_GL_SwapWindow(obj->window_);
 }
