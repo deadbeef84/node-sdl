@@ -1,1 +1,1 @@
-var sdl = module.exports = require('./build/Release/node_sdl.node');
+module.exports = require('bindings')('node_sdl');

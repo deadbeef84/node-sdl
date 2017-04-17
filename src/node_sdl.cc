@@ -85,13 +85,13 @@ init(Handle<Object> target)
   window_event_to_string_[SDL_WINDOWEVENT_CLOSE] = "close";
   // std::cout << "Finished initializing window event mappings." << std::endl;
 
-  // sdl::InitWrappers(target);
+  sdl::InitWrappers(target);
   sdl::WindowWrapper::Init(target);
   sdl::RendererWrapper::Init(target);
   sdl::TextureWrapper::Init(target);
   sdl::SurfaceWrapper::Init(target);
-  // sdl::ColorWrapper::Init(target);
-  // sdl::RectWrapper::Init(target);
+  sdl::ColorWrapper::Init(target);
+  sdl::RectWrapper::Init(target);
   sdl::gl::Init(target);
   sdl::event::Init(target);
   sdl::key::Init(target);

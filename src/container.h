@@ -48,13 +48,12 @@ namespace sdl {
 		static NAN_GETTER(GetBlue);
 		static NAN_GETTER(GetAlpha);
 
-		static NAN_METHOD(GetColor);
-
 		static NAN_SETTER(SetRed);
 		static NAN_SETTER(SetGreen);
 		static NAN_SETTER(SetBlue);
 		static NAN_SETTER(SetAlpha);
 
+		static NAN_METHOD(GetColor);
 		static NAN_METHOD(ToString);
 
 		SDL_Color* color_;

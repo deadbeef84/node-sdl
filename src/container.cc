@@ -6,6 +6,8 @@
 
 using namespace v8;
 
+Nan::Persistent<v8::FunctionTemplate> sdl::RectWrapper::constructor;
+
 sdl::RectWrapper::~RectWrapper() {
 	if(NULL != rect_) {
 		delete rect_;
@@ -88,6 +90,8 @@ NAN_SETTER(sdl::RectWrapper::SetH) {
 	obj->rect_->h = value->Int32Value();
 }
 
+Nan::Persistent<v8::FunctionTemplate> sdl::ColorWrapper::constructor;
+
 sdl::ColorWrapper::~ColorWrapper() {
 	if(NULL != color_) {
 		delete color_;
@@ -98,6 +102,9 @@ NAN_MODULE_INIT(sdl::ColorWrapper::Init) {
 	Handle<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("ColorWrapper"));
+
+	Nan::SetPrototypeMethod(tpl, "getColor", GetColor);
+	Nan::SetPrototypeMethod(tpl, "toString", ToString);
 
 	Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
 	Nan::SetAccessor(proto, STRING_NEW("r"), GetRed, SetRed);
