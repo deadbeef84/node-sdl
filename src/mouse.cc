@@ -67,15 +67,15 @@ sdl::CursorWrapper::~CursorWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::CursorWrapper::Init) {
-	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Handle<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("CursorWrapper"));
 
 	Nan::SetPrototypeMethod(tpl, "free", FreeCursor);
 	Nan::SetPrototypeMethod(tpl, "set", SetCursor);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Cursor"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Cursor"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::CursorWrapper::New) {

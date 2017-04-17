@@ -23,7 +23,7 @@ sdl::SurfaceWrapper::~SurfaceWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::SurfaceWrapper::Init) {
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("SurfaceWrapper"));
 
@@ -64,8 +64,8 @@ NAN_MODULE_INIT(sdl::SurfaceWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "unlock", Unlock);
 	Nan::SetPrototypeMethod(tpl, "mustLock", MustLock);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Surface"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Surface"), tpl->GetFunction());
 }
 NAN_METHOD(sdl::SurfaceWrapper::New) {
 	if(!info.IsConstructCall()) {

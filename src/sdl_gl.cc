@@ -80,11 +80,11 @@ sdl::gl::ContextWrapper::~ContextWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::gl::ContextWrapper::Init) {
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("ContextWrapper"));
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	constructor.Reset(tpl);
 	exports.Set(STRING_NEW("Context"), constructor)
 }
 

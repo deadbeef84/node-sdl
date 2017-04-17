@@ -13,7 +13,7 @@ using namespace v8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // RendererWrapper Class Definition.
-Persistent<FunctionTemplate> sdl::RendererWrapper::constructor;
+Nan::Persistent<FunctionTemplate> sdl::RendererWrapper::constructor;
 
 sdl::RendererWrapper::RendererWrapper() {
 }
@@ -26,7 +26,7 @@ sdl::RendererWrapper::~RendererWrapper() {
 
 NAN_MODULE_INIT(sdl::RendererWrapper::Init) {
   	// Setup hardware renderer construction.
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("RendererWrapper"));
 
@@ -58,8 +58,8 @@ NAN_MODULE_INIT(sdl::RendererWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "drawRect", DrawRect);
 	Nan::SetPrototypeMethod(tpl, "fillRect", FillRect);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Renderer"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Renderer"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::RendererWrapper::New) {

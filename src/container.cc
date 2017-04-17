@@ -13,7 +13,7 @@ sdl::RectWrapper::~RectWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::RectWrapper::Init) {
-	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Handle<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("RectWrapper"));
 
@@ -23,8 +23,8 @@ NAN_MODULE_INIT(sdl::RectWrapper::Init) {
   Nan::SetAccessor(proto, STRING_NEW("h"), GetH, SetH);
   Nan::SetAccessor(proto, STRING_NEW("w"), GetW, SetW);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Rect"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Rect"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::RectWrapper::New) {
@@ -61,7 +61,7 @@ sdl::ColorWrapper::~ColorWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::ColorWrapper::Init) {
-	Handle<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Handle<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("ColorWrapper"));
 
@@ -71,8 +71,8 @@ NAN_MODULE_INIT(sdl::ColorWrapper::Init) {
   Nan::SetAccessor(proto, STRING_NEW("b"), GetBlue, SetBlue);
   Nan::SetAccessor(proto, STRING_NEW("a"), GetAlpha, SetAlpha);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Color"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Color"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::ColorWrapper::New) {
@@ -184,7 +184,7 @@ sdl::FingerWrapper::~FingerWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("FingerWrapper"));
 
@@ -194,8 +194,8 @@ NAN_MODULE_INIT(sdl::FingerWrapper::Init) {
 	Nan::SetAccessor(proto, STRING_NEW("y"), GetY);
 	Nan::SetAccessor(proto, STRING_NEW("pressure"), GetPressure);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Finger"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Finger"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::FingerWrapper::New) {

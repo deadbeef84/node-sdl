@@ -29,7 +29,7 @@ sdl::WindowWrapper::~WindowWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::WindowWrapper::Init) {
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("WindowWrapper"));
 
@@ -73,8 +73,8 @@ NAN_MODULE_INIT(sdl::WindowWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "updateWindowSurface", UpdateWindowSurface);
 	Nan::SetPrototypeMethod(tpl, "updateWindowSurfaceRects", UpdateWindowSurfaceRects);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Window"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Window"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::WindowWrapper::New) {

@@ -30,7 +30,7 @@ sdl::TextureWrapper::~TextureWrapper() {
 
 NAN_MODULE_INIT(sdl::TextureWrapper::Init) {
   // Setup hardware renderer construction.
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("TextureWrapper"));
 
@@ -51,8 +51,8 @@ NAN_MODULE_INIT(sdl::TextureWrapper::Init) {
 
 	Nan::SetPrototypeMethod(tpl, "update", Update);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
-	exports->Set(STRING_NEW("Texture"), constructor);
+	constructor.Reset(tpl);
+	Nan::Set(target, STRING_NEW("Texture"), tpl->GetFunction());
 }
 
 NAN_METHOD(sdl::TextureWrapper::New) {

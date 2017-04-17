@@ -20,7 +20,7 @@ sdl::TTF::FontWrapper::~FontWrapper() {
 }
 
 NAN_MODULE_INIT(sdl::TTF::FontWrapper::Init) {
-	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
+	Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 	tpl->SetClassName(STRING_NEW("FontWrapper"));
 
@@ -39,7 +39,7 @@ NAN_MODULE_INIT(sdl::TTF::FontWrapper::Init) {
 	Nan::SetPrototypeMethod(tpl, "renderUnicodeBlended", RenderUnicodeBlended);
 	Nan::SetPrototypeMethod(tpl, "renderGlyphBlended", RenderGlyphBlended);
 
-	constructor = Persistent<FunctionTemplate>::New(tpl->GetFunction());
+	constructor.Reset(tpl);
 	exports->Set(Nan::New("Font").ToLocalChecked(), constructor);
 }
 
