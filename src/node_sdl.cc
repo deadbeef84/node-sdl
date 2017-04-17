@@ -108,6 +108,30 @@ init(Handle<Object> target)
   Nan::Export(target, "quitSubSystem", sdl::QuitSubSystem);
 
   // Display and Window Management.
+  Nan::Export(target, "disableScreenSaver", sdl::DisableScreenSaver);
+  Nan::Export(target, "enableScreenSaver", sdl::EnableScreenSaver);
+  Nan::Export(target, "isScreenSaverEnabled", sdl::IsScreenSaverEnabled);
+
+  Nan::Export(target, "getClosestDisplayMode", sdl::GetClosestDisplayMode);
+  Nan::Export(target, "getCurrentDisplayMode", sdl::GetCurrentDisplayMode);
+  Nan::Export(target, "getCurrentVideoDriver", sdl::GetCurrentVideoDriver);
+  Nan::Export(target, "getDesktopDisplayMode", sdl::GetDesktopDisplayMode);
+  Nan::Export(target, "getDisplayBounds", sdl::GetDisplayBounds);
+  Nan::Export(target, "getDisplayMode", sdl::GetDisplayMode);
+  Nan::Export(target, "getDisplayName", sdl::GetDisplayName);
+  Nan::Export(target, "getNumDisplayModes", sdl::GetNumDisplayModes);
+  Nan::Export(target, "getNumVideoDisplays", sdl::GetNumVideoDisplays);
+  Nan::Export(target, "getNumVideoDrivers", sdl::GetNumVideoDrivers);
+  Nan::Export(target, "getVideoDriver", sdl::GetVideoDriver);
+  // TODO: Put this functionality into Window?
+  // Nan::Export(target, "getWindowFromID", sdl::GetWindowFromID);
+
+  // TODO: Implement showing a normal message box.
+  // Nan::Export(target, "showMessageBox", sdl::ShowMessageBox);
+  Nan::Export(target, "showSimpleMessageBox", sdl::ShowSimpleMessageBox);
+
+  Nan::Export(target, "videoInit", sdl::VideoInit);
+  Nan::Export(target, "videoQuit", sdl::VideoQuit);
 
   Nan::Export(target, "clearError", sdl::ClearError);
   Nan::Export(target, "getError", sdl::GetError);
