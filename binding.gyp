@@ -18,48 +18,48 @@
 			'src/joystick.cc',
 			'src/controller.cc'
 		],
-		'conditions': [[
-			'OS=="mac"', {
-				'libraries': [
-					'/usr/local/lib/libSDL2.dylib',
-					'/usr/local/lib/libSDL2_ttf.dylib',
-					'/usr/local/lib/libSDL2_image.dylib'
-				],
-				'include_dirs': [
-					'/usr/local/include/SDL2'
-				]
-			}
-		], [
-			'OS=="linux" and target_arch=="ia32"', {
-				'libraries': [
-					'/usr/lib/libSDL2-2.0.so',
-					'/usr/lib/libSDL2_image-2.0.so',
-					'/usr/lib/libSDL2_ttf-2.0.so'
-				],
-				'include_dirs': [
-					'/usr/include/SDL2'
-				]
-			}
-		], [
-			'OS=="linux" and target_arch=="x64"', {
-				'libraries': [
-					'/usr/lib/x86_64-linux-gnu/libSDL2-2.0.so',
-					'/usr/lib/x86_64-linux-gnu/libSDL2_image-2.0.so',
-					'/usr/lib/x86_64-linux-gnu/libSDL2_ttf-2.0.so'
-				],
-				'include_dirs': [
-					'<!(node -e "require(\'nan\')")',
-					'/usr/include/SDL2'
-				]
-			}
-		]],
-		# 'libraries': [
-		# 	'<!@(pkg-config sdl2 --libs)',
-		# ],
-		# 'include_dirs': [
-		# 	'<!(node -e "require(\'nan\')")',
-		# 	'<!@(pkg-config sdl2 --cflags-only-I | sed s/-I//g)',
-		# ],
+		# 'conditions': [[
+		# 	'OS=="mac"', {
+		# 		'libraries': [
+		# 			'/usr/local/lib/libSDL2.dylib',
+		# 			'/usr/local/lib/libSDL2_ttf.dylib',
+		# 			'/usr/local/lib/libSDL2_image.dylib'
+		# 		],
+		# 		'include_dirs': [
+		# 			'/usr/local/include/SDL2'
+		# 		]
+		# 	}
+		# ], [
+		# 	'OS=="linux" and target_arch=="ia32"', {
+		# 		'libraries': [
+		# 			'/usr/lib/libSDL2-2.0.so',
+		# 			'/usr/lib/libSDL2_image-2.0.so',
+		# 			'/usr/lib/libSDL2_ttf-2.0.so'
+		# 		],
+		# 		'include_dirs': [
+		# 			'/usr/include/SDL2'
+		# 		]
+		# 	}
+		# ], [
+		# 	'OS=="linux" and target_arch=="x64"', {
+		# 		'libraries': [
+		# 			'/usr/lib/x86_64-linux-gnu/libSDL2-2.0.so',
+		# 			'/usr/lib/x86_64-linux-gnu/libSDL2_image-2.0.so',
+		# 			'/usr/lib/x86_64-linux-gnu/libSDL2_ttf-2.0.so'
+		# 		],
+		# 		'include_dirs': [
+		# 			'<!(node -e "require(\'nan\')")',
+		# 			'/usr/include/SDL2'
+		# 		]
+		# 	}
+		# ]],
+		'libraries': [
+			'<!@(pkg-config sdl2 --libs)',
+		],
+		'include_dirs': [
+			'<!(node -e "require(\'nan\')")',
+			'<!@(pkg-config sdl2 --cflags-only-I | sed s/-I//g)',
+		],
 		'defines': [
 			'_THREAD_SAFE',
 			'ENABLE_ARG_CHECKING',
